@@ -3,20 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
+use App\Models\Patient;
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
 use Illuminate\Http\Request;
 use Spatie\QueryBuilder\QueryBuilder;
 use ProtoneMedia\LaravelQueryBuilderInertiaJs\InertiaTable;
 use Inertia\Inertia;
-
+use Illuminate\Validation\Rule;
 
 class AppointmentController extends Controller
 {
 
     public function index()
     {
-        $appointments = QueryBuilder::for (Appointment::class)
+        $appointments = QueryBuilder::for(Appointment::class)
             ->with('doctor')
             ->with('room')
             ->defaultSort('id')
@@ -35,44 +36,44 @@ class AppointmentController extends Controller
                 hidden: false,
                 sortable: true
             )->column(
-                    key: "date",
-                    label: "Date",
-                    canBeHidden: true,
-                    hidden: false,
-                    sortable: true,
-                    searchable: true
-                )->column(
-                    key: "from",
-                    label: "From",
-                    canBeHidden: true,
-                    hidden: false,
-                    sortable: true,
-                    searchable: true
-                )->column(
-                    key: "to",
-                    label: "To",
-                    canBeHidden: true,
-                    hidden: false,
-                    sortable: true,
-                    searchable: true
-                )->column(
-                    key: "room",
-                    label: "Room",
-                    canBeHidden: true,
-                    hidden: false,
-                    sortable: true,
-                    searchable: true
-                )->column(
-                    key: "doctor",
-                    label: "Doctor",
-                    canBeHidden: true,
-                    hidden: false,
-                    sortable: true,
-                    searchable: true
-                )->column(
-                    key: "actions",
-                    label: "Actions"
-                );
+                key: "date",
+                label: "Date",
+                canBeHidden: true,
+                hidden: false,
+                sortable: true,
+                searchable: true
+            )->column(
+                key: "from",
+                label: "From",
+                canBeHidden: true,
+                hidden: false,
+                sortable: true,
+                searchable: true
+            )->column(
+                key: "to",
+                label: "To",
+                canBeHidden: true,
+                hidden: false,
+                sortable: true,
+                searchable: true
+            )->column(
+                key: "room",
+                label: "Room",
+                canBeHidden: true,
+                hidden: false,
+                sortable: true,
+                searchable: true
+            )->column(
+                key: "doctor",
+                label: "Doctor",
+                canBeHidden: true,
+                hidden: false,
+                sortable: true,
+                searchable: true
+            )->column(
+                key: "actions",
+                label: "Actions"
+            );
         });
     }
 
@@ -102,10 +103,10 @@ class AppointmentController extends Controller
             $to = $request->records[$i]['date'] . " " . $request->records[$i]['to'];
             $interval = $this->timeInterval($from, $to, $request->records[$i]['num_of_cases']);
             $timesObjs = CarbonInterval::minutes($interval)->toPeriod($from, $to)->toArray();
-            $timesArr = array_map(fn($time) => $time->format('H:i'), $timesObjs);
+            $timesArr = array_map(fn ($time) => $time->format('H:i'), $timesObjs);
 
             $j = 0;
-            while($j < count($timesArr)-1){
+            while ($j < count($timesArr) - 1) {
                 $apt = new Appointment();
                 $apt->doctor_id = $request->doctor_id;
                 $apt->room_id = $request->records[$i]['room_id'];
@@ -140,10 +141,55 @@ class AppointmentController extends Controller
         $appointment->delete();
     }
 
-    public function search()
+    public function searchData(Request $request)
     {
-        return Inertia::render('Appointments/Search', []);
+        if($request->doctor_id == -1){
+            $result = Appointment::where('date', '=', $request->date)
+            ->with('doctor')
+            ->get();
+
+            $appointments = $result->groupBy('doctor_id');
+
+        }else {
+            $result = Appointment::where('doctor_id', '=', $request->doctor_id)
+            ->where('date', '=', $request->date)
+            ->with('doctor')
+            ->get();
+
+            $appointments = $result->groupBy('doctor_id');
+        }
+        return $appointments;
     }
 
+    public function reserve(Request $request){
+        $appointment = Appointment::find($request->input('appointment_id'));
+        $appointment->patient_id = $request->id;
+        $appointment->save();
+    }
 
+    public function reserveNewPatient(Request $request){
+
+        $request->validate([
+            'name' =>['string','max:255','required'],
+            'phone' =>['string','max:255','required'],
+            'type' =>['required',Rule::in(['I','P'])],
+            'gender' =>['required',Rule::in(['M','F'])],
+            'date_of_birth' =>['date','required'],
+            'insurance_number' =>['string','max:255','nullable'],
+            'insurance_company' =>['string','max:255','nullable'],
+        ]);
+
+        $patient = new Patient();
+        $patient->name = $request->name;
+        $patient->phone = $request->phone;
+        $patient->type = $request->type;
+        $patient->gender = $request->gender;
+        $patient->date_of_birth = $request->date_of_birth;
+        $patient->insurance_number = $request->insurance_number;
+        $patient->insurance_company = $request->insurance_company;
+        $patient->save();
+
+        $appointment = Appointment::find($request->input('appointment_id'));
+        $patient->appointments()->save($appointment);
+    }
 }

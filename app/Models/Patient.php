@@ -18,7 +18,13 @@ class Patient extends Model
         'date_of_birth' => 'date'
     ];
 
-    public function prescriptions(): HasMany{
+    public function prescriptions(): HasMany
+    {
         return $this->hasMany('App\Models\Prescription', 'patient_id', 'id');
+    }
+
+    public function appointments(): HasMany
+    {
+        return $this->hasMany('App\Models\Appointment', 'patient_id', 'id');
     }
 }

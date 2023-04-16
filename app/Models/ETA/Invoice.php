@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
  */
 class Invoice extends \Illuminate\Database\Eloquent\Model
 {
-    protected $table = 'Invoice';
+    protected $table = 'invoice';
 
     public $primaryKey = 'Id';
 
@@ -119,13 +119,13 @@ class Invoice extends \Illuminate\Database\Eloquent\Model
 		ifnull(sum(t2.amount), 0) taxTotal,
 		ifnull(Status, 'pending') as Status
 	from
-		Invoice t1
+		invoice t1
 		left outer join (
 			select
 				invoice_id,
 				sum( case when taxType = 'T4' then -amount else amount end) as amount
 			from
-				TaxTotal
+                taxtotal
 			group by
 				invoice_id
 		) t2 on t1.Id = t2.invoice_id

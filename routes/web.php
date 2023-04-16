@@ -31,6 +31,7 @@ use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SpecialtyController;
+use App\Models\Appointment;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -104,6 +105,10 @@ Route::middleware(['auth:sanctum', 'verified', 'ETASettings'])->group(function (
     Route::get('/room/all', [RoomController::class, 'all'])->name("room.all");
     Route::get('/patient/all', [PatientController::class, 'all'])->name("patient.all");
     Route::get('/drug/all', [DrugController::class, 'all'])->name("drug.all");
+
+    Route::post('/appointment/searchData', [AppointmentController::class, 'searchData'])->name("appointment.searchData");
+    Route::post('/appointment/reserve', [AppointmentController::class, 'reserve'])->name("appointment.reserve");
+    Route::post('/appointment/reserveNewPatient', [AppointmentController::class, 'reserveNewPatient'])->name("appointment.reserveNewPatient");
     
     Route::get('/invoice/search', [InvoiceController::class, 'search'])->name("invoices.search");
     Route::post('/invoice/searchData', [InvoiceController::class, 'searchData'])->name("invoices.searchData");

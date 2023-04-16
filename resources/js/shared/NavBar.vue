@@ -6,7 +6,7 @@
           <div class="text-xl font-semibold text-gray-700">
             <Link :href="route('dashboard')" class="flex">
               <jet-application-mark class="w-10" />
-              <span class="self-center ms-3">Accounting Master</span>
+              <span class="self-center ms-3">Clinic Master</span>
             </Link>
           </div>
 
@@ -47,7 +47,6 @@
               :align="alignDropDown()"
               width="48"
               class="ms-3 mb-3 lg:mb-0"
-              v-show="$page.props.accounting_enabled"
             >
               <template #trigger>
                 <span
@@ -75,7 +74,6 @@
               :align="alignDropDown()"
               width="48"
               class="ms-3 mb-3 lg:mb-0"
-              v-show="$page.props.accounting_enabled"
             >
               <template #trigger>
                 <span
@@ -103,7 +101,6 @@
               :align="alignDropDown()"
               width="48"
               class="ms-3 mb-3 lg:mb-0"
-              v-show="$page.props.accounting_enabled"
             >
               <template #trigger>
                 <span
@@ -131,7 +128,6 @@
               :align="alignDropDown()"
               width="48"
               class="ms-3 mb-3 lg:mb-0"
-              v-show="$page.props.accounting_enabled"
             >
               <template #trigger>
                 <span
@@ -159,7 +155,6 @@
               :align="alignDropDown()"
               width="48"
               class="ms-3 mb-3 lg:mb-0"
-              v-show="$page.props.accounting_enabled"
             >
               <template #trigger>
                 <span
@@ -187,7 +182,6 @@
               :align="alignDropDown()"
               width="48"
               class="ms-3 mb-3 lg:mb-0"
-              v-show="$page.props.accounting_enabled"
             >
               <template #trigger>
                 <span
@@ -215,7 +209,6 @@
               :align="alignDropDown()"
               width="48"
               class="ms-3 mb-3 lg:mb-0"
-              v-show="$page.props.accounting_enabled"
             >
               <template #trigger>
                 <span
