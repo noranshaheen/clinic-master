@@ -83,7 +83,7 @@
                   }"
                 >
                   <i class="fa fa-file"></i>
-                  {{ __("Patiens") }}
+                  {{ __("Patients") }}
                 </span>
               </template>
               <template #content>

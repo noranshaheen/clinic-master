@@ -40,10 +40,10 @@
                     <thead class="text-sm text-gray-700 bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
                             <th scope="col" class="px-6 py-3">
-                                Doctor
+                                {{__("Doctor")}}
                             </th>
                             <th scope="col" class="px-6 py-3">
-                                All Appointments
+                                {{__("Appointments")}}
                             </th>
                         </tr>
                     </thead>
