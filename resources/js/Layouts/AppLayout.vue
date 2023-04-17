@@ -11,7 +11,6 @@
         <new-drug-dialog ref="dlg5" />
         <!-- <new-prescription-dialog ref="dlg6" /> -->
         <new-appointment-dialog ref="dlg7" />
-        <new-reservation-dialog ref="dlg8" />
 
         <!-- <new-customer-dialog ref="dlg1" />
         <new-branch-dialog ref="dlg2" />
@@ -54,7 +53,6 @@ import NewRoomDialog from "@/Pages/Rooms/Edit.vue";
 import NewDrugDialog from "@/Pages/Drugs/Edit.vue";
 // import NewPrescriptionDialog from "@/Pages/Prescriptions/Edit.vue";
 import NewAppointmentDialog from "@/Pages/Appointments/Edit.vue";
-import NewReservationDialog from "@/Pages/Appointments/Reservation.vue"
 import NewCustomerDialog from "@/Pages/Customers/Edit.vue";
 import NewBranchDialog from "@/Pages/Branches/Edit.vue";
 import NewUserDialog from "@/Pages/Users/Edit.vue";
@@ -108,7 +106,6 @@ export default {
         NewDrugDialog,
         // NewPrescriptionDialog,
         NewAppointmentDialog,
-        NewReservationDialog,
     },
 
     data() {

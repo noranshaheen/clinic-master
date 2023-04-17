@@ -1,81 +1,84 @@
 <template>
     <app-layout>
-        <div class="py-8 container mx-auto">
-            <type-of-patient ref="dlg1" :appointment_id="selectedAppointemt_id" @Save="searchData()" />
+        <div class="relative bg-white shadow-md dark:bg-gray-800 sm:rounded-lg container mx-auto px-4">
+            <div class="p-1">
+                <type-of-patient ref="dlg1" :appointment_id="selectedAppointemt_id" @Save="searchData()" />
 
-            <div class="my-4 grid grid-cols-10 py-2 my-4 gap-4 mx-auto">
-                <div class="col-span-8">
-                    <div class="grid grid-cols-2 gap-8">
-                        <!-- all doctors -->
-                        <div class="">
-                            <jet-label :value="__('Doctor')" />
-                            <select v-model="form.doctor_id" class="mt-1 block w-full border-slate-300 rounded-md">
-                                <option v-for="doctor in allDoctors" :value="doctor.id" :key="doctor.id">
-                                    {{ doctor.name }}
-                                </option>
-                            </select>
-                        </div>
-                        <!-- select date -->
-                        <div class="">
-                            <jet-label :value="__('Date')" class="mt-4" />
-                            <jet-input type="date" v-model="form.date" class="mt-1 block w-full text-sm" required />
+                <div class="my-2 flex justify-between">
+                    <div class="w-3/5">
+                        <div class="grid grid-cols-2 gap-8">
+                            <!-- all doctors -->
+                            <div class="text-lg">
+                                <jet-label :value="__('Doctor')" />
+                                <select v-model="form.doctor_id" class="mt-1 block w-full border-slate-300 rounded-md">
+                                    <option v-for="doctor in allDoctors" :value="doctor.id" :key="doctor.id">
+                                        {{ doctor.name }}
+                                    </option>
+                                </select>
+                            </div>
+                            <!-- select date -->
+                            <div class="text-lg">
+                                <jet-label :value="__('Date')" class="mt-4" />
+                                <jet-input type="date" v-model="form.date" class="mt-1 block w-full text-sm" required />
+                            </div>
                         </div>
                     </div>
-                </div>
-                <!-- search botton -->
-                <div class="col-span-2 flex flex-col justify-end items-end py-1">
-                    <div class="text-lg">
-                        <jet-button @click="searchData()">
-                            {{ __("Search") }}
-                        </jet-button>
+                    <!-- search botton -->
+                    <div class="w-1/5 flex flex-col justify-end items-end">
+                            <jet-button @click="searchData()" class="text-lg w-1/2 h-1/2">
+                                <i class="fa-solid fa-magnifying-glass mx-1"></i>
+                                {{ __("Search") }}
+                            </jet-button>
                     </div>
-                </div>
-            </div>
-
-            <div>
-                <div class="relative overflow-x-auto shadow-lg sm:rounded-lg" v-if="appointments">
-                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
-                            <tr>
-                                <th scope="col" class="px-6 py-3">
-                                    Doctor
-                                </th>
-                                <th scope="col" class="px-6 py-3">
-                                    All Appointments
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
-                                v-for="appointment in appointments" :key="appointment.id">
-                                <td class="px-6 py-4">
-                                    {{ appointment[0].doctor.name }}
-                                </td>
-                                <td class="px-6 py-4 grid grid-cols-8 gap-4">
-                                    <div v-for="apnt in appointment" :key="apnt.id">
-                                        <jet-secondary-button v-if="apnt.patient_id == null"
-                                            @click.prevent="openDlg('dlg1', apnt.id)"
-                                            class="m-1 text-blue-500 border-blue-500 hover:bg-[#4099de] hover:text-white">
-                                            {{ new Date(apnt.from).toLocaleTimeString() }}
-                                        </jet-secondary-button>
-                                        <jet-secondary-button v-else @click.prevent="showDetails(apnt.id)"
-                                            class="m-1 text-gray-100 border-gray-50 hover:bg-[#b7d5ed] hover:text-white">
-                                            {{ new Date(apnt.from).toLocaleTimeString() }}
-                                        </jet-secondary-button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="relative overflow-x-auto shadow-lg sm:rounded-lg my-4 bg-white" v-else>
-                    <p class="text-center text-red-600 my-5">
-                        <i class="fa fa-exclamation-circle mr-1"></i>
-                        {{ __("No Records Were Found") }}
-                    </p>
                 </div>
             </div>
         </div>
+
+        <div class="my-4 container mx-auto">
+            <div class="relative overflow-x-auto shadow-lg sm:rounded-lg" v-if="Object.keys(appointments).length > 0">
+                <table class="w-full text-sm text-center text-gray-500 dark:text-gray-400">
+                    <thead class="text-sm text-gray-700 bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">
+                                Doctor
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                All Appointments
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                            v-for="appointment in appointments" :key="appointment.id">
+                            <td class="px-6 py-4">
+                                {{ appointment[0].doctor.name }}
+                            </td>
+                            <td class="px-6 py-4 grid grid-cols-8 gap-4">
+                                <div v-for="apnt in appointment" :key="apnt.id">
+                                    <jet-secondary-button v-if="apnt.patient_id == null"
+                                        @click.prevent="openDlg('dlg1', apnt.id)"
+                                        class="m-1 text-blue-500 border-blue-500 hover:bg-[#4099de] hover:text-white">
+                                        {{ new Date(apnt.from).toLocaleTimeString() }}
+                                    </jet-secondary-button>
+                                    <jet-secondary-button v-else @click.prevent="showDetails(apnt.id)"
+                                        class="m-1 text-[#e5e5e5] border-gray-[#e5e5e5] hover:bg-[#b7d5ed] hover:text-white">
+                                        {{ new Date(apnt.from).toLocaleTimeString() }}
+                                    </jet-secondary-button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="relative overflow-x-auto shadow-lg sm:rounded-lg my-4 bg-white container" v-else>
+                <p class="text-center text-red-600 my-5">
+                    <i class="fa fa-exclamation-circle mr-1"></i>
+                    {{ __("No Records Were Found") }}
+                </p>
+            </div>
+        </div>
+
+
     </app-layout>
 </template>
 
@@ -129,7 +132,7 @@ export default {
                 doctor_id: "",
                 date: ""
             }),
-            appointments: [],
+            appointments: {},
             selectedAppointemt_id: "",
 
         }
@@ -139,7 +142,11 @@ export default {
             axios
                 .post(route('appointment.searchData'), this.form)
                 .then((response) => {
-                    this.appointments = response.data
+                    if (Object.keys(response.data).length > 0) {
+                        this.appointments = response.data
+                    } else {
+                        this.appointments = {};
+                    }
                     console.log(response.data);
                 })
         },
@@ -154,9 +161,9 @@ export default {
                     swal({
                         icon: 'info',
                         title: 'Reservation Details',
-                        text: 'Reservation Time : ' + new Date(response.data[0].from).toLocaleTimeString() + '\n'
-                              +'Patient Name : ' + response.data[1].name + '\n'
-                              +'Phone Number : ' + response.data[1].phone+'\n',
+                        text: 'Reservation Time : ' + new Date(response.data[0].from).toLocaleTimeString() + '\n\n'
+                            + 'Patient Name : ' + response.data[1].name + '\n\n'
+                            + 'Phone Number : ' + response.data[1].phone ,
                         footer: 'Ok'
                     })
                 })

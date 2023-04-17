@@ -1,9 +1,5 @@
 <template>
-  <jet-dialog-modal
-    :show="showDialog"
-    maxWidth="5xl"
-    @close="showDialog = false"
-  >
+  <jet-dialog-modal :show="showDialog" maxWidth="5xl" @close="showDialog = false">
     <template #title>
       {{ __("Add An Appointment Dialog") }}
     </template>
@@ -15,15 +11,8 @@
         <div class="grid grid-cols-2 gap-3">
           <div class="col-span-1">
             <jet-label :value="__('Doctor')" />
-            <select
-              v-model="form.doctor_id"
-              class="mt-1 block w-full border-slate-300 rounded-md"
-            >
-              <option
-                v-for="doctor in doctors"
-                :value="doctor.id"
-                :key="doctor.id"
-              >
+            <select v-model="form.doctor_id" class="mt-1 block w-full border-slate-300 rounded-md">
+              <option v-for="doctor in doctors" :value="doctor.id" :key="doctor.id">
                 {{ doctor.name }}
               </option>
             </select>
@@ -31,100 +20,55 @@
 
           <div class="col-span-1">
             <jet-label :value="__('Clinic')" />
-            <select
-              v-model="clinic_id"
-              class="mt-1 block w-full border-slate-300 rounded-md"
-              @change="updateAvailableRooms(clinic_id)"
-            >
-              <option
-                v-for="clinic in clinics"
-                :value="clinic.id"
-                :key="clinic.id"
-              >
+            <select v-model="clinic_id" class="mt-1 block w-full border-slate-300 rounded-md"
+              @change="updateAvailableRooms(clinic_id)">
+              <option v-for="clinic in clinics" :value="clinic.id" :key="clinic.id">
                 {{ clinic.name }}
               </option>
             </select>
           </div>
 
-          <div
-            v-for="(record, idx1) in form.records"
-            :key="idx1"
-            class="bg-gray-200 grid grid-cols-6 gap-3 col-span-2 py-2"
-          >
+          <div v-for="(record, idx1) in form.records" :key="idx1"
+            class="bg-gray-200 grid grid-cols-6 gap-3 col-span-2 p-2">
             <div class="col-span-1">
               <jet-label :value="__('Date')" class="mt-4" />
-              <jet-input
-                type="date"
-                class="mt-1 block w-full text-sm"
-                v-model="record.date"
-                required
-              />
+              <jet-input type="date" class="mt-1 block w-full text-sm" v-model="record.date" required />
             </div>
 
             <div class="col-span-1">
               <jet-label :value="__('From')" class="mt-4" />
-              <jet-input
-                type="time"
-                class="mt-1 block w-full text-sm"
-                v-model="record.from"
-                required
-              />
+              <jet-input type="time" class="mt-1 block w-full text-sm" v-model="record.from" required />
             </div>
 
             <div class="col-span-1">
               <jet-label :value="__('To')" class="mt-4" />
-              <jet-input
-                type="time"
-                class="mt-1 block w-full text-sm"
-                v-model="record.to"
-                required
-              />
+              <jet-input type="time" class="mt-1 block w-full text-sm" v-model="record.to" required />
             </div>
 
             <div class="col-span-1">
               <jet-label :value="__('Number Of Cases')" class="mt-4" />
-              <jet-input
-                type="number"
-                class="mt-1 block w-full text-sm"
-                v-model="record.num_of_cases"
-                required
-              />
+              <jet-input type="number" class="mt-1 block w-full text-sm" v-model="record.num_of_cases" required />
             </div>
 
             <div class="col-span-1">
-            <jet-label :value="__('Room')"  class="mt-4"/>
-            <select
-              v-model="record.room_id"
-              class="mt-1 block w-full border-slate-300 rounded-md text-sm"
-            >
-              <option
-                v-for="room in availableRooms"
-                :value="room.id"
-                :key="room.id"
-              >
-                {{ room.name }}
-              </option>
-            </select>
-          </div>
+              <jet-label :value="__('Room')" class="mt-4" />
+              <select v-model="record.room_id" class="mt-1 block w-full border-slate-300 rounded-md text-sm">
+                <option v-for="room in availableRooms" :value="room.id" :key="room.id">
+                  {{ room.name }}
+                </option>
+              </select>
+            </div>
 
-            <div class="col-span-1">
-              <jet-label value=" " class="mt-4" />
-              <jet-danger-button
-                @click="deleteEntry(idx1)"
-                class="mt-8 block min-w-fit"
-              >
-                {{ __("Delete") }}
-              </jet-danger-button>
+            <div class="col-span-1 flex justify-end">
+                <jet-danger-button @click="deleteEntry(idx1)" class="mt-8 block min-w-fit">
+                  {{ __("Delete") }}
+                </jet-danger-button>
             </div>
           </div>
         </div>
 
-        <div class="col-span-1 w-full">
-          <jet-button
-            class="ps-2 w-full mt-1"
-            @click="addBalance"
-            :disabled="form.processing"
-          >
+        <div class="col-span-1 w-1/5 my-2 mx-auto">
+          <jet-button class="ps-2 w-full mt-1" @click="addBalance" :disabled="form.processing">
             {{ __("Add An Appointment") }}
           </jet-button>
         </div>
@@ -137,12 +81,7 @@
           {{ __("Cancel") }}
         </jet-secondary-button>
 
-        <jet-button
-          class="ms-2"
-          @click="submit"
-          :class="{ 'opacity-25': form.processing }"
-          :disabled="form.processing"
-        >
+        <jet-button class="ms-2" @click="submit" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
           {{ __("Save") }}
         </jet-button>
       </div>
@@ -228,7 +167,7 @@ export default {
     },
     updateAvailableRooms(clinic_id) {
       this.availableRooms = this.allrooms.filter((room) => {
-        return room.clinic_id == clinic_id ? true: false ;
+        return room.clinic_id == clinic_id ? true : false;
         // console.log(room.clinic_id)
       });
       console.log(clinic_id);
@@ -288,8 +227,8 @@ export default {
         date: new Date().toISOString().slice(0, 10),
         from: "",
         to: "",
-        room_id:"",
-        num_of_cases:0
+        room_id: "",
+        num_of_cases: 0
       });
     },
     deleteEntry(idx1) {

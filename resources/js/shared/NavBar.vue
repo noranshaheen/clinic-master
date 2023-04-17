@@ -225,12 +225,6 @@
                 <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg7')">
                   {{ __("Add Appointment") }}
                 </dropdown-link>
-                <dropdown-link :href="route('appointments.index')">
-                  {{ __("Show Appointments") }}
-                </dropdown-link>
-                <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg8')">
-                  {{ __("Make Reservation") }}
-                </dropdown-link>
               </template>
             </dropdown>
 
