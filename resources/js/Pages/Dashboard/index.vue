@@ -1,7 +1,7 @@
 <template>
     <app-layout>
         <div class="py-8 container mx-auto">
-            <type-of-patient ref="dlg1" :appointment_id="selectedAppointemt_id" @Save="searchData()"/>
+            <type-of-patient ref="dlg1" :appointment_id="selectedAppointemt_id" @Save="searchData()" />
 
             <div class="my-4 grid grid-cols-10 py-2 my-4 gap-4 mx-auto">
                 <div class="col-span-8">
@@ -47,16 +47,19 @@
                         </thead>
                         <tbody>
                             <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
-                            v-for="appointment in appointments" :key="appointment.id" >
-                                <td class="px-6 py-4" >
+                                v-for="appointment in appointments" :key="appointment.id">
+                                <td class="px-6 py-4">
                                     {{ appointment[0].doctor.name }}
                                 </td>
-                                <td class="px-6 py-4">
-                                    <div>
-                                        <jet-secondary-button v-for="apnt in appointment" :key="apnt.id"
-                                            :disabled="apnt.patient_id"
+                                <td class="px-6 py-4 grid grid-cols-8 gap-4">
+                                    <div v-for="apnt in appointment" :key="apnt.id">
+                                        <jet-secondary-button v-if="apnt.patient_id == null"
                                             @click.prevent="openDlg('dlg1', apnt.id)"
                                             class="m-1 text-blue-500 border-blue-500 hover:bg-[#4099de] hover:text-white">
+                                            {{ new Date(apnt.from).toLocaleTimeString() }}
+                                        </jet-secondary-button>
+                                        <jet-secondary-button v-else @click.prevent="showDetails(apnt.id)"
+                                            class="m-1 text-gray-100 border-gray-50 hover:bg-[#b7d5ed] hover:text-white">
                                             {{ new Date(apnt.from).toLocaleTimeString() }}
                                         </jet-secondary-button>
                                     </div>
@@ -96,6 +99,7 @@ import JetValidationErrors from "@/Jetstream/ValidationErrors.vue";
 import Multiselect from "@suadelabs/vue3-multiselect";
 import TextField from "@/UI/TextField.vue";
 import axios from "axios";
+import swal from "sweetalert";
 export default {
     components: {
         AppLayout,
@@ -142,6 +146,20 @@ export default {
         openDlg(dlg, id) {
             this.selectedAppointemt_id = id;
             this.$refs[dlg].ShowDialog();
+        },
+        showDetails(appointment_id) {
+            axios
+                .get(route('appointments.show', { appointment: appointment_id }))
+                .then((response) => {
+                    swal({
+                        icon: 'info',
+                        title: 'Reservation Details',
+                        text: 'Reservation Time : ' + new Date(response.data[0].from).toLocaleTimeString() + '\n'
+                              +'Patient Name : ' + response.data[1].name + '\n'
+                              +'Phone Number : ' + response.data[1].phone+'\n',
+                        footer: 'Ok'
+                    })
+                })
         },
     },
     created() {

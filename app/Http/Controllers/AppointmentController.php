@@ -120,7 +120,7 @@ class AppointmentController extends Controller
 
     public function show(Appointment $appointment)
     {
-        //
+        return array($appointment,$appointment->patient) ;
     }
 
 
