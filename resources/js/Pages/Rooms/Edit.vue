@@ -12,7 +12,7 @@
           <div>
 
             <div class="mt-4">
-                <jet-label for="type" value="Room Name" />
+                <jet-label for="type" :value='__("Room Name")' />
                 <jet-input
                   id="type"
                   type="text"
@@ -23,7 +23,7 @@
               </div>
 
             <div>
-              <jet-label for="branch" value="Choose Clinic" />
+              <jet-label for="branch" :value='__("Choose Clinic")' />
               <select
                 id="branch"
                 v-model="form.clinic_id"

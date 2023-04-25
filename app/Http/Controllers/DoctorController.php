@@ -55,7 +55,7 @@ class DoctorController extends Controller
                 searchable:true
             )->column(
                 key:'specialty',
-                label:__('Specialty'),
+                label:__('Speciatly'),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true,
@@ -76,7 +76,7 @@ class DoctorController extends Controller
                 searchable:true
             )->column(
                 key:'actions',
-                label:"Actions"
+                label:__("Actions")
             );
         });
     }

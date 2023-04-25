@@ -27,26 +27,26 @@ class DrugController extends Controller
         ])->table(function (InertiaTable $table) {
             $table->column(
                 key:"id",
-                label:"ID",
+                label:__("ID"),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true
             )->column(
                 key:"name",
-                label:"Name",
+                label:__("Name"),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true,
                 searchable:true
             )->column(
                 key:"description",
-                label:"Description",
+                label:__("Description"),
                 canBeHidden:true,
                 hidden:false,
                 searchable:true
             )->column(
                 key:"actions",
-                label:"Actions",
+                label:__("Actions"),
             );
         });
     }

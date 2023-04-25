@@ -1,7 +1,7 @@
 <template>
   <jet-dialog-modal :show="showDialog" @close="showDialog = false">
     <template #title>
-      {{ __("doctor Information") }}
+      {{ __("Doctor Information") }}
     </template>
 
     <template #content>
@@ -11,7 +11,7 @@
         <div class="grid grid-cols-2 gap-4">
           <div>
             <div class="mt-4">
-              <jet-label value="Doctor Name" />
+              <jet-label :value='__("Doctor Name")' />
               <jet-input
                 type="text"
                 class="mt-1 block w-full"
@@ -21,7 +21,7 @@
               />
             </div>
             <div class="mt-4">
-              <jet-label value="Phone Number" />
+              <jet-label :value='__("Phone Number")' />
               <jet-input
                 type="text"
                 class="mt-1 block w-full"
@@ -31,19 +31,18 @@
               />
             </div>
             <div class="mt-4">
-              <jet-label value="Another Phone Number (optinal)" />
+              <jet-label :value='__("Another Phone (optional)")' />
               <jet-input
                 type="text"
                 class="mt-1 block w-full"
                 v-model="form.another_phone"
-                placeholder="enter another phone if exist"
                 autofocus
               />
             </div>
           </div>
           <div>
             <div class="mt-4">
-              <jet-label value="Speciatly" />
+              <jet-label :value='__("Speciatly")' />
               <select
                 class="mt-1 block w-full rounded border border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm"
                 v-model="form.specialty"
@@ -61,7 +60,7 @@
             </div>
 
             <div class="mt-4">
-              <jet-label value="Title" />
+              <jet-label :value='__("Title")' />
               <select
                 v-model="form.title"
                 class="mt-1 block w-full rounded border border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm"
@@ -72,7 +71,7 @@
               </select>
             </div>
             <div class="mt-4">
-              <jet-label value="Date Of Birth" />
+              <jet-label :value='__("Date Of Birth")' />
               <jet-input
                 type="date"
                 class="mt-1 block w-full"

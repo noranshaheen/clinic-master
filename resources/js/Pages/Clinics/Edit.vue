@@ -12,7 +12,7 @@
           <div>
 
             <div class="mt-4">
-              <jet-label  value="Clinic Name" />
+              <jet-label  :value='__("Clinic Name")' />
               <jet-input
                 type="text"
                 class="mt-1 block w-full"
@@ -22,7 +22,7 @@
             </div>
 
             <div class="mt-4">
-              <jet-label value="Clinic Phone" />
+              <jet-label :value='__("Phone Number")'/>
               <jet-input
                 type="text"
                 class="mt-1 block w-full"
@@ -32,7 +32,7 @@
             </div>
 
             <div class="mt-4">
-              <jet-label value="Address" />
+              <jet-label :value='__("Address")' />
               <jet-input
                 type="text"
                 class="mt-1 block w-full"

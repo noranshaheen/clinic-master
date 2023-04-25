@@ -12,24 +12,24 @@
 
           <div>
             <div class="mt-4">
-              <jet-label value="Patient Name" />
+              <jet-label :value='__("Patient Name")' />
               <jet-input type="text" class="mt-1 block w-full" v-model="form.name" required />
             </div>
 
             <div class="mt-4">
-              <jet-label value="Phone Number" />
+              <jet-label :value='__("Phone Number")' />
               <jet-input type="text" class="mt-1 block w-full" v-model="form.phone" required />
             </div>
 
             <div class="mt-4">
-              <jet-label value="Date Of Birth" />
+              <jet-label :value='__("Date Of Birth")' />
               <jet-input type="date" class="mt-1 block w-full" v-model="form.date_of_birth" required autofocus />
             </div>
           </div>
 
           <div>
             <div class="mt-4">
-              <jet-label for="gender" value="Gender" />
+              <jet-label for="gender" :value='__("Gender")' />
               <select id="gender" v-model="form.gender"
                 class="mt-1 block w-full rounded border border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm">
                 <option value="M">{{ __("Male") }}</option>
@@ -38,7 +38,7 @@
             </div>
 
             <div class="mt-4">
-              <jet-label for="type" value="Type" />
+              <jet-label for="type" :value='__("Type")' />
               <select id="type" v-model="form.type"
                 class="mt-1 block w-full rounded border border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm">
                 <option value="P">{{ __("Personal") }}</option>
@@ -49,13 +49,13 @@
             <div v-if="form.type == 'I'">
 
               <div class="mt-4">
-                <jet-label for="insurance_number" value="Insurance Number" />
+                <jet-label for="insurance_number" :value='__("Insurance Number")'/>
                 <jet-input id="insurance_number" type="text" class="mt-1 block w-full" v-model="form.insurance_number"
                   required />
               </div>
 
               <div class="mt-4">
-                <jet-label for="insurance_company" value="Insurance Company" />
+                <jet-label for="insurance_company" :value='__("Insurance Company")' />
                 <jet-input id="insurance_company" type="text" class="mt-1 block w-full" v-model="form.insurance_company"
                   required />
               </div>

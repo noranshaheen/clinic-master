@@ -27,34 +27,34 @@ class ClinicController extends Controller
         ])->table(function (InertiaTable $table) {
             $table->column(
                 key:"id",
-                label:"ID",
+                label:__("ID"),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true
             )->column(
                 key:"name",
-                label:"Name",
+                label:__("Clinic"),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true,
                 searchable:true
             )->column(
                 key:"phone",
-                label:"Phone",
+                label:__("Phone Number"),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true,
                 searchable:true
             )->column(
                 key:"address",
-                label:"Address",
+                label:__("Address"),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true,
                 searchable:true
             )->column(
                 key:"actions",
-                label:"Actions",
+                label:__("Actions"),
             );
         });
     }

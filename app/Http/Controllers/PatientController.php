@@ -26,62 +26,62 @@ class PatientController extends Controller
         ])->table(function (InertiaTable $table) {
             $table->column(
                 key:"id",
-                label:"ID",
+                label:__("ID"),
                 canBeHidden:false,
                 hidden:false,
                 sortable:true,
             )->column(
                 key:"name",
-                label: "Name",
+                label: __("Name"),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true,
                 searchable:true
             )->column(
                 key:"gender",
-                label: "Gender",
+                label: __("Gender"),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true,
                 searchable:true
             )->column(
                 key:"date_of_birth",
-                label: "Age",
+                label: __("Age"),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true,
                 searchable:true
             )->column(
                 key:"type",
-                label: "Type",
+                label: __("Type"),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true,
                 searchable:true
             )->column(
                 key:"insurance_number",
-                label: "Insurance Number",
+                label: __("Insurance Number"),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true,
                 searchable:true
             )->column(
                 key:"insurance_company",
-                label: "Insurance Company",
+                label: __("Insurance Company"),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true,
                 searchable:true
             )->column(
                 key:"phone",
-                label: "Phone Number",
+                label: __("Phone Number"),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true,
                 searchable:true
             )->column(
                 key:"actions",
-                label: "Actions",
+                label: __("Actions"),
             );
         });
     }

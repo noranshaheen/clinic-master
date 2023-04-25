@@ -1,124 +1,119 @@
 <template>
-  <app-layout>
-    <jet-validation-errors class="mb-4 mt-4" />
-    <div class="py-4">
-      <!-- <dialog-invoice-line :invoice="invoice" v-model="currentItem" ref="dlg1" @update:model-value="onClose" /> -->
-      <div class="mx-auto sm:px-6 lg:px-8">
-        <div
-          class="bg-white overflow-hidden shadow-xl sm:rounded-lg px-4 pb-4 pt-0"
-        >
-          <div class="grid grid-cols-4 gap-4 sm:grid-cols-1 mt-4">
-            <div class="col-span-2">
-              <jet-label value="Patient" />
-              <!-- <select v-model="form.patient">
-                <option
-                  v-for="patient in patients"
-                  :key="patient.id"
-                  :value="patient.id"
-                >
-                  {{ patient.id+" "+ patient.name }}
-                </option>
-              </select> -->
-              <multiselect
-                v-model="form.patient"
-                label="id"
-                :options="patients"
-                placeholder="Select Patient"
-                searchable="true"
-                :custom-label="nameWithId"
-                track-by="id"
-              />
+    <app-layout>
+        <div class="py-4">
+            <dialog-invoice-line :invoice="invoice" v-model="currentItem" ref="dlg1" @update:model-value="onClose" />
+            <div class="mx-auto sm:px-6 lg:px-8">
+                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg px-4 pb-4 pt-0">
+                    <div class="flex items-center ms-0 mb-4 border-b border-gray-200">
+                        <jet-button @click="tab_idx = 1" :disabled="tab_idx == 1" :isRounded="false">
+                            {{ __("Prescription Summary") }}
+                        </jet-button>
+                        <jet-button @click="tab_idx = 3" :disabled="tab_idx == 3" :isRounded="false">
+                            {{ __("Prescription Items") }}
+                        </jet-button>
+                        <jet-button @click="tab_idx = 2" :disabled="tab_idx == 2" :isRounded="false">
+                            {{ __("Advices & Notes") }}
+                        </jet-button>
+                    </div>
+                    <!--First Tab-->
+                    <div v-show="tab_idx == 1" class="grid lg:grid-cols-4 gap-4 sm:grid-cols-1 h-1/2 overflow">
+                        <div class="lg:col-span-2">
+                            <jet-label :value="__('Doctor')" />
+                            <multiselect v-model="form.issuer" label="name" :options="branches" placeholder="Select branch"
+                                :disabled="form.documentType != 'I'" />
+                        </div>
+                        <div class="lg:col-span-2">
+                            <jet-label :value="__('Patient')" />
+                            <multiselect v-model="form.receiver" label="name" :options="customers"
+                                placeholder="Select customer" :disabled="form.documentType != 'I'"
+                                :custom-label="nameWithId" track-by="Id" />
+                        </div>
+                        <div class="lg:col-span-2">
+                            <jet-label :value="__('Diagnosis')" />
+                            <multiselect v-model="form.taxpayerActivityCode" label="Desc_ar" :options="activities"
+                                placeholder="Select activity" :disabled="form.documentType != 'I'" />
+                        </div>
+                        <TextField class="lg:col-span-2" v-model="form.dateTimeIssued" itemType="datetime-local"
+                            :itemLabel="__('Prescription Date')" />
+                        <!-- <TextField v-model="form.internalID" itemType="text" :itemLabel="__('Internal Invoice ID')"
+                            :active="$page.props.auto_inv_num ? false : form.documentType == 'I'" /> -->
+                        <!-- <TextField v-model="form.totalSalesAmount" itemType="number" :itemLabel="__('Total Sales Amount')"
+                            :active="false" /> -->
+                        <!-- <TextField v-model="form.totalDiscountAmount" itemType="number"
+                            :itemLabel="__('Total Discount Amount')" :active="false" />
+                        <TextField v-model="form.netAmount" itemType="number" :itemLabel="__('Net Amount')"
+                            :active="false" />
+                        <TextField v-model="form.totalAmount" itemType="number" :itemLabel="__('Total Amount')"
+                            :active="false" />
+                        <TextField v-model="form.extraDiscountAmount" itemType="number"
+                            :itemLabel="__('Extra Discount Amount')" @update:model-value="updateValues()" />
+                        <TextField v-model="form.totalItemsDiscountAmount" itemType="number"
+                            :itemLabel="__('Total Items Discount Amount')" :active="false" /> -->
+                    </div>
+                    <!--second tab-->
+                    <div v-show="tab_idx == 2" class="grid lg:grid-cols-1 sm:grid-cols-1 h-1/2 overflow">
+                        <TextField v-model="form.purchaseOrderReference" itemType="text"/>
+                        <!-- <TextField v-model="form.purchaseOrderDescription" itemType="text"
+                            :itemLabel="__('Purchase Order Description')" />
+                        <TextField v-model="form.salesOrderReference" itemType="text" :itemLabel="__('Sales Order')" />
+                        <TextField v-model="form.salesOrderDescription" itemType="text"
+                            :itemLabel="__('Sales Order Description')" />
+                        <TextField v-model="form.purchaseOrderReference" itemType="text"
+                            :itemLabel="__('Purchase Order Reference')" />
+                        <TextField v-model="form.proformaInvoiceNumber" itemType="text"
+                            :itemLabel="__('Proforma Invoice Number')" /> -->
+                    </div>
+                    <!--third tab-->
+                    <div v-show="tab_idx == 3">
+                        <div class="grid grid-cols-4 gap-0 mt-2">
+                            <div class="bg-gray-200 col-span-1">
+                                {{ __("Drug") }}
+                            </div>
+                            <div class="bg-gray-200 col-span-1">
+                                {{ __("Dosage") }}
+                            </div>
+                            <div class="bg-gray-200 col-span-1">
+                                {{ __("Duration") }}
+                            </div>
+                            <div class="bg-gray-200 col-span-1"></div>
+
+                            <template v-for="(item, idx1) in form.invoiceLines">
+                                <jet-label class="mt-2 col-span-1">{{item.item.codeNamePrimaryLang }}</jet-label>
+                                <jet-label class="mt-2 col-span-1">{{ item.unitValue.amountEGP }}</jet-label>
+                                <jet-label class="mt-2 col-span-1">{{ item.quantity }}</jet-label>
+                                <jet-secondary-button @click="EditItem(item, idx1)" class="h-12 mt-2 ms-2">
+                                    {{ __("Edit") }}
+                                </jet-secondary-button>
+                                <jet-danger-button @click="DeleteItem(idx1)" class="h-12 mt-2 ms-2">
+                                    {{ __("Delete") }}
+                                </jet-danger-button>
+                            </template>
+                            <jet-label class="col-span-4" v-if="!form.invoiceLines.length">
+                                {{ __("Please Add at least one drug") }}
+                            </jet-label>
+                        </div>
+                        <div class="flex items-center justify-end mt-4">
+                            <jet-button class="ms-2" @click="AddItem()" v-if="form.documentType == 'I'">
+                                {{ __("Add New Drug") }}
+                            </jet-button>
+                        </div>
+
+                    </div>
+
+                    <div class="flex items-center justify-end mt-20">
+                        <jet-secondary-button @click="onCancel()">
+                            {{ __("Cancel") }}
+                        </jet-secondary-button>
+
+                        <jet-button class="ms-2" @click="onSave()">
+                            {{ __("Save") }}
+                        </jet-button>
+                    </div>
+                </div>
+
             </div>
-
-            <div class="col-span-2">
-              <TextField
-                v-model="form.dateTimeIssued"
-                itemType="datetime-local"
-                itemLabel="Date Issued"
-              />
-            </div>
-
-            <div class="col-span-4">
-              <div
-                v-for="(invLine, idx1) in form.prescriptionLines"
-                :key="idx1"
-                class="grid grid-cols-10 gap-4"
-              >
-                <div class="col-span-2">
-                  <jet-label value="Medicine" />
-                  <!-- <select v-model="invLine.drug">
-                  <option v-for="drug in drugs" :key="drug.id" :value="drug.id">
-                    {{ drug.name }}
-                  </option>
-                </select> -->
-                  <multiselect
-                    v-model="invLine.drug"
-                    label="name"
-                    :options="drugs"
-                    placeholder="Select Medicine"
-                    searchable="true"
-                  />
-                </div>
-
-                <div class="col-span-2">
-                  <jet-label value="Dose" />
-                  <select
-                    v-model="invLine.dose"
-                    class="mt-1 block w-full rounded border border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm"
-                  >
-                    <option value="1">{{ "One Time" }}</option>
-                    <option value="2">{{ "Two Times" }}</option>
-                    <option value="3">{{ "Three Time" }}</option>
-                  </select>
-                </div>
-
-                <div class="col-span-2">
-                  <jet-label value="Time" />
-                  <select
-                    v-model="invLine.time"
-                    class="mt-1 block w-full rounded border border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm"
-                  >
-                    <option value="day">{{ "A Day" }}</option>
-                    <option value="week">{{ "A Week" }}</option>
-                  </select>
-                </div>
-
-                <div class="col-span-3">
-                  <TextField
-                    v-model="invLine.notes"
-                    itemType="text"
-                    itemLabel="Notes"
-                  />
-                </div>
-
-                <div class="col-span-1">
-                  <jet-danger-button @click="DeleteItem(idx1)" class="mt-4">
-                    {{ __("Delete") }}
-                  </jet-danger-button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="flex items-center justify-end mt-4">
-            <jet-button class="ms-2" @click="AddItem()">
-              {{ __("Add Another Drug") }}
-            </jet-button>
-          </div>
-
-          <div class="flex items-center justify-start mt-20">
-            <jet-secondary-button @click="onCancel()">
-              {{ __("Cancel") }}
-            </jet-secondary-button>
-
-            <jet-button class="ms-2" @click="onSave()">
-              {{ __("Save") }}
-            </jet-button>
-          </div>
         </div>
-      </div>
-    </div>
-  </app-layout>
+    </app-layout>
 </template>
 
 <style src="@suadelabs/vue3-multiselect/dist/vue3-multiselect.css"></style>
@@ -132,156 +127,313 @@ import JetSecondaryButton from "@/Jetstream/SecondaryButton.vue";
 import JetDangerButton from "@/Jetstream/DangerButton.vue";
 import TextField from "@/UI/TextField.vue";
 import Multiselect from "@suadelabs/vue3-multiselect";
-import DialogInvoiceLine from "@/Pages/Invoices/EditLine.vue";
-import axios from "axios";
+import DialogInvoiceLine from "@/Pages/Prescriptions/EditLine.vue";
+import axios from 'axios';
 
 export default {
-  components: {
-    AppLayout,
-    JetLabel,
-    JetButton,
-    JetSecondaryButton,
-    JetDangerButton,
-    DialogInvoiceLine,
-    TextField,
-    Multiselect,
-  },
-  props: {},
-  data() {
-    return {
-      // tab_idx: 1,
-      //   clinics: [],
-      //   doctors: [],
-      patients: [],
-      drugs: [],
-      errors: [],
-      form: this.$inertia.form({
-        // doctor_id: "",
-        patient: "",
-        dateTimeIssued: new Date().toISOString().slice(0, 16),
-        prescriptionLines: [],
-      }),
-    };
-  },
-  methods: {
-    AddItem: function () {
-      this.form.prescriptionLines.push({
-        drug: "",
-        dose: "",
-        time: "",
-        notes: "",
-      });
-      //   this.$nextTick(() => {
-      //     this.$refs.dlg1.ShowDialog();
-      //   });
+    components: {
+        AppLayout,
+        JetLabel,
+        JetButton,
+        JetSecondaryButton,
+        JetDangerButton,
+        DialogInvoiceLine,
+        TextField,
+        Multiselect,
     },
-    nameWithId: function ({ id, name }) {
-      return id + " - " + name;
+    props: {
+        invoice: {
+            Type: Object,
+            default: null,
+        },
+        items: {
+            Type: Object,
+            default: null,
+        },
     },
-    DeleteItem: function (idx) {
-      this.form.prescriptionLines.splice(idx, 1);
+    data() {
+        return {
+            addingNewLine: true,
+            currentItemIdx: 0,
+            tab_idx: 1,
+            currentItem: { quantity: 1009 },
+            branches: [],
+            customers: [],
+            activities: [],
+            errors: [],
+            form: this.$inertia.form({
+                issuer: "",
+                receiver: "",
+                name: "",
+                documentType: "I",
+                dateTimeIssued: new Date().toISOString().slice(0, 16),
+                taxpayerActivityCode: "",
+                internalID: this.$page.props.auto_inv_num ? "automatic" : "0",
+                purchaseOrderReference: "",
+                purchaseOrderDescription: "",
+                salesOrderReference: "",
+                salesOrderDescription: "",
+                purchaseOrderReference: "",
+                proformaInvoiceNumber: "",
+                totalSalesAmount: 0,
+                totalDiscountAmount: 0,
+                netAmount: 0,
+                totalAmount: 0,
+                extraDiscountAmount: 0,
+                totalItemsDiscountAmount: 0,
+                invoiceLines: [],
+                taxTotals: [],
+            }),
+        };
     },
-    // EditItem: function (item, idx) {
-    //   this.addingNewLine = false;
-    //   if (!item.discount) item.discount = { amount: 0, rate: 0 };
-    //   this.currentItem = item;
-    //   this.currentItemIdx = idx;
-    //   this.$nextTick(() => {
-    //     this.$refs.dlg1.ShowDialog();
-    //   });
-    //   this.RecalculateTax();
-    // },
-    // onClose: function () {
-    //   //            this.currentItem.description = this.currentItem.custom_desc;
-    //   //            this.currentItem.description =
-    //   //                this.$page.props.locale == "ar"
-    //   //                    ? this.currentItem.item.descriptionSecondaryLang
-    //   //                    : this.currentItem.item.descriptionPrimaryLang;
+    methods: {
+        RecalculateTax: function () {
+            this.form.totalSalesAmount = 0;
+            this.form.totalDiscountAmount = 0;
+            this.form.netAmount = 0;
+            this.form.totalAmount = 0;
+            this.form.totalItemsDiscountAmount = 0;
+            var taxTotals = {};
+            this.form.taxTotals = [];
+            for (var i = 0; i < this.form.invoiceLines.length; i++) {
+                var item = this.form.invoiceLines[i];
 
-    //   this.currentItem.itemType = this.currentItem.item.codeTypeName;
-    //   this.currentItem.itemCode = this.currentItem.item.itemCode;
-    //   this.currentItem.unitType = this.currentItem.unit.code;
-    //   this.currentItem.internalCode = this.currentItem.item.Id.toString();
-    //   var temp = this.currentItem.unitValue;
-    //   this.currentItem.unitValue = {};
-    //   this.currentItem.unitValue.currencySold = temp.currencySold;
-    //   this.currentItem.unitValue.currencyExchangeRate =
-    //     temp.currencyExchangeRate;
-    //   this.currentItem.unitValue.amountEGP = temp.amountEGP;
-    //   this.currentItem.unitValue.amountSold = temp.amountSold;
-    //   this.currentItem.taxableItems = this.currentItem.taxItems.map(function (
-    //     taxitem
-    //   ) {
-    //     var obj = {};
-    //     obj.taxType = taxitem.taxType.Code;
-    //     obj.amount = taxitem.value;
-    //     obj.subType = taxitem.taxSubtype.Code;
-    //     obj.rate = taxitem.percentage;
-    //     return obj;
-    //   });
-    //   //delete this.currentItem.item;
-    //   if (this.addingNewLine) this.form.invoiceLines.push(this.currentItem);
-    //   else this.form.invoiceLines[this.currentItemIdx] = this.currentItem;
-    //   this.addingNewLine = false;
-    //   this.RecalculateTax();
-    // },
-    onCancel: function () {
-      window.history.back();
+                this.form.totalSalesAmount += parseFloat(item.salesTotal);
+                if (item.discount)
+                    this.form.totalDiscountAmount += parseFloat(item.discount.amount);
+                this.form.netAmount += parseFloat(item.netTotal);
+                this.form.totalAmount += parseFloat(item.total);
+                this.form.totalItemsDiscountAmount += parseFloat(item.itemsDiscount);
+
+                for (var j = 0; j < item.taxItems.length; j++) {
+                    var taxitem = item.taxItems[j];
+                    if (taxitem.taxType.Code in taxTotals)
+                        taxTotals[taxitem.taxType.Code] =
+                            taxTotals[taxitem.taxType.Code] +
+                            parseFloat(taxitem.value);
+                    else
+                        taxTotals[taxitem.taxType.Code] = parseFloat(
+                            taxitem.value
+                        );
+                }
+            }
+            this.form.extraDiscountAmount = Math.round(this.form.extraDiscountAmount * 100000) / 100000;
+            this.form.netAmount = Math.round(this.form.netAmount * 100000) / 100000;
+            this.form.totalAmount = this.form.totalAmount - this.form.extraDiscountAmount;
+            this.form.totalAmount = Math.round(this.form.totalAmount * 100000) / 100000;
+            this.form.totalDiscountAmount = Math.round(this.form.totalDiscountAmount * 100000) / 100000;
+            this.form.totalItemsDiscountAmount = Math.round(this.form.totalItemsDiscountAmount * 100000) / 100000;
+            this.form.totalSalesAmount = Math.round(this.form.totalSalesAmount * 100000) / 100000;
+
+            for (let item of Object.keys(taxTotals))
+                this.form.taxTotals.push({
+                    taxType: item,
+                    amount: taxTotals[item],
+                });
+        },
+        AddItem: function () {
+            this.addingNewLine = true;
+            this.currentItem = {
+                quantity: 1,
+                totalTaxableFees: 0,
+                discount: { amount: 0, rate: 0 },
+                itemsDiscount: 0,
+                valueDifference: 0,
+                unitValue: { amountEGP: 0, amountSold: 0, currencySold: "EGP", currencyExchangeRate: 1 },
+            };
+            this.$nextTick(() => {
+                this.$refs.dlg1.ShowDialog();
+            });
+            this.RecalculateTax();
+        },
+        DeleteItem: function (idx) {
+            this.form.invoiceLines.splice(idx, 1);
+            this.RecalculateTax();
+        },
+        EditItem: function (item, idx) {
+            this.addingNewLine = false;
+            if (!item.discount)
+                item.discount = { amount: 0, rate: 0 };
+            this.currentItem = item;
+            this.currentItemIdx = idx;
+            this.$nextTick(() => {
+                this.$refs.dlg1.ShowDialog();
+            });
+            this.RecalculateTax();
+        },
+        onClose: function () {
+            //            this.currentItem.description = this.currentItem.custom_desc;
+            //            this.currentItem.description = 
+            //                this.$page.props.locale == "ar"
+            //                    ? this.currentItem.item.descriptionSecondaryLang
+            //                    : this.currentItem.item.descriptionPrimaryLang;
+
+            this.currentItem.itemType = this.currentItem.item.codeTypeName;
+            this.currentItem.itemCode = this.currentItem.item.itemCode;
+            this.currentItem.unitType = this.currentItem.unit.code;
+            this.currentItem.internalCode = this.currentItem.item.Id.toString();
+            var temp = this.currentItem.unitValue;
+            this.currentItem.unitValue = {};
+            this.currentItem.unitValue.currencySold = temp.currencySold;
+            this.currentItem.unitValue.currencyExchangeRate = temp.currencyExchangeRate;
+            this.currentItem.unitValue.amountEGP = temp.amountEGP;
+            this.currentItem.unitValue.amountSold = temp.amountSold;
+            this.currentItem.taxableItems = this.currentItem.taxItems.map(
+                function (taxitem) {
+                    var obj = {};
+                    obj.taxType = taxitem.taxType.Code;
+                    obj.amount = taxitem.value;
+                    obj.subType = taxitem.taxSubtype.Code;
+                    obj.rate = taxitem.percentage;
+                    return obj;
+                }
+            );
+            //delete this.currentItem.item;
+            if (this.addingNewLine)
+                this.form.invoiceLines.push(this.currentItem);
+            else this.form.invoiceLines[this.currentItemIdx] = this.currentItem;
+            this.addingNewLine = false;
+            this.RecalculateTax();
+        },
+        onCancel: function () {
+            window.history.back();
+        },
+        onSave: function () {
+            if (this.invoice) this.form.Id = this.invoice.Id;
+            axios
+                .post(route("eta.invoices.store"), this.form)
+                .then((response) => {
+                    this.processing = false;
+                    this.$nextTick(() => this.$emit("dataUpdated"));
+                    this.form.reset();
+                    this.form.processing = false;
+                    this.addingNew = false;
+                    this.tab_idx = 1;
+                })
+                .catch((error) => {
+                    this.form.processing = false;
+                    this.$page.props.errors = error.response.data.errors;
+                    this.errors = error.response.data.errors; //.password[0];
+                    //this.$refs.password.focus()
+                });
+        },
+        getTaxStr: function (taxitem) {
+            if (taxitem.taxType.Code)
+                return (
+                    taxitem.taxType.Code + "(" + taxitem.taxSubtype.Code + ")"
+                );
+            return taxitem.taxType + "(" + taxitem.subType + ")";
+        },
+        getDocumentTitle: function () {
+            return this.form.documentType == 'I' ? this.__("Invoice Summary") :
+                this.form.documentType == 'C' ? this.__("Credit Note Summary") :
+                    this.form.documentType == 'D' ? this.__("Debit Note Summary") :
+                        this.__("Error!!");
+        },
+        nameWithId({ name, receiver_id, Id }) {
+            return Id + ' - ' + receiver_id + ' - ' + name;
+        },
+        updateValues() {
+            this.RecalculateTax();
+        },
     },
-    onSave: function () {
-      axios
-        .post(route("prescriptions.store"), this.form)
-        .then((response) => {
-          this.$store.dispatch("setSuccessFlashMessage", true);
-          this.processing = false;
-          this.form.reset();
-          this.form.processing = false;
-          setTimeout(() => {
-            window.location.reload();
-          }, 500);
-        })
-        .catch((error) => {
-          this.form.processing = false;
-          this.$page.props.errors = error.response.data.errors;
-          this.errors = error.response.data.errors; //.password[0];
-          //this.$refs.password.focus()
+    created: function created() {
+        axios
+            .get(route("json.branches"))
+            .then((response) => {
+                this.branches = response.data;
+                if (this.invoice)
+                    this.form.issuer = this.branches.find(
+                        (option) => option.Id === this.invoice.issuer_id
+                    );
+            })
+            .catch((error) => { });
+        axios
+            .get(route("json.customers"))
+            .then((response) => {
+                this.customers = response.data;
+                if (this.invoice)
+                    this.form.receiver = this.customers.find(
+                        (option) => option.Id === this.invoice.receiver_id
+                    );
+            })
+            .catch((error) => { });
+        axios
+            .get("/json/ActivityCodes.json")
+            .then((response) => {
+                this.activities = response.data;
+                if (this.invoice)
+                    this.form.taxpayerActivityCode = this.activities.find(
+                        (option) =>
+                            option.code === this.invoice.taxpayerActivityCode
+                    );
+                else this.form.taxpayerActivityCode = this.activities[0];
+            })
+            .catch((error) => { });
+        this.$nextTick(() => {
+            if (this.invoice) {
+                this.form.receiver = this.customers.find(
+                    (option) => option.Id === this.invoice.receiver_id
+                );
+                //todo mfayez fix this this.invoice.receiver;
+                this.form.name = this.invoice.name;
+                this.form.taxpayerActivityCode =
+                    this.invoice.taxpayerActivityCode;
+                this.form.internalID = this.invoice.internalID;
+                this.form.totalSalesAmount = this.invoice.totalSalesAmount;
+                this.form.totalDiscountAmount = this.invoice.totalDiscountAmount;
+                this.form.netAmount = this.invoice.netAmount;
+                this.form.totalAmount = this.invoice.totalAmount;
+                this.form.extraDiscountAmount = this.invoice.extraDiscountAmount;
+                this.form.totalItemsDiscountAmount = this.invoice.totalItemsDiscountAmount;
+                this.form.invoiceLines = this.invoice.invoicelines;
+                this.form.documentType = this.invoice.documentType;
+                this.form.dateTimeIssued = this.invoice.dateTimeIssued.slice(
+                    0,
+                    16
+                );
+                for (var i = 0; i < this.form.invoiceLines.length; i++) {
+                    this.form.invoiceLines[i].unitValue =
+                        this.form.invoiceLines[i].unit_value;
+                    this.form.invoiceLines[i].taxItems =
+                        this.form.invoiceLines[i].taxable_items;
+                    for (
+                        var j = 0;
+                        j < this.form.invoiceLines[i].taxItems.length;
+                        j++
+                    ) {
+                        this.form.invoiceLines[i].taxItems[j].value =
+                            this.form.invoiceLines[i].taxItems[j].amount;
+                        this.form.invoiceLines[i].taxItems[j].percentage =
+                            this.form.invoiceLines[i].taxItems[j].rate;
+                        this.form.invoiceLines[i].taxItems[j].taxType = {
+                            Code: this.form.invoiceLines[i].taxItems[j].taxType,
+                        };
+                        this.form.invoiceLines[i].taxItems[j].taxSubtype = {
+                            Code: this.form.invoiceLines[i].taxItems[j].subType,
+                        };
+                        this.form.invoiceLines[i].taxItems[j].taxType.label =
+                            this.form.invoiceLines[i].taxItems[j].taxType.Code;
+                        this.form.invoiceLines[i].taxItems[j].taxSubtype.label =
+                            this.form.invoiceLines[i].taxItems[
+                                j
+                            ].taxSubtype.Code;
+                    }
+                    this.form.invoiceLines[i].taxableItems =
+                        this.form.invoiceLines[i].taxItems.map(function (
+                            taxitem
+                        ) {
+                            var obj = {};
+                            obj.taxType = taxitem.taxType.Code;
+                            obj.amount = taxitem.value;
+                            obj.subType = taxitem.taxSubtype.Code;
+                            obj.rate = taxitem.percentage;
+                            return obj;
+                        });
+                }
+                this.RecalculateTax();
+            }
         });
     },
-    // getTaxStr: function (taxitem) {
-    //   if (taxitem.taxType.Code)
-    //     return taxitem.taxType.Code + "(" + taxitem.taxSubtype.Code + ")";
-    //   return taxitem.taxType + "(" + taxitem.subType + ")";
-    // },
-    // getDocumentTitle: function () {
-    //   return this.form.documentType == "I"
-    //     ? this.__("Invoice Summary")
-    //     : this.form.documentType == "C"
-    //     ? this.__("Credit Note Summary")
-    //     : this.form.documentType == "D"
-    //     ? this.__("Debit Note Summary")
-    //     : this.__("Error!!");
-    // },
-    // nameWithId({ name, receiver_id, Id }) {
-    //   return Id + " - " + receiver_id + " - " + name;
-    // },
-    // updateValues() {
-    //   this.RecalculateTax();
-    // },
-  },
-  created: function created() {
-    this.AddItem();
-    axios
-      .get(route("patient.all"))
-      .then((response) => {
-        this.patients = response.data;
-      })
-      .catch((error) => {});
-    axios
-      .get(route("drug.all"))
-      .then((response) => {
-        this.drugs = response.data;
-      })
-      .catch((error) => {});
-  },
 };
 </script>

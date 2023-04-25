@@ -13,7 +13,7 @@
 
                         <div class="mt-4">
                             <jet-label
-                                value="Drug Name"
+                                :value='__("Drug Name")'
                             />
                             <jet-input
                                 type="text"
@@ -24,7 +24,7 @@
                         </div>
                         <div class="mt-4">
                             <jet-label
-                                value="Drug Description"
+                                :value='__("Drug Description")'
                             />
                             <jet-input
                                 type="text"

@@ -61,7 +61,7 @@
                                         {{ new Date(apnt.from).toLocaleTimeString() }}
                                     </jet-secondary-button>
                                     <jet-secondary-button v-else @click.prevent="showDetails(apnt.id)"
-                                        class="m-1 text-[#e5e5e5] border-gray-[#e5e5e5] hover:bg-[#b7d5ed] hover:text-white">
+                                        class="m-1 text-neutral-200 border-neutral-200 hover:bg-[#b7d5ed] hover:text-white">
                                         {{ new Date(apnt.from).toLocaleTimeString() }}
                                     </jet-secondary-button>
                                 </div>
@@ -160,10 +160,10 @@ export default {
                 .then((response) => {
                     swal({
                         icon: 'info',
-                        title: 'Reservation Details',
-                        text: 'Reservation Time : ' + new Date(response.data[0].from).toLocaleTimeString() + '\n\n'
-                            + 'Patient Name : ' + response.data[1].name + '\n\n'
-                            + 'Phone Number : ' + response.data[1].phone ,
+                        title: this.__('Reservation Details'),
+                        text: this.__('Reservation Time : ') + new Date(response.data[0].from).toLocaleTimeString() + '\n\n'
+                            + this.__('Patient Name : ')+ response.data[1].name + '\n\n'
+                            + this.__('Phone Number : ')+ response.data[1].phone ,
                         footer: 'Ok'
                     })
                 })

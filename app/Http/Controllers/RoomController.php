@@ -28,27 +28,27 @@ class RoomController extends Controller
         ])->table(function (InertiaTable $table) {
             $table->column(
                 key:"id",
-                label:"ID",
+                label:__("ID"),
                 canBeHidden:false,
                 hidden:false,
                 sortable:true
             )->column(
                 key:"name",
-                label:"Type",
+                label:__("Name"),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true,
                 searchable:true
             )->column(
                 key:"branch",
-                label:"Branch",
+                label:__("Branch"),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true,
                 searchable:true
             )->column(
                 key:"actions",
-                label:"Actions"
+                label:__("Actions")
             );
         });
     }
