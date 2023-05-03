@@ -4,12 +4,12 @@
         <choose-patient ref="dlg2" :appointment_id="appointment_id" @Save="save"/>
         <jet-dialog-modal :show="showDialog" @close="showDialog = false" maxWidth="md">
             <template #title>
-                which type of patients you are?
+                {{ __("which type of patients you are?") }}
             </template>
             <template #content>
                 <div class="grid grid-cols-2 gap-8">
-                    <jet-button @click="openDlg('dlg1')">Add New Patient</jet-button>
-                    <jet-button @click="openDlg('dlg2')">Choose An Old Patient</jet-button>
+                    <jet-button @click="openDlg('dlg1')">{{ __("Add New Patient") }}</jet-button>
+                    <jet-button @click="openDlg('dlg2')">{{ __("Choose An Old Patient") }}</jet-button>
                 </div>
 
             </template>

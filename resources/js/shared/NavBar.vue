@@ -187,7 +187,7 @@
                 <span
                   class="grid justify-items-center cursor-pointer hover:text-[#4099de]"
                   :class="{
-                    'text-[#4099de]': $page.url.startsWith('/Prescription'),
+                    'text-[#4099de]': $page.url.startsWith('/prescriptions'),
                   }"
                 >
                   <i class="fa fa-file"></i>
@@ -214,7 +214,7 @@
                 <span
                   class="grid justify-items-center cursor-pointer hover:text-[#4099de]"
                   :class="{
-                    'text-[#4099de]': $page.url.startsWith('/appointment'),
+                    'text-[#4099de]': $page.url.startsWith('/appointments'),
                   }"
                 >
                   <i class="fa fa-file"></i>

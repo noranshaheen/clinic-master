@@ -1,0 +1,11 @@
+[
+    {
+      "name" : "plain x-ray"  
+    },
+    {
+      "name" : "angiography (an x-ray of the blood vessels)"  
+    },
+    {
+      "name" : "computed tomography (CT) scanning"  
+    }
+]

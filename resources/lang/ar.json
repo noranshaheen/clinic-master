@@ -472,5 +472,21 @@
 	"Drug Name":"اسم الدواء",
 	"Drug Description":"وصف الدواء",
 	"Number Of Cases":"عدد الحالات",
-	"Add An Appointment":"إضافة معاد"
+	"Add An Appointment":"إضافة معاد",
+	"which type of patients you are?":"اختار نوع المريض",
+	"Add New Patient":"اضافة مريض جديد",
+	"Choose An Old Patient":"اختيار مريض سابق",
+	"Choose Patient Dialog":"اختيار مريض سابق",
+	"Select Patient":"اختر مريض",
+	"(you can choose multiple options)":"(يمكن اختيار اكثر من اختيار)",
+	"Diagnosis":"التشخيص",
+	"Select Medicine":"اختر الدواء",
+	"Dosage":"الجرعة",
+	"Duration":"المدة",
+	"Analysis":"التحاليل",
+	"X-ray":"الأشعة",
+	"Notes":"ملاحظات",
+	"Add Analysis":"اضافة تحاليل",
+	"Add X-ray":"اضافة أشعة",
+	"prescription Information":"تفاصيل الروشتة"
 }

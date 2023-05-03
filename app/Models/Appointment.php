@@ -15,11 +15,12 @@ class Appointment extends Model
     protected $table = 'appointments';
 
     public $primaryKey = 'id';
-    protected $fillable = ['doctor_id', 'patient_id', 'room_id'];
+    protected $fillable = ['doctor_id','room_id','patient_id','done'];
     protected $casts = [
         'date' => 'date',
         'from' => 'datetime',
-        'to'    => 'datetime'
+        'to'    => 'datetime',
+        'done' => 'integer'
     ];
 
     public function room(): BelongsTo

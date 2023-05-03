@@ -95,9 +95,19 @@ class AppointmentController extends Controller
 
     public function store(Request $request)
     {
+        // $today = Carbon::parse('today');
         $timesArr = array();
 
         for ($i = 0; $i < count($request->records); $i++) {
+    
+            // $request->records[$i]->validate([
+            //     'date' =>['date','required','after_or_equal:'.$today],
+            //     'doctor_id' =>['numeric','required'],
+            //     'room_id' =>['numeric','required'],
+            //     'num_of_cases'=>['numeric','min:1','required'],
+            //     'from'=>['required'],
+            //     'to'=>['required']
+            // ]);
 
             $from = $request->records[$i]['date'] . " " . $request->records[$i]['from'];
             $to = $request->records[$i]['date'] . " " . $request->records[$i]['to'];
@@ -169,12 +179,14 @@ class AppointmentController extends Controller
 
     public function reserveNewPatient(Request $request){
 
+        $today = Carbon::parse('today');
+
         $request->validate([
-            'name' =>['string','max:255','required'],
-            'phone' =>['string','max:255','required'],
+            'name' =>['string','max:255','min:2','required'],
+            'phone' =>['numeric','min:11','required'],
             'type' =>['required',Rule::in(['I','P'])],
             'gender' =>['required',Rule::in(['M','F'])],
-            'date_of_birth' =>['date','required'],
+            'date_of_birth' => ['date','required','before_or_equal:'.$today],
             'insurance_number' =>['string','max:255','nullable'],
             'insurance_company' =>['string','max:255','nullable'],
         ]);

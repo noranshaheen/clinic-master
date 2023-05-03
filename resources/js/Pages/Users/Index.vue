@@ -6,7 +6,7 @@
         </confirm>
         <div class="py-4">
             <div v-if="$page.props.auth.user.is_admin" class="mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-4">
+                <div class="bg-white shadow-xl sm:rounded-lg p-4">
                     <Table :resource="users">
                         <template #cell(actions)="{ item: user }">
                             <button class="p-1 rounded-md bg-green-500 text-white hover:bg-green-600 mx-2"

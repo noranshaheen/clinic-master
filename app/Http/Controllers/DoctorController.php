@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use ProtoneMedia\LaravelQueryBuilderInertiaJs\InertiaTable;
 use Spatie\QueryBuilder\QueryBuilder;
+use Carbon\Carbon;
 
 class DoctorController extends Controller
 {
@@ -94,11 +95,13 @@ class DoctorController extends Controller
      */
     public function store(Request $request)
     {
+        $today = Carbon::parse('today');
+
         $request->validate([
-            'name' => ['string','max:255','required'],
-            'phone' => ['string','max:255','required'],
-            'another_phone' => ['nullable','string','max:255'],
-            'date_of_birth' => ['date','required'],
+            'name' => ['string','max:255','min:2','required'],
+            'phone' => ['numeric','min:11','required'],
+            'another_phone' => ['nullable','numeric','min:11'],
+            'date_of_birth' => ['date','required','before_or_equal:'.$today],
             'specialty' => ['string','max:255','required'],
             'title' => ['string','max:255','required'],
         ]);
@@ -133,11 +136,13 @@ class DoctorController extends Controller
      */
     public function update(Request $request, Doctor $doctor)
     {
+        $today = Carbon::parse('today');
+
         $date = $request->validate([
-            'name' => ['string','max:255','required'],
-            'phone' => ['string','max:255','required'],
-            'another_phone' => ['nullable','string','max:255'],
-            'date_of_birth' => ['date','required'],
+            'name' => ['string','max:255','min:2','required'],
+            'phone' => ['numeric','min:11','required'],
+            'another_phone' => ['nullable','numeric','min:11'],
+            'date_of_birth' => ['date','required','before_or_equal:'.$today],
             'specialty' => ['string','max:255','required'],
             'title' => ['string','max:255','required'],
         ]);

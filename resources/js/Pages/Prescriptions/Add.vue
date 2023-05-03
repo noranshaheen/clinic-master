@@ -1,123 +1,186 @@
 <template>
     <app-layout>
-        <div class="py-4">
-            <dialog-invoice-line :invoice="invoice" v-model="currentItem" ref="dlg1" @update:model-value="onClose" />
+
+        <show-prescription ref="dlg1" :prescription="prescription_details" />
+
+        <jet-validation-errors class="mb-4 mt-4" />
+
+        <div class="py-4 container mx-auto">
             <div class="mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg px-4 pb-4 pt-0">
-                    <div class="flex items-center ms-0 mb-4 border-b border-gray-200">
-                        <jet-button @click="tab_idx = 1" :disabled="tab_idx == 1" :isRounded="false">
-                            {{ __("Prescription Summary") }}
-                        </jet-button>
-                        <jet-button @click="tab_idx = 3" :disabled="tab_idx == 3" :isRounded="false">
-                            {{ __("Prescription Items") }}
-                        </jet-button>
-                        <jet-button @click="tab_idx = 2" :disabled="tab_idx == 2" :isRounded="false">
-                            {{ __("Advices & Notes") }}
-                        </jet-button>
+                <div class="bg-white shadow-xl sm:rounded-lg px-4 pb-4 pt-0">
+                    <div class="flex justify-start sm:grid-cols-1 mt-4">
+
+                        <div class="">
+                            <jet-label class="py-4" :value='__("Patients")' />
+                            <!-- <multiselect v-model="form.patient" label="id" :options="patients" placeholder="Select Patient"
+                                :searchable="true" :custom-label="nameWithId" track-by="id"
+                                /> -->
+                            <div class="grid grid-cols-10 gap-4 my-2">
+                                <div v-for="patient in patients" :key="patient.patient_id">
+                                    <jet-button v-if="patient.patient_id" :class="{
+                                            'bg-green-400': patient.done,
+                                        }" @click.prevent="getHistory(patient.patient_id, patient.patient.name)">
+                                        {{ patient.patient.name }}
+                                    </jet-button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <!--First Tab-->
-                    <div v-show="tab_idx == 1" class="grid lg:grid-cols-4 gap-4 sm:grid-cols-1 h-1/2 overflow">
-                        <div class="lg:col-span-2">
-                            <jet-label :value="__('Doctor')" />
-                            <multiselect v-model="form.issuer" label="name" :options="branches" placeholder="Select branch"
-                                :disabled="form.documentType != 'I'" />
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+
+                    <div class="border-r-2 col-span-1 relative shadow-lg sm:rounded-lg my-4 bg-white p-4">
+                        <div v-if="current_patient_name" class="mx-auto w-11/12 my-1 border border-[#eceeef]">
+                            <input class="text-center p-2 font-bold bg-[#f8f9fa] w-full" v-model="current_patient_name" />
                         </div>
-                        <div class="lg:col-span-2">
-                            <jet-label :value="__('Patient')" />
-                            <multiselect v-model="form.receiver" label="name" :options="customers"
-                                placeholder="Select customer" :disabled="form.documentType != 'I'"
-                                :custom-label="nameWithId" track-by="Id" />
+                        <div v-if="patient_history.length > 0" class="my-5 overflow-x-auto w-full">
+                            <table class="w-11/12 mx-auto lg:max-w-full">
+                                <thead class="text-center bg-gray-300">
+                                    <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{ __("Date") }}</th>
+                                    <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{ __("Diagnosis") }}</th>
+                                    <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]"></th>
+                                </thead>
+
+                                <tbody>
+                                    <tr v-for="patient in patient_history" :key="patient.id"
+                                        class="border border-[#eceeef]">
+                                        <td class="p-2 border border-[#eceeef]">
+                                            {{ new Date(patient.created_at).toLocaleDateString() }}</td>
+                                        <td class="p-2 border border-[#eceeef]">
+                                            <span class="block" v-for="diagnosis in JSON.parse(patient.diagnosis)">
+                                                {{ "- " + diagnosis.name }}
+                                            </span>
+                                        </td>
+                                        <td class="text-center p-2 border border-[#eceeef]">
+                                            <secondary-button @click="openDlg(patient)">
+                                                <i class="fa fa-info fa-lg"></i>
+                                            </secondary-button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <div class="lg:col-span-2">
+                        <div v-else>
+                            <p class="text-center text-red-600 my-5">
+                                <i class="fa fa-exclamation-circle mr-1"></i>
+                                {{ __("No Records Were Found") }}
+                            </p>
+                        </div>
+                    </div>
+
+
+                    <div class="col-span-2 relative shadow-lg sm:rounded-lg my-4 bg-white p-4">
+
+                        <div class="mb-4 pb-2 border-b-2">
                             <jet-label :value="__('Diagnosis')" />
-                            <multiselect v-model="form.taxpayerActivityCode" label="Desc_ar" :options="activities"
-                                placeholder="Select activity" :disabled="form.documentType != 'I'" />
-                        </div>
-                        <TextField class="lg:col-span-2" v-model="form.dateTimeIssued" itemType="datetime-local"
-                            :itemLabel="__('Prescription Date')" />
-                        <!-- <TextField v-model="form.internalID" itemType="text" :itemLabel="__('Internal Invoice ID')"
-                            :active="$page.props.auto_inv_num ? false : form.documentType == 'I'" /> -->
-                        <!-- <TextField v-model="form.totalSalesAmount" itemType="number" :itemLabel="__('Total Sales Amount')"
-                            :active="false" /> -->
-                        <!-- <TextField v-model="form.totalDiscountAmount" itemType="number"
-                            :itemLabel="__('Total Discount Amount')" :active="false" />
-                        <TextField v-model="form.netAmount" itemType="number" :itemLabel="__('Net Amount')"
-                            :active="false" />
-                        <TextField v-model="form.totalAmount" itemType="number" :itemLabel="__('Total Amount')"
-                            :active="false" />
-                        <TextField v-model="form.extraDiscountAmount" itemType="number"
-                            :itemLabel="__('Extra Discount Amount')" @update:model-value="updateValues()" />
-                        <TextField v-model="form.totalItemsDiscountAmount" itemType="number"
-                            :itemLabel="__('Total Items Discount Amount')" :active="false" /> -->
-                    </div>
-                    <!--second tab-->
-                    <div v-show="tab_idx == 2" class="grid lg:grid-cols-1 sm:grid-cols-1 h-1/2 overflow">
-                        <TextField v-model="form.purchaseOrderReference" itemType="text"/>
-                        <!-- <TextField v-model="form.purchaseOrderDescription" itemType="text"
-                            :itemLabel="__('Purchase Order Description')" />
-                        <TextField v-model="form.salesOrderReference" itemType="text" :itemLabel="__('Sales Order')" />
-                        <TextField v-model="form.salesOrderDescription" itemType="text"
-                            :itemLabel="__('Sales Order Description')" />
-                        <TextField v-model="form.purchaseOrderReference" itemType="text"
-                            :itemLabel="__('Purchase Order Reference')" />
-                        <TextField v-model="form.proformaInvoiceNumber" itemType="text"
-                            :itemLabel="__('Proforma Invoice Number')" /> -->
-                    </div>
-                    <!--third tab-->
-                    <div v-show="tab_idx == 3">
-                        <div class="grid grid-cols-4 gap-0 mt-2">
-                            <div class="bg-gray-200 col-span-1">
-                                {{ __("Drug") }}
-                            </div>
-                            <div class="bg-gray-200 col-span-1">
-                                {{ __("Dosage") }}
-                            </div>
-                            <div class="bg-gray-200 col-span-1">
-                                {{ __("Duration") }}
-                            </div>
-                            <div class="bg-gray-200 col-span-1"></div>
-
-                            <template v-for="(item, idx1) in form.invoiceLines">
-                                <jet-label class="mt-2 col-span-1">{{item.item.codeNamePrimaryLang }}</jet-label>
-                                <jet-label class="mt-2 col-span-1">{{ item.unitValue.amountEGP }}</jet-label>
-                                <jet-label class="mt-2 col-span-1">{{ item.quantity }}</jet-label>
-                                <jet-secondary-button @click="EditItem(item, idx1)" class="h-12 mt-2 ms-2">
-                                    {{ __("Edit") }}
-                                </jet-secondary-button>
-                                <jet-danger-button @click="DeleteItem(idx1)" class="h-12 mt-2 ms-2">
-                                    {{ __("Delete") }}
-                                </jet-danger-button>
-                            </template>
-                            <jet-label class="col-span-4" v-if="!form.invoiceLines.length">
-                                {{ __("Please Add at least one drug") }}
-                            </jet-label>
-                        </div>
-                        <div class="flex items-center justify-end mt-4">
-                            <jet-button class="ms-2" @click="AddItem()" v-if="form.documentType == 'I'">
-                                {{ __("Add New Drug") }}
-                            </jet-button>
+                            <span class="m-2 text-gray-400 text-sm">{{ __("(you can choose multiple options)") }}</span>
+                            <multiselect :options="all_diagnosis" label="name" :placeholder="__('Select Diagnosis')"
+                                :multiple="true" v-model="form.diagnosis" class="mt-2"/>
                         </div>
 
-                    </div>
+                        <div>
+                            <jet-label :value="__('Drug')" />
+                            <!-- start adding drugs -->
+                            <div class="my-4 pb-2 border-b-2 ">
+                                <div class="grid grid-cols-7 gap-4 my-1" v-if="form.prescriptionLines.length != 0">
+                                    <jet-label class="col-span-2 p-1" :value="__('Select Medicine')" />
+                                    <jet-label class="col-span-2 p-1" :value="__('Dosage')" />
+                                    <jet-label class="col-span-2 p-1" :value="__('Duration')" />
+                                </div>
 
-                    <div class="flex items-center justify-end mt-20">
+                                <div v-for="(invLine, idx1) in form.prescriptionLines" :key="idx1"
+                                    class="grid grid-cols-7 gap-4">
+
+                                    <div class="col-span-2">
+                                        <multiselect v-model="invLine.drug" label="name" :options="drugs" />
+                                    </div>
+
+                                    <div class="col-span-2">
+                                        <multiselect v-model="invLine.dose" label="name" :options="doses"
+                                            placeholder="Dose" />
+                                    </div>
+
+                                    <div class="col-span-2">
+                                        <multiselect v-model="invLine.time" label="duration" :options="durations"
+                                            placeholder="Time" />
+                                    </div>
+
+                                    <div>
+                                        <div class="flex justify-end">
+                                            <jet-danger-button @click="DeleteItem(idx1)" class="mt-2">
+                                                {{ __("Delete") }}
+                                            </jet-danger-button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-end mt-4">
+                                    <jet-button class="ms-2" @click="AddItem()">{{ __("Add Drug") }} </jet-button>
+                                </div>
+                            </div>
+                            <!-- end adding drugs -->
+
+                            <!-- start adding analysis -->
+                            <div class="my-2 pb-2 border-b-2 ">
+                                <jet-label :value="__('Analysis')" />
+                                <span class="m-2 text-gray-400 text-sm">{{ __("(you can choose multiple options)") }}</span>
+                                <div v-if="analysis">
+                                    <multiselect v-model="form.analysis" label="name" :options="all_analysis"
+                                        placeholder="Select Analysis" :searchable="true" :multiple="true" class="mt-2"/>
+                                </div>
+                                <div class="flex items-center justify-end mt-4">
+                                    <jet-button class="ms-2" @click="AddAnalysis()">
+                                        {{ __("Add Analysis") }}
+                                    </jet-button>
+                                </div>
+                            </div>
+                            <!-- end adding analysis -->
+
+                            <!-- start adding rays -->
+                            <div class="my-2 pb-2 border-b-2">
+                                <jet-label :value="__('X-ray')" />
+                                <span class="m-2 text-gray-400 text-sm">{{ __("(you can choose multiple options)") }}</span>
+                                <div v-if="rays">
+                                    <multiselect v-model="form.rays" label="name" :options="all_rays"
+                                        placeholder="Select Ray" :searchable="true" :multiple="true" class="mt-2"/>
+                                </div>
+                                <div class="flex items-center justify-end mt-4">
+                                    <jet-button class="ms-2" @click="AddRays()">
+                                        {{ __("Add X-ray") }}
+                                    </jet-button>
+                                </div>
+                            </div>
+                            <!-- end adding rays -->
+
+                            <!-- start notes -->
+                            <div class="my-1">
+                                <jet-label :value="__('Notes')" class="my-1" />
+                                <div class="my-1">
+                                    <input v-model="form.notes" type="text" class="w-full border border-gray-300 rounded" />
+                                </div>
+                            </div>
+                            <!-- end notes -->
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-end mt-8">
                         <jet-secondary-button @click="onCancel()">
                             {{ __("Cancel") }}
                         </jet-secondary-button>
-
                         <jet-button class="ms-2" @click="onSave()">
                             {{ __("Save") }}
                         </jet-button>
                     </div>
                 </div>
-
             </div>
         </div>
     </app-layout>
 </template>
-
+  
 <style src="@suadelabs/vue3-multiselect/dist/vue3-multiselect.css"></style>
-
+  
 <script>
 import { computed, ref } from "vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
@@ -127,8 +190,10 @@ import JetSecondaryButton from "@/Jetstream/SecondaryButton.vue";
 import JetDangerButton from "@/Jetstream/DangerButton.vue";
 import TextField from "@/UI/TextField.vue";
 import Multiselect from "@suadelabs/vue3-multiselect";
-import DialogInvoiceLine from "@/Pages/Prescriptions/EditLine.vue";
-import axios from 'axios';
+import DialogInvoiceLine from "@/Pages/Invoices/EditLine.vue";
+import axios from "axios";
+import SecondaryButton from "@/Jetstream/SecondaryButton.vue";
+import ShowPrescription from './Show.vue';
 
 export default {
     components: {
@@ -140,175 +205,100 @@ export default {
         DialogInvoiceLine,
         TextField,
         Multiselect,
+        SecondaryButton,
+        ShowPrescription,
     },
-    props: {
-        invoice: {
-            Type: Object,
-            default: null,
-        },
-        items: {
-            Type: Object,
-            default: null,
-        },
-    },
+    props: {},
     data() {
         return {
-            addingNewLine: true,
-            currentItemIdx: 0,
-            tab_idx: 1,
-            currentItem: { quantity: 1009 },
-            branches: [],
-            customers: [],
-            activities: [],
+            //   clinics: [],
+            //   doctors: [],
+            prescription_details: "",
+            patients: [],
+            current_patient_name: "",
+            patient_history: [],
+            drugs: [],
+            doses: [],
+            durations: [],
+            all_diagnosis: [],
             errors: [],
+            analysis: false,
+            all_analysis: [],
+            all_rays: [],
+            rays: false,
             form: this.$inertia.form({
-                issuer: "",
-                receiver: "",
-                name: "",
-                documentType: "I",
+                // doctor_id: "",
+                patient_id: "",
                 dateTimeIssued: new Date().toISOString().slice(0, 16),
-                taxpayerActivityCode: "",
-                internalID: this.$page.props.auto_inv_num ? "automatic" : "0",
-                purchaseOrderReference: "",
-                purchaseOrderDescription: "",
-                salesOrderReference: "",
-                salesOrderDescription: "",
-                purchaseOrderReference: "",
-                proformaInvoiceNumber: "",
-                totalSalesAmount: 0,
-                totalDiscountAmount: 0,
-                netAmount: 0,
-                totalAmount: 0,
-                extraDiscountAmount: 0,
-                totalItemsDiscountAmount: 0,
-                invoiceLines: [],
-                taxTotals: [],
+                prescriptionLines: [],
+                diagnosis: [],
+                analysis: [],
+                rays: [],
+                notes: ""
             }),
         };
     },
     methods: {
-        RecalculateTax: function () {
-            this.form.totalSalesAmount = 0;
-            this.form.totalDiscountAmount = 0;
-            this.form.netAmount = 0;
-            this.form.totalAmount = 0;
-            this.form.totalItemsDiscountAmount = 0;
-            var taxTotals = {};
-            this.form.taxTotals = [];
-            for (var i = 0; i < this.form.invoiceLines.length; i++) {
-                var item = this.form.invoiceLines[i];
-
-                this.form.totalSalesAmount += parseFloat(item.salesTotal);
-                if (item.discount)
-                    this.form.totalDiscountAmount += parseFloat(item.discount.amount);
-                this.form.netAmount += parseFloat(item.netTotal);
-                this.form.totalAmount += parseFloat(item.total);
-                this.form.totalItemsDiscountAmount += parseFloat(item.itemsDiscount);
-
-                for (var j = 0; j < item.taxItems.length; j++) {
-                    var taxitem = item.taxItems[j];
-                    if (taxitem.taxType.Code in taxTotals)
-                        taxTotals[taxitem.taxType.Code] =
-                            taxTotals[taxitem.taxType.Code] +
-                            parseFloat(taxitem.value);
-                    else
-                        taxTotals[taxitem.taxType.Code] = parseFloat(
-                            taxitem.value
-                        );
-                }
-            }
-            this.form.extraDiscountAmount = Math.round(this.form.extraDiscountAmount * 100000) / 100000;
-            this.form.netAmount = Math.round(this.form.netAmount * 100000) / 100000;
-            this.form.totalAmount = this.form.totalAmount - this.form.extraDiscountAmount;
-            this.form.totalAmount = Math.round(this.form.totalAmount * 100000) / 100000;
-            this.form.totalDiscountAmount = Math.round(this.form.totalDiscountAmount * 100000) / 100000;
-            this.form.totalItemsDiscountAmount = Math.round(this.form.totalItemsDiscountAmount * 100000) / 100000;
-            this.form.totalSalesAmount = Math.round(this.form.totalSalesAmount * 100000) / 100000;
-
-            for (let item of Object.keys(taxTotals))
-                this.form.taxTotals.push({
-                    taxType: item,
-                    amount: taxTotals[item],
-                });
+        getAppointments() {
+            axios
+                .get(route("appointment.today"))
+                .then((response) => {
+                    this.patients = response.data;
+                    // console.log(response.data);
+                })
+                .catch((error) => { });
         },
         AddItem: function () {
-            this.addingNewLine = true;
-            this.currentItem = {
-                quantity: 1,
-                totalTaxableFees: 0,
-                discount: { amount: 0, rate: 0 },
-                itemsDiscount: 0,
-                valueDifference: 0,
-                unitValue: { amountEGP: 0, amountSold: 0, currencySold: "EGP", currencyExchangeRate: 1 },
-            };
-            this.$nextTick(() => {
-                this.$refs.dlg1.ShowDialog();
+            this.form.prescriptionLines.push({
+                drug: "",
+                dose: "",
+                time: "",
+                notes: "",
             });
-            this.RecalculateTax();
+        },
+        AddAnalysis: function () {
+            this.analysis = true;
+        },
+        AddRays: function () {
+            this.rays = true
+        },
+        nameWithId: function ({ id, name }) {
+            return id + " - " + name;
+        },
+        openDlg(patient) {
+            console.log(patient);
+            this.prescription_details = patient;
+            this.$nextTick(() => this.$refs.dlg1.ShowDialog());
+        },
+        getHistory(patient_id, patient_name) {
+            axios
+                .get(route("patient.history", patient_id))
+                .then((response) => {
+                    // console.log(patient_name)
+                    // this.current_patient_id = patient_id;
+                    this.form.patient_id = patient_id;
+                    this.patient_history = response.data;
+                    this.current_patient_name = patient_name;
+                })
         },
         DeleteItem: function (idx) {
-            this.form.invoiceLines.splice(idx, 1);
-            this.RecalculateTax();
-        },
-        EditItem: function (item, idx) {
-            this.addingNewLine = false;
-            if (!item.discount)
-                item.discount = { amount: 0, rate: 0 };
-            this.currentItem = item;
-            this.currentItemIdx = idx;
-            this.$nextTick(() => {
-                this.$refs.dlg1.ShowDialog();
-            });
-            this.RecalculateTax();
-        },
-        onClose: function () {
-            //            this.currentItem.description = this.currentItem.custom_desc;
-            //            this.currentItem.description = 
-            //                this.$page.props.locale == "ar"
-            //                    ? this.currentItem.item.descriptionSecondaryLang
-            //                    : this.currentItem.item.descriptionPrimaryLang;
-
-            this.currentItem.itemType = this.currentItem.item.codeTypeName;
-            this.currentItem.itemCode = this.currentItem.item.itemCode;
-            this.currentItem.unitType = this.currentItem.unit.code;
-            this.currentItem.internalCode = this.currentItem.item.Id.toString();
-            var temp = this.currentItem.unitValue;
-            this.currentItem.unitValue = {};
-            this.currentItem.unitValue.currencySold = temp.currencySold;
-            this.currentItem.unitValue.currencyExchangeRate = temp.currencyExchangeRate;
-            this.currentItem.unitValue.amountEGP = temp.amountEGP;
-            this.currentItem.unitValue.amountSold = temp.amountSold;
-            this.currentItem.taxableItems = this.currentItem.taxItems.map(
-                function (taxitem) {
-                    var obj = {};
-                    obj.taxType = taxitem.taxType.Code;
-                    obj.amount = taxitem.value;
-                    obj.subType = taxitem.taxSubtype.Code;
-                    obj.rate = taxitem.percentage;
-                    return obj;
-                }
-            );
-            //delete this.currentItem.item;
-            if (this.addingNewLine)
-                this.form.invoiceLines.push(this.currentItem);
-            else this.form.invoiceLines[this.currentItemIdx] = this.currentItem;
-            this.addingNewLine = false;
-            this.RecalculateTax();
+            this.form.prescriptionLines.splice(idx, 1);
         },
         onCancel: function () {
-            window.history.back();
+            window.location.reload();
         },
         onSave: function () {
-            if (this.invoice) this.form.Id = this.invoice.Id;
             axios
-                .post(route("eta.invoices.store"), this.form)
+                .post(route("prescriptions.store"), this.form)
                 .then((response) => {
+                    this.$store.dispatch("setSuccessFlashMessage", true);
                     this.processing = false;
-                    this.$nextTick(() => this.$emit("dataUpdated"));
                     this.form.reset();
                     this.form.processing = false;
-                    this.addingNew = false;
-                    this.tab_idx = 1;
+                    this.getAppointments();
+                    // setTimeout(() => {
+                    //     window.location.reload();
+                    // }, 500);
                 })
                 .catch((error) => {
                     this.form.processing = false;
@@ -317,123 +307,43 @@ export default {
                     //this.$refs.password.focus()
                 });
         },
-        getTaxStr: function (taxitem) {
-            if (taxitem.taxType.Code)
-                return (
-                    taxitem.taxType.Code + "(" + taxitem.taxSubtype.Code + ")"
-                );
-            return taxitem.taxType + "(" + taxitem.subType + ")";
-        },
-        getDocumentTitle: function () {
-            return this.form.documentType == 'I' ? this.__("Invoice Summary") :
-                this.form.documentType == 'C' ? this.__("Credit Note Summary") :
-                    this.form.documentType == 'D' ? this.__("Debit Note Summary") :
-                        this.__("Error!!");
-        },
-        nameWithId({ name, receiver_id, Id }) {
-            return Id + ' - ' + receiver_id + ' - ' + name;
-        },
-        updateValues() {
-            this.RecalculateTax();
-        },
     },
     created: function created() {
+        // this.AddItem();
+        this.getAppointments();
         axios
-            .get(route("json.branches"))
+            .get(route("drug.all"))
             .then((response) => {
-                this.branches = response.data;
-                if (this.invoice)
-                    this.form.issuer = this.branches.find(
-                        (option) => option.Id === this.invoice.issuer_id
-                    );
+                this.drugs = response.data;
             })
             .catch((error) => { });
         axios
-            .get(route("json.customers"))
+            .get(route('json.Diagnosis'))
             .then((response) => {
-                this.customers = response.data;
-                if (this.invoice)
-                    this.form.receiver = this.customers.find(
-                        (option) => option.Id === this.invoice.receiver_id
-                    );
+                this.all_diagnosis = response.data;
             })
-            .catch((error) => { });
         axios
-            .get("/json/ActivityCodes.json")
+            .get(route('doses'))
             .then((response) => {
-                this.activities = response.data;
-                if (this.invoice)
-                    this.form.taxpayerActivityCode = this.activities.find(
-                        (option) =>
-                            option.code === this.invoice.taxpayerActivityCode
-                    );
-                else this.form.taxpayerActivityCode = this.activities[0];
+                this.doses = response.data;
             })
-            .catch((error) => { });
-        this.$nextTick(() => {
-            if (this.invoice) {
-                this.form.receiver = this.customers.find(
-                    (option) => option.Id === this.invoice.receiver_id
-                );
-                //todo mfayez fix this this.invoice.receiver;
-                this.form.name = this.invoice.name;
-                this.form.taxpayerActivityCode =
-                    this.invoice.taxpayerActivityCode;
-                this.form.internalID = this.invoice.internalID;
-                this.form.totalSalesAmount = this.invoice.totalSalesAmount;
-                this.form.totalDiscountAmount = this.invoice.totalDiscountAmount;
-                this.form.netAmount = this.invoice.netAmount;
-                this.form.totalAmount = this.invoice.totalAmount;
-                this.form.extraDiscountAmount = this.invoice.extraDiscountAmount;
-                this.form.totalItemsDiscountAmount = this.invoice.totalItemsDiscountAmount;
-                this.form.invoiceLines = this.invoice.invoicelines;
-                this.form.documentType = this.invoice.documentType;
-                this.form.dateTimeIssued = this.invoice.dateTimeIssued.slice(
-                    0,
-                    16
-                );
-                for (var i = 0; i < this.form.invoiceLines.length; i++) {
-                    this.form.invoiceLines[i].unitValue =
-                        this.form.invoiceLines[i].unit_value;
-                    this.form.invoiceLines[i].taxItems =
-                        this.form.invoiceLines[i].taxable_items;
-                    for (
-                        var j = 0;
-                        j < this.form.invoiceLines[i].taxItems.length;
-                        j++
-                    ) {
-                        this.form.invoiceLines[i].taxItems[j].value =
-                            this.form.invoiceLines[i].taxItems[j].amount;
-                        this.form.invoiceLines[i].taxItems[j].percentage =
-                            this.form.invoiceLines[i].taxItems[j].rate;
-                        this.form.invoiceLines[i].taxItems[j].taxType = {
-                            Code: this.form.invoiceLines[i].taxItems[j].taxType,
-                        };
-                        this.form.invoiceLines[i].taxItems[j].taxSubtype = {
-                            Code: this.form.invoiceLines[i].taxItems[j].subType,
-                        };
-                        this.form.invoiceLines[i].taxItems[j].taxType.label =
-                            this.form.invoiceLines[i].taxItems[j].taxType.Code;
-                        this.form.invoiceLines[i].taxItems[j].taxSubtype.label =
-                            this.form.invoiceLines[i].taxItems[
-                                j
-                            ].taxSubtype.Code;
-                    }
-                    this.form.invoiceLines[i].taxableItems =
-                        this.form.invoiceLines[i].taxItems.map(function (
-                            taxitem
-                        ) {
-                            var obj = {};
-                            obj.taxType = taxitem.taxType.Code;
-                            obj.amount = taxitem.value;
-                            obj.subType = taxitem.taxSubtype.Code;
-                            obj.rate = taxitem.percentage;
-                            return obj;
-                        });
-                }
-                this.RecalculateTax();
-            }
-        });
+        axios
+            .get(route('durations'))
+            .then((response) => {
+                // console.log(response.data)
+                this.durations = response.data;
+            })
+        axios
+            .get(route('json.analysis'))
+            .then((response) => {
+                this.all_analysis = response.data;
+            })
+        axios
+            .get(route('json.rays'))
+            .then((response) => {
+                this.all_rays = response.data;
+            })
     },
 };
 </script>
+  

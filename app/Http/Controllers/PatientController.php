@@ -8,6 +8,7 @@ use Inertia\Inertia;
 use ProtoneMedia\LaravelQueryBuilderInertiaJs\InertiaTable;
 use Spatie\QueryBuilder\QueryBuilder;
 use Illuminate\Validation\Rule;
+use Carbon\Carbon;
 
 class PatientController extends Controller
 {
@@ -93,12 +94,14 @@ class PatientController extends Controller
 
     public function store(Request $request)
     {
+        $today = Carbon::parse('today');
+
         $request->validate([
-            'name' =>['string','max:255','required'],
-            'phone' =>['string','max:255','required'],
+            'name' =>['string','max:255','min:2','required'],
+            'phone' =>['numeric','min:11','required'],
             'type' =>['required',Rule::in(['I','P'])],
             'gender' =>['required',Rule::in(['M','F'])],
-            'date_of_birth' =>['date','required'],
+            'date_of_birth' => ['date','required','before_or_equal:'.$today],
             'insurance_number' =>['string','max:255','nullable'],
             'insurance_company' =>['string','max:255','nullable'],
         ]);
@@ -128,12 +131,14 @@ class PatientController extends Controller
 
     public function update(Request $request, Patient $patient)
     {
+        $today = Carbon::parse('today');
+
         $date = $request->validate([
-            'name' =>['string','max:255','required'],
-            'phone' =>['string','max:255','required'],
+            'name' =>['string','max:255','min:2','required'],
+            'phone' =>['numeric','min:11','required'],
             'type' =>['required',Rule::in(['I','P'])],
             'gender' =>['required',Rule::in(['M','F'])],
-            'date_of_birth' =>['date','max:100','required'],
+            'date_of_birth' => ['date','required','before_or_equal:'.$today],
             'insurance_number' =>['string','max:255','nullable'],
             'insurance_company' =>['string','max:255','nullable'],
         ]);

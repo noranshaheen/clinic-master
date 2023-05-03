@@ -73,8 +73,8 @@ class ClinicController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => ['required','string','max:255'],
-            'phone'=> ['required','string','max:100'],
+            'name' => ['required','string','max:255','min:2'],
+            'phone'=> ['required','numeric'],
             'address' =>['required','string','max:255'],
         ]);
 
@@ -110,9 +110,9 @@ class ClinicController extends Controller
     public function update(Request $request, Clinic $clinic)
     {
         $date = $request->validate([
-            'name' => ['required','string','max:255'],
-            'phone'=> ['required','string','max:100'],
-            'city' =>['required','string','max:255'],
+            'name' => ['required','string','max:255','min:2'],
+            'phone'=> ['required','numeric'],
+            'address' =>['required','string','max:255'],
         ]);
 
         $clinic->update($date);

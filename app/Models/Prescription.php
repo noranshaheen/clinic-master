@@ -14,7 +14,7 @@ class Prescription extends Model
     protected $table = 'prescriptions';
 
     public $primaryKey = 'id';
-    protected $fillable = ['doctor_id','patient_id','dateTimeIssued'];
+    protected $fillable = ['doctor_id','patient_id','rays','diagnosis','analysis','notes','dateTimeIssued'];
     protected $casts = [
         'dateTimeIssued' =>'datetime'
     ];

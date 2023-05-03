@@ -64,7 +64,8 @@
               <select
                 v-model="form.title"
                 class="mt-1 block w-full rounded border border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm"
-              >
+                required
+                >
                 <option value="أخصائي">{{ __("أخصائي") }}</option>
                 <option value="استشاري">{{ __("استشاري") }}</option>
                 <option value="أستاذ">{{ __("أستاذ") }}</option>
@@ -192,6 +193,10 @@ export default {
           this.$page.props.errors = error.response.data.errors;
           this.errors = error.response.data.errors; //.password[0];
           //this.$refs.password.focus()
+          this.showDialog = false;
+          setTimeout(() => {
+            window.location.reload();
+          }, 500);
         });
     },
     SaveNewCustomer() {
@@ -219,35 +224,7 @@ export default {
       if (this.doctor == null) this.SaveNewCustomer();
       else this.SaveCustomer();
     },
-    // onCountryChange(event){
-    //     alert(event.target.value);
-    //     this.allStates.find((state) => {
-    //         if (state.countryShortCode == event.target.value) {
-    //             this.states = state.regions;
-    //         }
-    //     });
-    //     console.log(this.states);
-    // }
   },
-  // created: function created() {
-  //     axios
-  //         .get("/json/Countries.json")
-  //         .then((response) => {
-  //             this.countries = response.data.map((country) => {
-  //                 return {
-  //                     name: country.countryName,
-  //                     code: country.countryShortCode,
-  //                 };
-  //             });
-  //             this.allStates = response.data;
-  //             this.allStates.find((state) => {
-  //                 if (state.countryShortCode == this.form.address.country) {
-  //                     this.states = state.regions;
-  //                 }
-  //             });
-  //         })
-  //         .catch((error) => {});
-  // },
   created() {
     axios
       .get(route("specialties.index"))

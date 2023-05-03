@@ -47,12 +47,12 @@
 
             <div class="col-span-1">
               <jet-label :value="__('Number Of Cases')" class="mt-4" />
-              <jet-input type="number" class="mt-1 block w-full text-sm" v-model="record.num_of_cases" required />
+              <jet-input type="number" min=1 class="mt-1 block w-full text-sm" v-model="record.num_of_cases" required />
             </div>
 
             <div class="col-span-1">
               <jet-label :value="__('Room')" class="mt-4" />
-              <select v-model="record.room_id" class="mt-1 block w-full border-slate-300 rounded-md text-sm">
+              <select required v-model="record.room_id" class="mt-1 block w-full border-slate-300 rounded-md text-sm">
                 <option v-for="room in availableRooms" :value="room.id" :key="room.id">
                   {{ room.name }}
                 </option>

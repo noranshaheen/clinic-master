@@ -1,14 +1,14 @@
 <template>
     <div>
         <jet-dialog-modal :show="showDialog" @close="showDialog=false" maxWidth="md">
-            <template #title>Choose Patient Dialog</template>
+            <template #title>{{ __("Choose Patient Dialog") }}</template>
             <template #content>
                 <multiselect v-model="form.patient" label="name" :options="allPatients" :custom-label="nameWithCode"
                     :placeholder="__('Select Patient')" />
             </template>
             <template #footer>
-                <jet-button @click="onSave()" class="m-1"> Save </jet-button>
-                <jet-secondary-button @click="onCancel()" class="m-1"> Cancel </jet-secondary-button>
+                <jet-button @click="onSave()" class="m-1"> {{ __('Save') }} </jet-button>
+                <jet-secondary-button @click="onCancel()" class="m-1"> {{ __('Cancel') }} </jet-secondary-button>
             </template>
         </jet-dialog-modal>
     </div>

@@ -77,8 +77,6 @@
                 </p>
             </div>
         </div>
-
-
     </app-layout>
 </template>
 

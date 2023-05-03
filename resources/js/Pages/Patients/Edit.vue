@@ -30,7 +30,7 @@
           <div>
             <div class="mt-4">
               <jet-label for="gender" :value='__("Gender")' />
-              <select id="gender" v-model="form.gender"
+              <select id="gender" v-model="form.gender" required
                 class="mt-1 block w-full rounded border border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm">
                 <option value="M">{{ __("Male") }}</option>
                 <option value="F">{{ __("Female") }}</option>
@@ -39,7 +39,7 @@
 
             <div class="mt-4">
               <jet-label for="type" :value='__("Type")' />
-              <select id="type" v-model="form.type"
+              <select id="type" v-model="form.type" required
                 class="mt-1 block w-full rounded border border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm">
                 <option value="P">{{ __("Personal") }}</option>
                 <option value="I">{{ __("Insurance") }}</option>

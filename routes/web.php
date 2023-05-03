@@ -29,6 +29,7 @@ use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\DrugController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PrescriptionController;
+use App\Http\Controllers\PrescriptionItemsController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SpecialtyController;
 use App\Models\Appointment;
@@ -114,6 +115,17 @@ Route::middleware(['auth:sanctum', 'verified', 'ETASettings'])->group(function (
     Route::post('/invoice/searchData', [InvoiceController::class, 'searchData'])->name("invoices.searchData");
 
     Route::get('/getBranchesImages/{ids}', [BranchController::class, 'getBranchesimages'])->name('branches.getImages');
+
+    Route::get('/json/Diagnosis', [PrescriptionController::class, 'indexDiagnosis_json'])->name("json.Diagnosis");
+    Route::get('/json/analysis', [PrescriptionController::class, 'indexAnalysis_json'])->name("json.analysis");
+    Route::get('/json/rays', [PrescriptionController::class, 'indexRays_json'])->name("json.rays");
+    Route::get('/doses', [PrescriptionController::class, 'index_doses'])->name("doses");
+    Route::get('/durations', [PrescriptionController::class, 'index_duration'])->name("durations");
+    Route::get('/history/{patient_id}', [PrescriptionController::class, 'getHistory'])->name("patient.history");
+
+    Route::get('/appointment/today',[PrescriptionController::class, 'getTodaysPatients'])->name("appointment.today");
+
+    Route::get('/prescription/items/{prescription_id}',[PrescriptionItemsController::class,'getItems'])->name("prescriptionItems.details");
 
     Route::get('/json/branches', [BranchController::class, 'index_json'])->name("json.branches");
     Route::get('/json/customers', [CustomerController::class, 'index_json'])->name("json.customers");
