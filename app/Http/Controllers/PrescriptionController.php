@@ -74,12 +74,12 @@ class PrescriptionController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Prescriptions/Add');
-        // if(Auth::user()->current_team_id == 1){
-        //     return redirect('/');
-        // }else {
-        //     return Inertia::render('Prescriptions/Add');
-        // }
+        // return Inertia::render('Prescriptions/Add');
+        if(Auth::user()->current_team_id == 1){
+            return redirect('/');
+        }else {
+            return Inertia::render('Prescriptions/Add');
+        }
     }
 
     /**
