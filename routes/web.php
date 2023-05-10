@@ -83,7 +83,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
 Route::middleware(['auth:sanctum', 'verified', 'ETASettings'])->group(function () {
 
-    Route::get('/', [DashboardController::class, 'dashboard'])->name('dashboard');
+    Route::get('/', [DashboardController::class, 'dashboard'])->middleware('guest')->name('dashboard');
 
     Route::resources([
         'invoices' => InvoiceController::class,
@@ -110,6 +110,8 @@ Route::middleware(['auth:sanctum', 'verified', 'ETASettings'])->group(function (
     Route::post('/appointment/searchData', [AppointmentController::class, 'searchData'])->name("appointment.searchData");
     Route::post('/appointment/reserve', [AppointmentController::class, 'reserve'])->name("appointment.reserve");
     Route::post('/appointment/reserveNewPatient', [AppointmentController::class, 'reserveNewPatient'])->name("appointment.reserveNewPatient");
+    Route::post('/appointment/cancelUnreserved', [AppointmentController::class, 'cancelUnreserved'])->name("appointment.cancel.unreserved");
+    Route::post('/appointment/cancelAll', [AppointmentController::class, 'cancelAll'])->name("appointment.cancel.all");
     
     Route::get('/invoice/search', [InvoiceController::class, 'search'])->name("invoices.search");
     Route::post('/invoice/searchData', [InvoiceController::class, 'searchData'])->name("invoices.searchData");

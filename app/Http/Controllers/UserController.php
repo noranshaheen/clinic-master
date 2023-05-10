@@ -43,7 +43,6 @@ class UserController extends Controller
         });
 
         $branches = QueryBuilder::for(User::class)
-			->with("issuers")
         	->defaultSort('name')
             ->allowedSorts(['Id', 'name', 'email'] )
             ->allowedFilters(['name', 'email', $globalSearch])
@@ -105,18 +104,13 @@ class UserController extends Controller
 		$data = $request->validate([
             'name' 		=> ['required', 'string', 'max:255'],
 			'email' 	=> ['required', 'string', 'email', 'max:255', Rule::unique('users')],
-            'password'	=> ['required', 'min:8'],
-			'issuers'	=> ['array'], 
-            'current_team_id'	=> ['required', 'integer', Rule::in([1,2,3,4,5])]
+            'password'	=> ['required', 'min:8'], 
+            'current_team_id'	=> ['required', 'integer', Rule::in([1,2])]
         ]);
 		
         $item2 = new User($data);
 		$item2->password = Hash::make($item2->password);
 		$item2->save();
-
-		if ($request->has('issuers')){
-			$item2->issuers()->attach($data['issuers']);
-		}
 
         return $item2;
     }
@@ -154,16 +148,12 @@ class UserController extends Controller
     {
 		$data = $request->validate([
             'name' 		=> ['required', 'string', 'max:255'],
-			'email' 	=> ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($id)],
-			'issuers'	=> ['array'], 
-            'current_team_id'	=> ['required', 'integer', Rule::in([1,2,3,4,5])]
+			'email' 	=> ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($id)], 
+            'current_team_id'	=> ['required', 'integer', Rule::in([1,2])]
         ]);
 		
 		$item = User::findOrFail($id);
-		if ($request->has('issuers')){
-			$item->issuers()->detach();
-			$item->issuers()->attach($data['issuers']);
-		}
+
 		$item->update($data);
 		if ($request->has('password') && strlen($request->input('password')) > 0)
 			$item->password = Hash::make($request->input('password'));

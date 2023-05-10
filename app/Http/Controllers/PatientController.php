@@ -98,7 +98,7 @@ class PatientController extends Controller
 
         $request->validate([
             'name' =>['string','max:255','min:2','required'],
-            'phone' =>['numeric','min:11','required'],
+            'phone' =>['numeric','min:11','required','unique:patients,phone'],
             'type' =>['required',Rule::in(['I','P'])],
             'gender' =>['required',Rule::in(['M','F'])],
             'date_of_birth' => ['date','required','before_or_equal:'.$today],
@@ -133,9 +133,9 @@ class PatientController extends Controller
     {
         $today = Carbon::parse('today');
 
-        $date = $request->validate([
+        $date =  $request->validate([
             'name' =>['string','max:255','min:2','required'],
-            'phone' =>['numeric','min:11','required'],
+            'phone' =>['numeric','min:11','required','unique:patients,phone'],
             'type' =>['required',Rule::in(['I','P'])],
             'gender' =>['required',Rule::in(['M','F'])],
             'date_of_birth' => ['date','required','before_or_equal:'.$today],

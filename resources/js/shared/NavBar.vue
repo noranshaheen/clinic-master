@@ -35,6 +35,7 @@
             class="flex flex-col -mx-4 md:flex-row md:items-center md:mx-5 mt-3 lg:mt-0"
           >
             <Link
+              v-if="$page.props.auth.user.current_team_id == 1"
               :href="route('dashboard')"
               :class="{ 'text-[#4099de]': $page.url === '/' }"
               class="grid justify-items-center ms-3 mb-3 lg:mb-0"
@@ -195,7 +196,8 @@
                 </span>
               </template>
               <template #content>
-                <dropdown-link as="a" :href="route('prescriptions.create')">
+                <dropdown-link v-if="$page.props.auth.user.current_team_id == 2"
+                 as="a" :href="route('prescriptions.create')">
                   {{ __("Add Prescription") }}
                 </dropdown-link>
                 <dropdown-link as="a" :href="route('prescriptions.index')">
@@ -677,14 +679,12 @@
 
                 <dropdown-link
                   :href="route('users.index')"
-                  v-if="$page.props.auth.user.id == 1"
                 >
                   {{ __("Users") }}
                 </dropdown-link>
                 <dropdown-link
                   as="a"
                   @click.prevent="openDlg('dlg10')"
-                  v-if="$page.props.auth.user.id == 1"
                   href="#"
                 >
                   {{ __("Settings") }}

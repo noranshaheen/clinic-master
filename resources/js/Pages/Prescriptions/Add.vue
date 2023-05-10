@@ -3,119 +3,193 @@
 
         <show-prescription ref="dlg1" :prescription="prescription_details" />
 
-        <jet-validation-errors class="mb-4 mt-4" />
+        <!-- <jet-validation-errors class="mb-4 mt-4" /> -->
 
-        <div class="py-4 container mx-auto">
-            <div class="mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white shadow-xl sm:rounded-lg px-4 pb-4 pt-0">
-                    <div class="flex justify-start sm:grid-cols-1 mt-4">
-
+        <div class="py-2 mx-auto">
+            <div class="mx-auto sm:px-4 lg:px-6">
+                <div class="bg-white shadow-xl sm:rounded-lg px-2 pb-2 pt-0">
+                    <div class="flex justify-start sm:grid-cols-1 mt-2">
+                        <!-- patients -->
                         <div class="">
                             <jet-label class="py-4" :value='__("Patients")' />
-                            <!-- <multiselect v-model="form.patient" label="id" :options="patients" placeholder="Select Patient"
-                                :searchable="true" :custom-label="nameWithId" track-by="id"
-                                /> -->
-                            <div class="grid grid-cols-10 gap-4 my-2">
-                                <div v-for="patient in patients" :key="patient.patient_id">
-                                    <jet-button v-if="patient.patient_id" :class="{
-                                            'bg-green-400': patient.done,
-                                        }" @click.prevent="getHistory(patient.patient_id, patient.patient.name)">
+                            <div class="flex justify-start flex-wrap">
+                                <div v-for="patient in patients" :key="patient.patient_id" class="my-2 mx-2">
+                                    <jet-button v-if="patient.patient_id !== null && patient.cancelled == null" 
+                                    :class="{ 'bg-green-400': patient.done, }"
+                                        @click.prevent="getHistory(patient.patient_id, patient.patient.name)">
                                         {{ patient.patient.name }}
                                     </jet-button>
                                 </div>
                             </div>
                         </div>
+                        <!-- patients -->
                     </div>
                 </div>
 
-                <div class="grid grid-cols-3 gap-4">
+                <div class="grid grid-cols-3 gap-4 my-4">
 
-                    <div class="border-r-2 col-span-1 relative shadow-lg sm:rounded-lg my-4 bg-white p-4">
-                        <div v-if="current_patient_name" class="mx-auto w-11/12 my-1 border border-[#eceeef]">
-                            <input class="text-center p-2 font-bold bg-[#f8f9fa] w-full" v-model="current_patient_name" />
-                        </div>
-                        <div v-if="patient_history.length > 0" class="my-5 overflow-x-auto w-full">
-                            <table class="w-11/12 mx-auto lg:max-w-full">
-                                <thead class="text-center bg-gray-300">
-                                    <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{ __("Date") }}</th>
-                                    <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{ __("Diagnosis") }}</th>
-                                    <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]"></th>
-                                </thead>
-
-                                <tbody>
-                                    <tr v-for="patient in patient_history" :key="patient.id"
-                                        class="border border-[#eceeef]">
-                                        <td class="p-2 border border-[#eceeef]">
-                                            {{ new Date(patient.created_at).toLocaleDateString() }}</td>
-                                        <td class="p-2 border border-[#eceeef]">
-                                            <span class="block" v-for="diagnosis in JSON.parse(patient.diagnosis)">
-                                                {{ "- " + diagnosis.name }}
-                                            </span>
-                                        </td>
-                                        <td class="text-center p-2 border border-[#eceeef]">
-                                            <secondary-button @click="openDlg(patient)">
-                                                <i class="fa fa-info fa-lg"></i>
-                                            </secondary-button>
+                    <div class=" col-span-1 border-r-2 relative shadow-lg sm:rounded-lg bg-white py-2 px-4">
+                        <!-- <div>{{ __("History") }}</div> -->
+                        <div class="h-full">
+                            <div class="flex items-center border-b border-gray-200">
+                                <jet-button @click="tab_idx = 1" :disabled="tab_idx == 1" :isRounded="false" class="w-1/2">
+                                    {{ __("prescrption details") }}
+                                </jet-button>
+                                <jet-button @click="tab_idx = 2" :disabled="tab_idx == 2" :isRounded="false" class="w-1/2">
+                                    {{ __("history") }}
+                                </jet-button>
+                            </div>
+                            <div v-show="tab_idx == 1">
+                                <table class="w-full">
+                                    <!-- start diagnosis -->
+                                    <tr class="border">
+                                        <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Diagnosis") }}</td>
+                                        <td class="p-2">
+                                            <ul v-for="diagnosis in all_diagnosis" class="list-disc list-inside">
+                                                <li v-if="diagnosis.selected">
+                                                    {{ diagnosis.name }}
+                                                </li>
+                                            </ul>
                                         </td>
                                     </tr>
-                                </tbody>
-                            </table>
+                                    <!-- end diagnosis -->
+                                    <!-- start drugs -->
+                                    <tr class="border">
+                                        <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Drugs") }}</td>
+                                        <td class="p-2">
+                                            <!-- {{form.checkedDrugs}} -->
+                                            <ul v-for="line in form.prescriptionLines">
+                                                <li>
+                                                    {{ line.drg.name }}
+                                                    <multiselect v-model="line.dose" label="name" :options="doses"
+                                                        placeholder="Dose" :searchable="true" class="text-sm" />
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                    <!-- end drugs -->
+                                    <!-- start analysis -->
+                                    <tr class="border">
+                                        <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Analysis") }}</td>
+                                        <td class="p-2">
+                                            <ul v-for="analysis in form.analysis" class="list-disc list-inside">
+                                                <li>
+                                                    {{ analysis }}
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                    <!-- end analysis -->
+                                    <!-- start rays -->
+                                    <tr class="border">
+                                        <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("X-ray") }}</td>
+                                        <td class="p-2">
+                                            <ul v-for="ray in form.rays" class="list-disc list-inside">
+                                                <li>
+                                                    {{ ray }}
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                    <!-- end rays -->
+                                    <!-- start nots -->
+                                    <tr class="border">
+                                        <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Notes") }}</td>
+                                        <td class="p-2">{{ form.notes }}</td>
+                                    </tr>
+                                    <!-- end notes -->
+                                </table>
+                                <div class="mt-4">
+                                    <div class="flex items-center justify-end">
+                                        <jet-secondary-button @click="onCancel()">
+                                            {{ __("Cancel") }}
+                                        </jet-secondary-button>
+                                        <jet-button class="ms-2" @click="onSave()">
+                                            {{ __("Save") }}
+                                        </jet-button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-show="tab_idx == 2" class="flex flex-col justify-between">
+                                <div>
+                                    <div v-if="current_patient_name" class="mx-auto w-full mt-4 border border-[#eceeef]">
+                                        <input class="text-center p-2 font-bold bg-[#f8f9fa] w-full"
+                                            v-model="current_patient_name" />
+                                    </div>
+                                    <div v-if="patient_history.length > 0" class="overflow-x-auto w-full">
+                                        <table class="w-full mx-auto lg:max-w-full">
+                                            <thead class="text-center bg-gray-300">
+                                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{ __("Date") }}</th>
+                                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{ __("Diagnosis") }}
+                                                </th>
+                                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]"></th>
+                                            </thead>
+
+                                            <tbody>
+                                                <tr v-for="patient in patient_history" :key="patient.id"
+                                                    class="border border-[#eceeef]">
+                                                    <td class="p-2 border border-[#eceeef]">
+                                                        {{ new Date(patient.created_at).toLocaleDateString() }}</td>
+                                                    <td class="p-2 border border-[#eceeef]">
+                                                        <ul class="list-disc list-inside">
+                                                            <li v-for="diagnosis in JSON.parse(patient.diagnosis)">
+                                                                {{ diagnosis }}
+                                                            </li>
+                                                        </ul>
+                                                    </td>
+                                                    <td class="text-center p-2 border border-[#eceeef]">
+                                                        <secondary-button @click="openDlg(patient)">
+                                                            <i class="fa fa-info fa-lg"></i>
+                                                        </secondary-button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div v-else class="my-4">
+                                        <p class="text-center text-red-600">
+                                            <i class="fa fa-exclamation-circle mr-1"></i>
+                                            {{ __("No Records Were Found") }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div v-else>
-                            <p class="text-center text-red-600 my-5">
-                                <i class="fa fa-exclamation-circle mr-1"></i>
-                                {{ __("No Records Were Found") }}
-                            </p>
-                        </div>
+
                     </div>
 
-
-                    <div class="col-span-2 relative shadow-lg sm:rounded-lg my-4 bg-white p-4">
+                    <!-- start prescription -->
+                    <div class="col-span-2 relative shadow-lg sm:rounded-lg bg-white p-4">
 
                         <div class="mb-4 pb-2 border-b-2">
                             <jet-label :value="__('Diagnosis')" />
                             <span class="m-2 text-gray-400 text-sm">{{ __("(you can choose multiple options)") }}</span>
-                            <multiselect :options="all_diagnosis" label="name" :placeholder="__('Select Diagnosis')"
-                                :multiple="true" v-model="form.diagnosis" class="mt-2"/>
+                            <div class="flex justify-start flex-wrap my-4">
+                                <button v-for="diagnosis in all_diagnosis" :key="diagnosis.id" class="my-4 mx-2">
+                                    <input type="checkbox" class="peer sr-only" :id="diagnosis.name" name="diagnosis"
+                                        :value="diagnosis.name" v-model="diagnosis.selected" @change="getDrugs()" />
+                                    <label :for="diagnosis.name"
+                                        class=" cursor-pointer p-2 rounded-md text-center text-sm border shadow peer-checked:bg-green-500">
+                                        {{ diagnosis.name }}
+                                    </label>
+                                </button>
+                            </div>
                         </div>
 
                         <div>
                             <jet-label :value="__('Drug')" />
+                            <span class="m-2 text-gray-400 text-sm">{{ __("(you can choose multiple options)") }}</span>
                             <!-- start adding drugs -->
                             <div class="my-4 pb-2 border-b-2 ">
-                                <div class="grid grid-cols-7 gap-4 my-1" v-if="form.prescriptionLines.length != 0">
-                                    <jet-label class="col-span-2 p-1" :value="__('Select Medicine')" />
-                                    <jet-label class="col-span-2 p-1" :value="__('Dosage')" />
-                                    <jet-label class="col-span-2 p-1" :value="__('Duration')" />
-                                </div>
-
-                                <div v-for="(invLine, idx1) in form.prescriptionLines" :key="idx1"
-                                    class="grid grid-cols-7 gap-4">
-
-                                    <div class="col-span-2">
-                                        <multiselect v-model="invLine.drug" label="name" :options="drugs" />
-                                    </div>
-
-                                    <div class="col-span-2">
-                                        <multiselect v-model="invLine.dose" label="name" :options="doses"
-                                            placeholder="Dose" />
-                                    </div>
-
-                                    <div class="col-span-2">
-                                        <multiselect v-model="invLine.time" label="duration" :options="durations"
-                                            placeholder="Time" />
-                                    </div>
-
-                                    <div>
-                                        <div class="flex justify-end">
-                                            <jet-danger-button @click="DeleteItem(idx1)" class="mt-2">
-                                                {{ __("Delete") }}
-                                            </jet-danger-button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="flex items-center justify-end mt-4">
-                                    <jet-button class="ms-2" @click="AddItem()">{{ __("Add Drug") }} </jet-button>
+                                <div v-if="temp_drugs.length != 0" class="inline">
+                                    <button v-for="(drug, idx) in temp_drugs" class="my-4 mx-2">
+                                        <input type="checkbox" class="peer sr-only" :id="drug.name" name="drug"
+                                            :value="{ drg: drug, dose: null }" v-model="checkedDrugs" @change="check(drug)" />
+                                        <label :for="drug.name"
+                                            class=" cursor-pointer p-2 text-sm rounded-md text-center border shadow peer-checked:bg-green-500">
+                                            {{ drug.name }}
+                                        </label>
+                                    </button>
                                 </div>
                             </div>
                             <!-- end adding drugs -->
@@ -124,13 +198,19 @@
                             <div class="my-2 pb-2 border-b-2 ">
                                 <jet-label :value="__('Analysis')" />
                                 <span class="m-2 text-gray-400 text-sm">{{ __("(you can choose multiple options)") }}</span>
-                                <div v-if="analysis">
-                                    <multiselect v-model="form.analysis" label="name" :options="all_analysis"
-                                        placeholder="Select Analysis" :searchable="true" :multiple="true" class="mt-2"/>
+                                <div v-if="analysis" class="flex justify-start">
+                                    <button v-for="analysis in all_analysis" :key="analysis.id" class="my-4 mx-2">
+                                        <input type="checkbox" class="peer sr-only" :id="analysis.name" name="analysis"
+                                            :value="analysis.name" v-model="form.analysis" />
+                                        <label :for="analysis.name"
+                                            class=" cursor-pointer p-2 rounded-md text-sm text-center border shadow peer-checked:bg-green-500">
+                                            {{ analysis.name }}
+                                        </label>
+                                    </button>
                                 </div>
                                 <div class="flex items-center justify-end mt-4">
                                     <jet-button class="ms-2" @click="AddAnalysis()">
-                                        {{ __("Add Analysis") }}
+                                        {{ __("Add") }}
                                     </jet-button>
                                 </div>
                             </div>
@@ -140,13 +220,21 @@
                             <div class="my-2 pb-2 border-b-2">
                                 <jet-label :value="__('X-ray')" />
                                 <span class="m-2 text-gray-400 text-sm">{{ __("(you can choose multiple options)") }}</span>
-                                <div v-if="rays">
-                                    <multiselect v-model="form.rays" label="name" :options="all_rays"
-                                        placeholder="Select Ray" :searchable="true" :multiple="true" class="mt-2"/>
+                                <div v-if="rays" class="flex justify-start">
+                                    <!-- <multiselect v-model="form.rays" label="name" :options="all_rays"
+                                        placeholder="Select Ray" :searchable="true" :multiple="true" class="mt-2" /> -->
+                                    <button v-for="rays in all_rays" :key="rays.id" class="my-4 mx-2">
+                                        <input type="checkbox" class="peer sr-only" :id="rays.name" name="rays"
+                                            :value="rays.name" v-model="form.rays" />
+                                        <label :for="rays.name"
+                                            class=" cursor-pointer p-2 rounded-md text-sm text-center border shadow peer-checked:bg-green-500">
+                                            {{ rays.name }}
+                                        </label>
+                                    </button>
                                 </div>
                                 <div class="flex items-center justify-end mt-4">
                                     <jet-button class="ms-2" @click="AddRays()">
-                                        {{ __("Add X-ray") }}
+                                        {{ __("Add") }}
                                     </jet-button>
                                 </div>
                             </div>
@@ -164,16 +252,6 @@
                     </div>
                 </div>
 
-                <div>
-                    <div class="flex items-center justify-end mt-8">
-                        <jet-secondary-button @click="onCancel()">
-                            {{ __("Cancel") }}
-                        </jet-secondary-button>
-                        <jet-button class="ms-2" @click="onSave()">
-                            {{ __("Save") }}
-                        </jet-button>
-                    </div>
-                </div>
             </div>
         </div>
     </app-layout>
@@ -213,11 +291,13 @@ export default {
         return {
             //   clinics: [],
             //   doctors: [],
+            tab_idx: 1,
             prescription_details: "",
             patients: [],
             current_patient_name: "",
             patient_history: [],
             drugs: [],
+            temp_drugs: [],
             doses: [],
             durations: [],
             all_diagnosis: [],
@@ -226,6 +306,8 @@ export default {
             all_analysis: [],
             all_rays: [],
             rays: false,
+            checkedDiagnosis: [],
+            checkedDrugs: [],
             form: this.$inertia.form({
                 // doctor_id: "",
                 patient_id: "",
@@ -244,18 +326,69 @@ export default {
                 .get(route("appointment.today"))
                 .then((response) => {
                     this.patients = response.data;
-                    // console.log(response.data);
+                    console.log(response.data);
                 })
                 .catch((error) => { });
         },
-        AddItem: function () {
-            this.form.prescriptionLines.push({
-                drug: "",
-                dose: "",
-                time: "",
-                notes: "",
-            });
+        getDiagnosis() {
+            axios
+                .get(route('json.Diagnosis'))
+                .then((response) => {
+                    this.all_diagnosis = response.data;
+                })
         },
+        getDrugs: function () {
+            var temp_diagnosis = this.all_diagnosis.filter((d) => d.selected);
+            var temp_diagnosis_ids = temp_diagnosis.map((e) => Object.values(e.drugList))
+
+            var temp1 = []
+            var temp2 = []
+
+            if (temp_diagnosis_ids.length != 0) {
+                for (var i = 0; i < temp_diagnosis_ids.length; i++) {
+                    temp1 = this.drugs.filter((e) => { return temp_diagnosis_ids[i].includes(e.id) });
+                    for (var j = 0; j < temp1.length; j++) {
+                        if (temp2.length == 0) {
+                            temp2.push(temp1[j]);
+                        } else {
+                            var ids = temp2.map((e) => { return e.id })
+                            if (!ids.includes(temp1[j].id)) {
+                                temp2.push(temp1[j]);
+                            } else {
+                                continue;
+                            }
+                        }
+                    }
+                }
+                this.temp_drugs = temp2;
+            } else {
+                temp2 = []
+                this.temp_drugs = temp2;
+            }
+
+        },
+        check: function (drug) {
+            if (this.form.prescriptionLines.length == 0 || this.checkedDrugs.length == 0) {
+                this.form.prescriptionLines = this.checkedDrugs;
+            } else {
+                for (var i = 0; i < this.checkedDrugs.length; i++) {
+                    if (drug.id == this.checkedDrugs[i].drg.id) {
+                        continue;
+                    } else {
+                        this.form.prescriptionLines = this.checkedDrugs;
+                    }
+                }
+            }
+        },
+        // AddItem: function (drug) {
+        //     this.form.prescriptionLines.push({
+        //         drug: drug,
+        //         dose: "",
+        //     });
+        // },
+        // DeleteItem: function (idx) {
+        //     this.form.prescriptionLines.splice(idx, 1);
+        // },
         AddAnalysis: function () {
             this.analysis = true;
         },
@@ -281,13 +414,15 @@ export default {
                     this.current_patient_name = patient_name;
                 })
         },
-        DeleteItem: function (idx) {
-            this.form.prescriptionLines.splice(idx, 1);
-        },
+        // DeleteItem: function (idx) {
+        //     this.form.prescriptionLines.splice(idx, 1);
+        // },
         onCancel: function () {
             window.location.reload();
         },
         onSave: function () {
+            var temp = this.all_diagnosis.filter((e) => e.selected)
+            this.form.diagnosis = temp.map((e) => e.name);
             axios
                 .post(route("prescriptions.store"), this.form)
                 .then((response) => {
@@ -295,7 +430,9 @@ export default {
                     this.processing = false;
                     this.form.reset();
                     this.form.processing = false;
+                    this.temp_drugs = [];
                     this.getAppointments();
+                    this.getDiagnosis();
                     // setTimeout(() => {
                     //     window.location.reload();
                     // }, 500);
@@ -311,17 +448,13 @@ export default {
     created: function created() {
         // this.AddItem();
         this.getAppointments();
+        this.getDiagnosis();
         axios
             .get(route("drug.all"))
             .then((response) => {
                 this.drugs = response.data;
             })
             .catch((error) => { });
-        axios
-            .get(route('json.Diagnosis'))
-            .then((response) => {
-                this.all_diagnosis = response.data;
-            })
         axios
             .get(route('doses'))
             .then((response) => {

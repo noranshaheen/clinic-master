@@ -62,9 +62,11 @@ return new class extends Migration
             $table->dateTime('from');
             $table->dateTime('to');
             $table->foreignId('doctor_id')->constrained()->onDelete('cascade');
+            $table->foreignId('clinic_id')->constrained()->onDelete('cascade');
             $table->foreignId('room_id')->nullable()->constrained()->onDelete('cascade');
             $table->foreignId('patient_id')->nullable()->constrained()->onDelete('cascade');
             $table->integer('done')->nullable();
+            $table->integer('cancelled')->nullable();
             $table->timestamps();
                         });
 

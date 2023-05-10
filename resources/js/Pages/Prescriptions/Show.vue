@@ -11,43 +11,55 @@
                 <table class="w-full">
                     <tr class="border">
                         <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Date") }}</td>
-                        <td class="p-2">{{ new Date(prescription_detail[0].prescription.dateTimeIssued).toLocaleDateString() }}</td>
+                        <td class="p-2">{{ new Date(prescription_detail[0].prescription.dateTimeIssued).toLocaleDateString()
+                        }}</td>
                     </tr>
                     <tr class="border">
                         <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Diagnosis") }}</td>
                         <td class="p-2">
-                            <p v-for="diagnosis in JSON.parse(prescription_detail[0].prescription.diagnosis)">
-                                {{ " * "+diagnosis.name}}
-                            </p>
+                            <ul class="list-disc list-inside">
+                                <li v-for="diagnosis in JSON.parse(prescription_detail[0].prescription.diagnosis)">
+                                {{ diagnosis }}
+                                </li>
+                            </ul>
+                            
                         </td>
                     </tr>
-                    <tr class="border" v-if="JSON.parse(prescription_detail[0].prescription.rays).length >0">
+                    <tr class="border" v-if="JSON.parse(prescription_detail[0].prescription.rays).length > 0">
                         <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("X-ray") }}</td>
                         <td class="p-2">
-                            <p v-for="rays in JSON.parse(prescription_detail[0].prescription.rays)">
-                                {{ " * "+ rays.name }}
-                            </p>
+                            <ul class="list-disc list-inside">
+                                <li v-for="rays in JSON.parse(prescription_detail[0].prescription.rays)">
+                                    {{ rays }}
+                                </li>
+                            </ul>
+
                         </td>
                     </tr>
                     <tr class="border" v-if="JSON.parse(prescription_detail[0].prescription.analysis).length > 0">
                         <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Analysis") }}</td>
                         <td class="p-2">
-                            <p v-for="analysis in JSON.parse(prescription_detail[0].prescription.analysis)">
-                                {{ " * "+ analysis.name }}
-                            </p>
+                            <ul class="list-disc list-inside">
+                                <li v-for="analysis in JSON.parse(prescription_detail[0].prescription.analysis)">
+                                    {{ analysis }}
+                                </li>
+                            </ul>
+
+                        </td>
+                    </tr>
+                    <tr class="border">
+                        <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Drugs") }}</td>
+                        <td class="p-2">
+                            <ul class="list-disc list-inside">
+                                <li v-for="prescription in prescription_detail" :key="prescription.id">
+                                {{ prescription.drugs.name + ' - ' + prescription.notes }}
+                                </li>
+                            </ul>
                         </td>
                     </tr>
                     <tr v-if="prescription_detail[0].prescription.notes" class="border">
                         <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Notes") }}</td>
                         <td class="p-2">{{ prescription_detail[0].prescription.notes }}</td>
-                    </tr>
-                    <tr class="border">
-                        <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Drugs") }}</td>
-                        <td class="p-2">
-                            <p v-for="prescription in prescription_detail" :key="prescription.id">
-                                {{ " * "+prescription.drugs.name +' - '+prescription.notes }}
-                            </p>
-                        </td>
                     </tr>
                 </table>
             </div>
@@ -107,7 +119,7 @@ export default {
 
     data() {
         return {
-            prescription_detail:"",
+            prescription_detail: "",
             showDialog: false,
         };
     },

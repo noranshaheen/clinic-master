@@ -20,8 +20,8 @@
 
           <div class="col-span-1">
             <jet-label :value="__('Clinic')" />
-            <select v-model="clinic_id" class="mt-1 block w-full border-slate-300 rounded-md"
-              @change="updateAvailableRooms(clinic_id)">
+            <select v-model="form.clinic_id" class="mt-1 block w-full border-slate-300 rounded-md"
+              @change="updateAvailableRooms(form.clinic_id)">
               <option v-for="clinic in clinics" :value="clinic.id" :key="clinic.id">
                 {{ clinic.name }}
               </option>
@@ -140,11 +140,11 @@ export default {
       errors: [],
       form: this.$inertia.form({
         doctor_id: "",
+        clinic_id: "",
         records: [],
       }),
       allrooms: [],
       availableRooms: [],
-      clinic_id: "",
       clinics: [],
       doctors: [],
       showDialog: false,

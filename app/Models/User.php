@@ -51,11 +51,8 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-		'is_admin' => 'boolean',
-		'is_reviewer' => 'boolean',
-		'is_data_entry' => 'boolean',
-		'is_eta' => 'boolean',
-		'is_viewer' => 'boolean'
+		'is_reseptionist' => 'boolean',
+		'is_doctor' => 'boolean'
     ];
 
     /**
@@ -64,23 +61,14 @@ class User extends Authenticatable
      * @var array
      */
     protected $appends = [
-        'profile_photo_url', 'is_admin', 'is_reviewer', 'is_data_entry', 'is_eta', 'is_viewer'
+        'profile_photo_url', 'is_reseptionist', 'is_doctor'
     ];
 
-	public function getIsAdminAttribute(){
+	public function getIsReseptionistAttribute(){
 		return $this->current_team_id == 1;
 	}
-	public function getIsReviewerAttribute(){
+	public function getIsDoctorAttribute(){
 		return $this->current_team_id == 2;
-	}
-	public function getIsDataEntryAttribute(){
-		return $this->current_team_id == 3;
-	}
-	public function getIsEtaAttribute(){
-		return $this->current_team_id == 4;
-	}
-	public function getIsViewerAttribute(){
-		return $this->current_team_id == 5;
 	}
     
 	public function uploads()

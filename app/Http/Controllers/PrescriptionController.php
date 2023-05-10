@@ -12,6 +12,7 @@ use ProtoneMedia\LaravelQueryBuilderInertiaJs\InertiaTable;
 use Illuminate\Support\Facades\File;
 use Carbon\Carbon;
 use App\Models\Appointment;
+use Illuminate\Support\Facades\Auth;
 
 
 class PrescriptionController extends Controller
@@ -74,6 +75,11 @@ class PrescriptionController extends Controller
     public function create()
     {
         return Inertia::render('Prescriptions/Add');
+        // if(Auth::user()->current_team_id == 1){
+        //     return redirect('/');
+        // }else {
+        //     return Inertia::render('Prescriptions/Add');
+        // }
     }
 
     /**
@@ -81,6 +87,7 @@ class PrescriptionController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request);
         $today = Carbon::parse('today')->format('Y-m-d');
         $appointment = Appointment::where('patient_id',$request->patient_id)->where('date',$today)->first();
         $appointment->done = 1;
@@ -105,10 +112,9 @@ class PrescriptionController extends Controller
 
         for ($i = 0; $i < count($request->prescriptionLines); $i++) {
             $prescriptionItem = new PrescriptionItems();
-            $prescriptionItem->drug_id = $request->prescriptionLines[$i]['drug']['id'];
-            $prescriptionItem->notes =
-                $request->prescriptionLines[$i]['dose']['name'] . " for "
-                . $request->prescriptionLines[$i]['time']['duration'];
+            $prescriptionItem->drug_id = $request->prescriptionLines[$i]['drg']['id'];
+            $prescriptionItem->notes = $request->prescriptionLines[$i]['dose']['name'];
+                // . " for ". $request->prescriptionLines[$i]['time']['duration'];
             $prescription->prescriptionItems()->save($prescriptionItem);
         }
     }

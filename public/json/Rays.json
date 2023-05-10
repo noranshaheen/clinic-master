@@ -1,11 +1,14 @@
 [
     {
+      "id":"1",
       "name" : "plain x-ray"  
     },
     {
+      "id":"2",
       "name" : "angiography (an x-ray of the blood vessels)"  
     },
     {
+      "id":"3",
       "name" : "computed tomography (CT) scanning"  
     }
 ]

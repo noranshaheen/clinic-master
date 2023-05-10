@@ -30,19 +30,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-		$item = new Team(["name" => "Administrtor",   "personal_team" => 0, "user_id" => 1]);
+		$item = new Team(["name" => "Reseptionist",   "personal_team" => 0, "user_id" => 1]);
 		$item->save();
-		$item = new Team(["name" => "Reviewer",   "personal_team" => 0, "user_id" => 1]);
-		$item->save();
-		$item = new Team(["name" => "Data Entry", "personal_team" => 0, "user_id" => 1]);
-		$item->save();
-		$item = new Team(["name" => "ETA",   	  "personal_team" => 0, "user_id" => 1]);
-		$item->save();
-		$item = new Team(["name" => "Viewer",     "personal_team" => 0, "user_id" => 1]);
+		$item = new Team(["name" => "Doctor",   "personal_team" => 0, "user_id" => 1]);
 		$item->save();
 
 		$item1 = new User();
-		$item1->name = "Administrator";
+		$item1->name = "Reseptionist";
 		$item1->email = "admin@invoicemaster.com";
 		$item1->password = Hash::make("123456789");
 		$item1->current_team_id = 1;

@@ -11,7 +11,7 @@
         <template #content>
             <jet-validation-errors class="mb-4" />
 
-            <form v-if="$page.props.auth.user.is_admin" @submit.prevent="submit">
+            <form @submit.prevent="submit">
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <jet-label for="name" :value="__('Name')" />
@@ -51,28 +51,15 @@
                             v-model="form.current_team_id"
                             class="mt-1 block w-full"
                         >
-                            <option value="1">{{ __("Administrator") }}</option>
-                            <option value="2">{{ __("Reviewer") }}</option>
-                            <option value="3">{{ __("Data Entry") }}</option>
-                            <option value="4">{{ __("ETA") }}</option>
-                            <option value="5">{{ __("Viewer") }}</option>
+                            <option value="1">{{ __("Reseptionist") }}</option>
+                            <option value="2">{{ __("Doctor") }}</option>
                         </select>
-                    </div>
-                    <div class="col-span-2">
-                        <jet-label :value="__('Branches')" />
-                        <multiselect
-                            v-model="issuers"
-                            :options="branches"
-                            label="name"
-                            :placeholder="__('Select Branches')"
-                            :multiple="true"
-                        />
                     </div>
                 </div>
             </form>
-            <div v-else>
+            <!-- <div v-else>
                 {{__("You are not authorized to add/edit users")}}
-            </div>
+            </div> -->
         </template>
         <template #footer>
             <div class="flex items-center justify-end mt-4">
@@ -85,7 +72,6 @@
                     @click="submit"
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
-                    v-if="$page.props.auth.user.is_admin"
                 >
                     {{ __("Save") }}
                 </jet-button>
@@ -150,7 +136,7 @@ export default {
                 name: "",
                 email: "",
                 password: "",
-                issuers: [],
+                current_team_id:""
             }),
             showDialog: false,
         };
@@ -158,17 +144,10 @@ export default {
 
     methods: {
         ShowDialog() {
-            this.issuers = [];
             if (this.pUser !== null) {
                 this.form.name = this.pUser.name;
                 this.form.email = this.pUser.email;
                 this.form.current_team_id = this.pUser.current_team_id;
-                for (var i = 0; i < this.pUser.issuers.length; i++)
-                    this.issuers.push(
-                        this.branches.find(
-                            (option) => option.Id === this.pUser.issuers[i].Id
-                        )
-                    );
             }
             this.showDialog = true;
         },
@@ -176,9 +155,6 @@ export default {
             this.showDialog = false;
         },
         SaveUser() {
-            this.form.issuers = [];
-            for (var i = 0; i < this.issuers.length; i++)
-                this.form.issuers.push(this.issuers[i].Id);
             axios
                 .put(route("users.update", { user: this.pUser.id }), this.form)
                 .then((response) => {
@@ -192,9 +168,6 @@ export default {
                 });
         },
         SaveNewUser() {
-            this.form.issuers = [];
-            for (var i = 0; i < this.issuers.length; i++)
-                this.form.issuers.push(this.issuers[i].Id);
             axios
                 .post(route("users.store"), this.form)
                 .then((response) => {
@@ -217,21 +190,21 @@ export default {
             else this.SaveUser();
         },
     },
-    created: function created() {
-        axios
-            .get(route("json.branches"))
-            .then((response) => {
-                this.branches = response.data;
-                if (this.pUser)
-                    for (var i = 0; i < this.pUser.issuers.length; i++)
-                        this.issuers.push(
-                            this.branches.find(
-                                (option) =>
-                                    option.Id === this.pUser.issuers[i].Id
-                            )
-                        );
-            })
-            .catch((error) => {});
-    },
+    // created: function created() {
+    //     axios
+    //         .get(route("json.branches"))
+    //         .then((response) => {
+    //             this.branches = response.data;
+    //             if (this.pUser)
+    //                 for (var i = 0; i < this.pUser.issuers.length; i++)
+    //                     this.issuers.push(
+    //                         this.branches.find(
+    //                             (option) =>
+    //                                 option.Id === this.pUser.issuers[i].Id
+    //                         )
+    //                     );
+    //         })
+    //         .catch((error) => {});
+    // },
 };
 </script>

@@ -1,14 +1,58 @@
 [
     {
-      "name" : "Arrhythmia"  
+      "id":"1",
+      "name" : "التهاب المفاصل الروماتويدي",
+      "description":"",
+      "drugList":[1,2,3,4,5]
     },
     {
-      "name" : "Arthritis"  
+      "id":"2",
+      "name" : "هشاشة العظام" ,
+      "description":"",
+      "drugList":[2,4,6] 
     },
     {
-      "name" : "Diabetes"  
+      "id":"3",
+      "name" : "الكوليسترول المرتفع",
+      "description":"",
+      "drugList":[7,8,9]  
     },
     {
-      "name" : "Alzheimer's Disease"  
+      "id":"4",
+      "name" : "السكري من النوع الثاني" , 
+      "description":"",
+      "drugList":[10,2]
+    },
+    {
+      "id":"5",
+      "name" : "حساسية العين" ,
+      "description":"",
+      "drugList":[1,2] 
+    },
+    {
+      "id":"6",
+      "name" : "جفاف الجلد"  ,
+      "description":"",
+      "drugList":[4,5]
+    },
+    {
+      "id":"7",
+      "name" : "الحروق الشمسية"  
+    },
+    {
+      "id":"8",
+      "name" : "التهاب الأذن الوسطى"  
+    },
+    {
+      "id":"9",
+      "name" : "التهاب الحلق عند الأطفال"  
+    },
+    {
+      "id":"10",
+      "name" : "التهاب الكبد الفيروسي" 
+    },
+    {
+      "id":"11",
+      "name" : "متلازمة القولون العصبي"  
     }
 ]

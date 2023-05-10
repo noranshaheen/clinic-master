@@ -11,6 +11,7 @@
         <new-drug-dialog ref="dlg5" />
         <!-- <new-prescription-dialog ref="dlg6" /> -->
         <new-appointment-dialog ref="dlg7" />
+        <new-user-dialog ref="dlg8" />
 
         <!-- <new-customer-dialog ref="dlg1" />
         <new-branch-dialog ref="dlg2" />
@@ -19,7 +20,7 @@
         <load-invoices-dialog ref="dlg5" />
         <upload-invoices-dialog ref="dlg6" />
         <upload-items-dialog ref="dlg7" />
-        <new-user-dialog ref="dlg8" />
+        
         <archive-request-dialog ref="dlg11" />
         <add-pos ref="addPOS" />
         <load-receipts ref="loadReceipts" />

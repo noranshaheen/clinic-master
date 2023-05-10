@@ -1,14 +1,18 @@
 [
     {
+      "id":"1",
       "name" : "Allergy Skin Test"  
     },
     {
+      "id":"2",
       "name" : "Albumin Blood Test"  
     },
     {
+      "id":"3",
       "name" : "Blood Glucose Test"  
     },
     {
+      "id":"4",
       "name" : "Bone Marrow Tests"  
     }
 ]

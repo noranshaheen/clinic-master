@@ -24,6 +24,10 @@ class RedirectIfAuthenticated
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
                 return redirect(RouteServiceProvider::HOME);
+                
+                // if(Auth::user()->current_team_id == 2){
+                //     return redirect('prescriptions/create');
+                // }
             }
         }
 

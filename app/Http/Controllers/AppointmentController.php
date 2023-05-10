@@ -95,34 +95,38 @@ class AppointmentController extends Controller
 
     public function store(Request $request)
     {
-        // $today = Carbon::parse('today');
+        $today = Carbon::parse('today');
         $timesArr = array();
 
-        for ($i = 0; $i < count($request->records); $i++) {
-    
-            // $request->records[$i]->validate([
-            //     'date' =>['date','required','after_or_equal:'.$today],
-            //     'doctor_id' =>['numeric','required'],
-            //     'room_id' =>['numeric','required'],
-            //     'num_of_cases'=>['numeric','min:1','required'],
-            //     'from'=>['required'],
-            //     'to'=>['required']
-            // ]);
+        // dd($request);
 
-            $from = $request->records[$i]['date'] . " " . $request->records[$i]['from'];
-            $to = $request->records[$i]['date'] . " " . $request->records[$i]['to'];
-            $interval = $this->timeInterval($from, $to, $request->records[$i]['num_of_cases']);
+        $data = $request->validate([
+            'doctor_id' =>['numeric','required'],
+            'clinic_id' =>['numeric','required'],
+            'records' => ['required', 'array', 'min:1'],
+            'records.*.date' =>['date','required','after_or_equal:'.$today], 
+            'records.*.room_id' =>['numeric','required'],
+            'records.*.num_of_cases'=>['numeric','min:1','required'],
+            'records.*.from'=>['required'],
+            'records.*.to'=>['required']
+        ]);
+
+        foreach($data['records'] as $item) {
+            $from = $item['date'] . " " . $item['from'];
+            $to = $item['date'] . " " . $item['to'];
+            $interval = $this->timeInterval($from, $to, $item['num_of_cases']);
             $timesObjs = CarbonInterval::minutes($interval)->toPeriod($from, $to)->toArray();
             $timesArr = array_map(fn ($time) => $time->format('H:i'), $timesObjs);
 
             $j = 0;
             while ($j < count($timesArr) - 1) {
                 $apt = new Appointment();
-                $apt->doctor_id = $request->doctor_id;
-                $apt->room_id = $request->records[$i]['room_id'];
-                $apt->date = $request->records[$i]['date'];
-                $apt->from = $request->records[$i]['date'] . " " . $timesArr[$j++];
-                $apt->to = $request->records[$i]['date'] . " " . $timesArr[$j];
+                $apt->doctor_id = $data['doctor_id'];
+                $apt->clinic_id = $data['clinic_id'];
+                $apt->room_id = $item['room_id'];
+                $apt->date = $item['date'];
+                $apt->from = $item['date'] . " " . $timesArr[$j++];
+                $apt->to = $item['date'] . " " . $timesArr[$j];
                 $apt->save();
             }
         }
@@ -203,5 +207,37 @@ class AppointmentController extends Controller
 
         $appointment = Appointment::find($request->input('appointment_id'));
         $patient->appointments()->save($appointment);
+    }
+
+    public function cancelUnreserved(Request $request){
+        $appointments = Appointment::where('doctor_id','=',$request->doctor_id)
+                                    ->with('doctor')
+                                    ->where('date','=',$request->date)
+                                    ->where('patient_id','=',null)
+                                    ->get();
+        // dd($appointments);
+        foreach($appointments as $appointment){
+            $appointment->delete();
+        } 
+        return "unreserverd appointments of doctor ".$appointments[0]['doctor']['name']." in date ".$request->date." have been cancelled";   
+    }
+
+    public function cancelAll(Request $request){
+        $cancelledPatients=[];
+
+        $appointments = Appointment::where('doctor_id','=',$request->doctor_id)
+                                    ->with('doctor')
+                                    ->with('patient')
+                                    ->where('date','=',$request->date)
+                                    ->get();
+        foreach($appointments as $appointment){
+            // array_push($cancelledPatients,$appointment['patient']);
+            $appointment->cancelled = 1;
+            $appointment->update();
+            // array_push($cancelledPatients,$appointment);
+
+        }
+        // dd($appointments);
+        return $appointments;
     }
 }
