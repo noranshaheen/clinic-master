@@ -73,8 +73,8 @@ class ClinicController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => ['required','string','max:255','min:2'],
-            'phone'=> ['required','numeric'],
+            'name' => ['required','string','max:255','min:2','regex:/([^!@#$%^&*();,.?":{}|<>\d])*/'],
+            'phone'=> ['required','numeric','min:7','unique:clinics,phone'],
             'address' =>['required','string','max:255'],
         ]);
 

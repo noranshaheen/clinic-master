@@ -177,8 +177,10 @@ class AppointmentController extends Controller
 
     public function reserve(Request $request){
         $appointment = Appointment::find($request->input('appointment_id'));
-        $appointment->patient_id = $request->id;
+        $appointment->patient_id = $request->form["patient"]["id"];
+        $appointment->type = $request->form["type"];
         $appointment->save();
+        // dd($request->form);
     }
 
     public function reserveNewPatient(Request $request){
@@ -206,7 +208,9 @@ class AppointmentController extends Controller
         $patient->save();
 
         $appointment = Appointment::find($request->input('appointment_id'));
+        $appointment->type = $request->appointment_type;
         $patient->appointments()->save($appointment);
+        // dd($request);
     }
 
     public function cancelUnreserved(Request $request){
@@ -223,19 +227,19 @@ class AppointmentController extends Controller
     }
 
     public function cancelAll(Request $request){
-        $cancelledPatients=[];
-
         $appointments = Appointment::where('doctor_id','=',$request->doctor_id)
                                     ->with('doctor')
                                     ->with('patient')
                                     ->where('date','=',$request->date)
                                     ->get();
         foreach($appointments as $appointment){
-            // array_push($cancelledPatients,$appointment['patient']);
-            $appointment->cancelled = 1;
-            $appointment->update();
-            // array_push($cancelledPatients,$appointment);
-
+            if($appointment->patient_id != null){
+                $appointment->cancelled = 1;
+                $appointment->update();
+            }else{
+                $appointment->delete();
+            }
+            
         }
         // dd($appointments);
         return $appointments;

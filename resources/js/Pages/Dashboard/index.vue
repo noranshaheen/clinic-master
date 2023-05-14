@@ -5,6 +5,7 @@
                 <type-of-patient ref="dlg1" :appointment_id="selectedAppointemt_id" @Save="searchData()" />
                 <choose-cancellation-method ref="dlg2" :doctor_id="cancelledAppointments.doctor_id"
                     :date="cancelledAppointments.date" @Save="searchData()" />
+                <appointment-details ref="dlg3" :appointment_Details="appointment_Details"/>                
 
                 <div class="my-2 flex justify-between">
                     <div class="w-3/5">
@@ -64,7 +65,7 @@
                                         <jet-secondary-button v-if="apnt.patient_id == null"
                                             @click.prevent="openDlg('dlg1', apnt.id)"
                                             class="m-1 text-blue-500 border-blue-500 hover:bg-[#4099de] hover:text-white">
-                                            {{ new Date(apnt.from).toLocaleTimeString() }}
+                                            {{ subtractHours(apnt.from,3) }}
                                         </jet-secondary-button>
                                         <jet-secondary-button v-else-if="apnt.cancelled == null" 
                                         @click.prevent="showDetails(apnt.id)"
@@ -107,6 +108,7 @@
 import AppLayout from "@/Layouts/AppLayout.vue";
 import TypeOfPatient from "./TypeOfPatient.vue";
 import ChooseCancellationMethod from "./ChooseCancellationMethod.vue";
+import AppointmentDetails from './AppointmentDetails.vue';
 import JetActionMessage from "@/Jetstream/ActionMessage.vue";
 import JetActionSection from "@/Jetstream/ActionSection.vue";
 import JetButton from "@/Jetstream/Button.vue";
@@ -130,6 +132,7 @@ export default {
         AppLayout,
         TypeOfPatient,
         ChooseCancellationMethod,
+        AppointmentDetails,
         JetActionMessage,
         JetActionSection,
         JetButton,
@@ -155,6 +158,7 @@ export default {
                 doctor_id: "",
                 date: ""
             }),
+            appointment_Details:"",
             appointments: {},
             selectedAppointemt_id: "",
             cancelledAppointments: {
@@ -176,6 +180,12 @@ export default {
                     console.log(response.data);
                 })
         },
+        subtractHours(date, hours) {
+            var d = new Date(date);
+            d.setHours(d.getHours() - hours);
+            var exactTime = d.toLocaleTimeString();
+            return exactTime;
+        },
         openDlg(dlg, id) {
             this.selectedAppointemt_id = id;
             this.$refs[dlg].ShowDialog();
@@ -184,14 +194,9 @@ export default {
             axios
                 .get(route('appointments.show', { appointment: appointment_id }))
                 .then((response) => {
-                    swal({
-                        icon: 'info',
-                        title: this.__('Reservation Details'),
-                        text: this.__('Reservation Time : ') + new Date(response.data[0].from).toLocaleTimeString() + '\n\n'
-                            + this.__('Patient Name : ') + response.data[1].name + '\n\n'
-                            + this.__('Phone Number : ') + response.data[1].phone,
-                        footer: 'Ok'
-                    })
+                    console.log(response.data);
+                    this.appointment_Details = response.data;
+                    this.$refs.dlg3.ShowDialog();
                 })
         },
         openCancellationDialog(doctor_id, date) {

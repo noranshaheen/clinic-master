@@ -71,9 +71,6 @@ export default {
                             }).then((approve) => {
                                 this.showDialog = false;
                                 this.$emit('Save');
-                                // this.cancelledPatients = response.data;
-                                // this.$refs.dlg1.ShowDialog();
-                                // this.showDialog = false;
                             })
                     })
                 }

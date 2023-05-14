@@ -1,8 +1,22 @@
 <template>
     <div>
-        <jet-dialog-modal :show="showDialog" @close="showDialog=false" maxWidth="md">
+        <jet-dialog-modal :show="showDialog" @close="showDialog = false" maxWidth="md">
             <template #title>{{ __("Choose Patient Dialog") }}</template>
             <template #content>
+                <div class="mb-2 border-b">
+                    <div class="mb-2">
+                        <input id="1" type="radio" name="type" value="Normal" v-model="form.type"/>
+                        <label for="1" class="ml-2">Normal</label>
+                    </div>
+                    <div class="mb-2">
+                        <input id="2" type="radio" name="type" value="Emergency" v-model="form.type"/>
+                        <label for="2" class="ml-2">Emergency</label>
+                    </div>
+                    <div class="mb-2">
+                        <input id="3" type="radio" name="type" value="Consultation" v-model="form.type"/>
+                        <label for="3" class="ml-2">Consultation</label>
+                    </div>
+                </div>
                 <multiselect v-model="form.patient" label="name" :options="allPatients" :custom-label="nameWithCode"
                     :placeholder="__('Select Patient')" />
             </template>
@@ -37,10 +51,11 @@ export default {
         return {
             showDialog: false,
             form: this.$inertia.form({
-                patient: ""
+                patient: "",
+                type: ""
             }),
             allPatients: [],
-            errors:[]
+            errors: []
         }
     },
     methods: {
@@ -57,7 +72,8 @@ export default {
                 });
             } else {
                 axios
-                    .post(route('appointment.reserve', { appointment_id: this.appointment_id }), this.form.patient)
+                    .post(route('appointment.reserve', { appointment_id: this.appointment_id }),
+                        { form: this.form })
                     .then((response) => {
                         this.$store.dispatch("setSuccessFlashMessage", true);
                         this.showDialog = false;

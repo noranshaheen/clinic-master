@@ -65,6 +65,8 @@ return new class extends Migration
             $table->foreignId('clinic_id')->constrained()->onDelete('cascade');
             $table->foreignId('room_id')->nullable()->constrained()->onDelete('cascade');
             $table->foreignId('patient_id')->nullable()->constrained()->onDelete('cascade');
+            $table->string('type')->nullable();
+            $table->string('status')->default("hold");
             $table->integer('done')->nullable();
             $table->integer('cancelled')->nullable();
             $table->timestamps();

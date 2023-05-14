@@ -25,6 +25,24 @@
               <jet-label :value='__("Date Of Birth")' />
               <jet-input type="date" class="mt-1 block w-full" v-model="form.date_of_birth" required autofocus />
             </div>
+
+            <div class="mt-4" v-if="appointment_id != null">
+              <jet-label :value='__("Detection Type")'/>
+              <div class="mt-2">
+                <div class="mb-2">
+                  <input id="1" type="radio" name="type" value="Normal" v-model="form.appointment_type" />
+                  <label for="1" class="ml-2">Normal</label>
+                </div>
+                <div class="mb-2">
+                  <input id="2" type="radio" name="type" value="Emergency" v-model="form.appointment_type" />
+                  <label for="2" class="ml-2">Emergency</label>
+                </div>
+                <div class="mb-2">
+                  <input id="3" type="radio" name="type" value="Consultation" v-model="form.appointment_type" />
+                  <label for="3" class="ml-2">Consultation</label>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div>
@@ -49,7 +67,7 @@
             <div v-if="form.type == 'I'">
 
               <div class="mt-4">
-                <jet-label for="insurance_number" :value='__("Insurance Number")'/>
+                <jet-label for="insurance_number" :value='__("Insurance Number")' />
                 <jet-input id="insurance_number" type="text" class="mt-1 block w-full" v-model="form.insurance_number"
                   required />
               </div>
@@ -135,6 +153,7 @@ export default {
         gender: "",
         insurance_number: "",
         insurance_company: "",
+        appointment_type:""
       }),
       showDialog: false,
     };
@@ -162,10 +181,10 @@ export default {
         .then((response) => {
           this.$store.dispatch("setSuccessFlashMessage", true);
           this.showDialog = false;
-            setTimeout(() => {
-              window.location.reload();
-            }, 500);
-          
+          setTimeout(() => {
+            window.location.reload();
+          }, 500);
+
 
         })
         .catch((error) => {
