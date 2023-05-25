@@ -12,6 +12,7 @@ use ProtoneMedia\LaravelQueryBuilderInertiaJs\InertiaTable;
 use Illuminate\Support\Facades\File;
 use Carbon\Carbon;
 use App\Models\Appointment;
+use App\Models\Doctor;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -74,7 +75,6 @@ class PrescriptionController extends Controller
      */
     public function create()
     {
-        // return Inertia::render('Prescriptions/Add');
         if(Auth::user()->current_team_id == 1){
             return redirect('/');
         }else {
@@ -88,6 +88,10 @@ class PrescriptionController extends Controller
     public function store(Request $request)
     {
         // dd($request);
+        $request->validate([
+            'patient_id'=>['required'],
+            'dateTimeIssued'=>['required'],
+        ]);
         $today = Carbon::parse('today')->format('Y-m-d');
         $appointment = Appointment::where('patient_id',$request->patient_id)->where('date',$today)->first();
         $appointment->done = 1;
@@ -95,6 +99,7 @@ class PrescriptionController extends Controller
 
         $prescription = new Prescription();
         $prescription->patient_id = $request->patient_id;
+        $prescription->doctor_id = Auth::user()->doc_res_id;
         $prescription->dateTimeIssued = $request->dateTimeIssued;
 
         $prescription->diagnosis = is_array($request->diagnosis) ?
@@ -112,7 +117,7 @@ class PrescriptionController extends Controller
 
         for ($i = 0; $i < count($request->prescriptionLines); $i++) {
             $prescriptionItem = new PrescriptionItems();
-            $prescriptionItem->drug_id = $request->prescriptionLines[$i]['drg']['id'];
+            $prescriptionItem->drug_id = $request->prescriptionLines[$i]['id'];
             $prescriptionItem->notes = $request->prescriptionLines[$i]['dose']['name'];
                 // . " for ". $request->prescriptionLines[$i]['time']['duration'];
             $prescription->prescriptionItems()->save($prescriptionItem);
@@ -133,7 +138,7 @@ class PrescriptionController extends Controller
 
     public function getTodaysPatients(){
         $today = Carbon::parse('today')->format('Y-m-d');
-        $appointmentsToday = Appointment::where('date','=',$today)->where('doctor_id',3)->with('patient')->get();
+        $appointmentsToday = Appointment::where('date','=',$today)->where('doctor_id',Auth::user()->doc_res_id)->with('patient')->get();
         return $appointmentsToday;
     }
 

@@ -6,10 +6,11 @@
 
         <new-doctor-dialog ref="dlg1" />
         <new-patient-dialog ref="dlg2" />
+        <new-reseptionist-dialog ref="dlg11" />
         <new-clinic-dialog ref="dlg3" />
         <new-room-dialog ref="dlg4" />
         <new-drug-dialog ref="dlg5" />
-        <!-- <new-prescription-dialog ref="dlg6" /> -->
+        <new-diagnosis-dialog ref="dlg6" />
         <new-appointment-dialog ref="dlg7" />
         <new-user-dialog ref="dlg8" />
 
@@ -49,10 +50,11 @@
 // modals
 import NewDoctorDialog from "@/Pages/Doctors/Edit.vue";
 import NewPatientDialog from "@/Pages/Patients/Edit.vue";
+import NewReseptionistDialog from "@/Pages/Reseptionists/Edit.vue";
 import NewClinicDialog from "@/Pages/Clinics/Edit.vue";
 import NewRoomDialog from "@/Pages/Rooms/Edit.vue";
 import NewDrugDialog from "@/Pages/Drugs/Edit.vue";
-// import NewPrescriptionDialog from "@/Pages/Prescriptions/Edit.vue";
+import NewDiagnosisDialog from "@/Pages/Diagnosis/Edit.vue";
 import NewAppointmentDialog from "@/Pages/Appointments/Edit.vue";
 import NewCustomerDialog from "@/Pages/Customers/Edit.vue";
 import NewBranchDialog from "@/Pages/Branches/Edit.vue";
@@ -105,8 +107,9 @@ export default {
         NewClinicDialog,
         NewRoomDialog,
         NewDrugDialog,
-        // NewPrescriptionDialog,
+        NewDiagnosisDialog,
         NewAppointmentDialog,
+        NewReseptionistDialog
     },
 
     data() {

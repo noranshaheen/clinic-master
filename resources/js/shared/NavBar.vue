@@ -5,226 +5,224 @@
         <div class="flex items-center justify-between">
           <div class="text-xl font-semibold text-gray-700">
             <Link :href="route('dashboard')" class="flex">
-              <jet-application-mark class="w-10" />
-              <span class="self-center ms-3">Clinic Master</span>
+            <jet-application-mark class="w-10" />
+            <span class="self-center ms-3">Clinic Master</span>
             </Link>
           </div>
 
           <!-- Mobile menu button -->
           <div class="flex md:hidden">
-            <button
-              @click="isOpen = !isOpen"
-              type="button"
+            <button @click="isOpen = !isOpen" type="button"
               class="text-gray-500 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400 focus:outline-none focus:text-gray-600 dark:focus:text-gray-400"
-              aria-label="toggle menu"
-            >
+              aria-label="toggle menu">
               <svg viewBox="0 0 24 24" class="w-6 h-6 fill-current">
-                <path
-                  fill-rule="evenodd"
-                  d="M4 5h16a1 1 0 0 1 0 2H4a1 1 0 1 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2z"
-                ></path>
+                <path fill-rule="evenodd"
+                  d="M4 5h16a1 1 0 0 1 0 2H4a1 1 0 1 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2z">
+                </path>
               </svg>
             </button>
           </div>
         </div>
-        <div
-          :class="!isOpen ? 'hidden' : ''"
-          class="flex-1 md:flex md:items-center md:justify-between"
-        >
-          <div
-            class="flex flex-col -mx-4 md:flex-row md:items-center md:mx-5 mt-3 lg:mt-0"
-          >
-            <Link
-              v-if="$page.props.auth.user.current_team_id == 1"
-              :href="route('dashboard')"
-              :class="{ 'text-[#4099de]': $page.url === '/' }"
-              class="grid justify-items-center ms-3 mb-3 lg:mb-0"
-              ><i class="fas fa-chart-pie"></i>{{ __("Dashboard") }}</Link
-            >
+        <div :class="!isOpen ? 'hidden' : ''" class="flex-1 md:flex md:items-center md:justify-between">
+          <div class="flex flex-col -mx-4 md:flex-row md:items-center md:mx-5 mt-3 lg:mt-0">
+            <Link v-if="$page.props.auth.user.current_team_id == 1" :href="route('dashboard')"
+              :class="{ 'text-[#4099de]': $page.url === '/' }" class="grid justify-items-center ms-3 mb-3 lg:mb-0"><i
+              class="fas fa-chart-pie"></i>{{ __("Dashboard") }}</Link>
 
             <!-- start dropdown menus -->
             <!-- doctor menu -->
-            <dropdown
-              :align="alignDropDown()"
-              width="48"
-              class="ms-3 mb-3 lg:mb-0"
-            >
+            <dropdown :align="alignDropDown()" width="48" class="ms-3 mb-3 lg:mb-0">
               <template #trigger>
-                <span
-                  class="grid justify-items-center cursor-pointer hover:text-[#4099de]"
-                  :class="{
-                    'text-[#4099de]': $page.url.startsWith('/doctors'),
-                  }"
-                >
-                  <i class="fa fa-file"></i>
+                <span class="grid justify-items-center cursor-pointer hover:text-[#4099de]" :class="{
+                  'text-[#4099de]': $page.url.startsWith('/doctors'),
+                }">
+                  <!-- <i class="fa fa-user-doctor"></i> -->
+                  <i class="fa fa-stethoscope"></i>
                   {{ __("Doctors") }}
                 </span>
               </template>
               <template #content>
                 <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg1')">
+                  <i class="fas fa-plus"></i>
                   {{ __("Add Doctor") }}
                 </dropdown-link>
                 <dropdown-link :href="route('doctors.index')">
+                  <i class="fas fa-eye"></i>
                   {{ __("Show Doctors") }}
                 </dropdown-link>
               </template>
             </dropdown>
 
             <!-- patient menu -->
-            <dropdown
-              :align="alignDropDown()"
-              width="48"
-              class="ms-3 mb-3 lg:mb-0"
-            >
+            <dropdown :align="alignDropDown()" width="48" class="ms-3 mb-3 lg:mb-0">
               <template #trigger>
-                <span
-                  class="grid justify-items-center cursor-pointer hover:text-[#4099de]"
-                  :class="{
-                    'text-[#4099de]': $page.url.startsWith('/patients'),
-                  }"
-                >
-                  <i class="fa fa-file"></i>
+                <span class="grid justify-items-center cursor-pointer hover:text-[#4099de]" :class="{
+                  'text-[#4099de]': $page.url.startsWith('/patients'),
+                }">
+                  <i class="fa-solid fa-bed-pulse"></i>
                   {{ __("Patients") }}
                 </span>
               </template>
               <template #content>
                 <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg2')">
+                  <i class="fas fa-plus"></i>
                   {{ __("Add Patient") }}
                 </dropdown-link>
                 <dropdown-link :href="route('patients.index')">
+                  <i class="fas fa-eye"></i>
                   {{ __("Show Patients") }}
                 </dropdown-link>
               </template>
             </dropdown>
 
-            <!-- Clinic menu -->
-            <dropdown
-              :align="alignDropDown()"
-              width="48"
-              class="ms-3 mb-3 lg:mb-0"
-            >
+            <!-- reseptionist menu -->
+            <dropdown :align="alignDropDown()" width="48" class="ms-3 mb-3 lg:mb-0">
               <template #trigger>
-                <span
-                  class="grid justify-items-center cursor-pointer hover:text-[#4099de]"
-                  :class="{
-                    'text-[#4099de]': $page.url.startsWith('/clinics'),
-                  }"
-                >
-                  <i class="fa fa-file"></i>
+                <span class="grid justify-items-center cursor-pointer hover:text-[#4099de]" :class="{
+                  'text-[#4099de]': $page.url.startsWith('/reseptionist'),
+                }">
+                  <i class="fa fa-hospital-user"></i>
+                  {{ __("Reseptionists") }}
+                </span>
+              </template>
+              <template #content>
+                <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg11')">
+                  <i class="fas fa-plus"></i>
+                  {{ __("Add Reseptionist") }}
+                </dropdown-link>
+                <dropdown-link :href="route('reseptionists.index')">
+                  <i class="fas fa-eye"></i>
+                  {{ __("Show Reseptionists") }}
+                </dropdown-link>
+              </template>
+            </dropdown>
+
+            <!-- Clinic menu -->
+            <dropdown :align="alignDropDown()" width="48" class="ms-3 mb-3 lg:mb-0">
+              <template #trigger>
+                <span class="grid justify-items-center cursor-pointer hover:text-[#4099de]" :class="{
+                  'text-[#4099de]': $page.url.startsWith('/clinics'),
+                }">
+                  <i class="fa fa-hospital"></i> <!-- Updated Font Awesome icon class -->
                   {{ __("Clinics") }}
                 </span>
               </template>
               <template #content>
                 <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg3')">
+                  <i class="fas fa-plus"></i> <!-- Updated Font Awesome icon class -->
                   {{ __("Add Clinic") }}
                 </dropdown-link>
                 <dropdown-link :href="route('clinics.index')">
+                  <i class="fas fa-eye"></i> <!-- Updated Font Awesome icon class -->
                   {{ __("Show Clinics") }}
                 </dropdown-link>
               </template>
             </dropdown>
 
+
             <!-- Room menu -->
-            <dropdown
-              :align="alignDropDown()"
-              width="48"
-              class="ms-3 mb-3 lg:mb-0"
-            >
+            <dropdown :align="alignDropDown()" width="48" class="ms-3 mb-3 lg:mb-0">
               <template #trigger>
-                <span
-                  class="grid justify-items-center cursor-pointer hover:text-[#4099de]"
-                  :class="{
-                    'text-[#4099de]': $page.url.startsWith('/rooms')
-                  }"
-                >
+                <span class="grid justify-items-center cursor-pointer hover:text-[#4099de]" :class="{
+                  'text-[#4099de]': $page.url.startsWith('/rooms')
+                }">
                   <i class="fa fa-file"></i>
                   {{ __("Rooms") }}
                 </span>
               </template>
               <template #content>
                 <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg4')">
+                  <i class="fas fa-plus"></i>
                   {{ __("Add Room") }}
                 </dropdown-link>
                 <dropdown-link :href="route('rooms.index')">
+                  <i class="fas fa-eye"></i>
                   {{ __("Show Rooms") }}
                 </dropdown-link>
               </template>
             </dropdown>
 
             <!-- Drug menu -->
-            <dropdown
-              :align="alignDropDown()"
-              width="48"
-              class="ms-3 mb-3 lg:mb-0"
-            >
+            <dropdown :align="alignDropDown()" width="48" class="ms-3 mb-3 lg:mb-0">
               <template #trigger>
-                <span
-                  class="grid justify-items-center cursor-pointer hover:text-[#4099de]"
-                  :class="{
-                    'text-[#4099de]': $page.url.startsWith('/drugs'),
-                  }"
-                >
-                  <i class="fa fa-file"></i>
+                <span class="grid justify-items-center cursor-pointer hover:text-[#4099de]" :class="{
+                  'text-[#4099de]': $page.url.startsWith('/drugs'),
+                }">
+                  <i class="fa fa-capsules"></i>
                   {{ __("Drugs") }}
                 </span>
               </template>
               <template #content>
                 <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg5')">
+                  <i class="fas fa-plus"></i>
                   {{ __("Add Drug") }}
                 </dropdown-link>
                 <dropdown-link :href="route('drugs.index')">
+                  <i class="fas fa-eye"></i>
                   {{ __("Show Drugs") }}
                 </dropdown-link>
               </template>
             </dropdown>
 
-            <!-- Prescription menu -->
-            <dropdown
-              :align="alignDropDown()"
-              width="48"
-              class="ms-3 mb-3 lg:mb-0"
-            >
+            <!-- Diagnosis menu -->
+            <dropdown :align="alignDropDown()" width="48" class="ms-3 mb-3 lg:mb-0">
               <template #trigger>
-                <span
-                  class="grid justify-items-center cursor-pointer hover:text-[#4099de]"
-                  :class="{
-                    'text-[#4099de]': $page.url.startsWith('/prescriptions'),
-                  }"
-                >
+                <span class="grid justify-items-center cursor-pointer hover:text-[#4099de]" :class="{
+                  'text-[#4099de]': $page.url.startsWith('/diagnosis'),
+                }">
                   <i class="fa fa-file"></i>
+                  {{ __("Diagnosis") }}
+                </span>
+              </template>
+              <template #content>
+                <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg6')">
+                  <i class="fas fa-plus"></i>
+                  {{ __("Add Diagnosis") }}
+                </dropdown-link>
+                <dropdown-link :href="route('diagnosis.index')">
+                  <i class="fas fa-eye"></i>
+                  {{ __("Show Diagnosis") }}
+                </dropdown-link>
+              </template>
+            </dropdown>
+
+            <!-- Prescription menu -->
+            <dropdown :align="alignDropDown()" width="48" class="ms-3 mb-3 lg:mb-0">
+              <template #trigger>
+                <span class="grid justify-items-center cursor-pointer hover:text-[#4099de]" :class="{
+                  'text-[#4099de]': $page.url.startsWith('/prescriptions'),
+                }">
+                  <!-- <i class="fa-sharp fa-solid fa-notes-medical"></i> -->
+                  <i class="fa fa-file-prescription"></i>
                   {{ __("Prescriptions") }}
                 </span>
               </template>
               <template #content>
-                <dropdown-link v-if="$page.props.auth.user.current_team_id == 2"
-                 as="a" :href="route('prescriptions.create')">
+                <dropdown-link v-if="$page.props.auth.user.current_team_id == 2" as="a"
+                  :href="route('prescriptions.create')">
+                  <i class="fas fa-plus"></i>
                   {{ __("Add Prescription") }}
                 </dropdown-link>
                 <dropdown-link as="a" :href="route('prescriptions.index')">
+                  <i class="fas fa-eye"></i>
                   {{ __("Show Prescriptions") }}
                 </dropdown-link>
               </template>
             </dropdown>
 
             <!-- Appointment menu -->
-            <dropdown
-              :align="alignDropDown()"
-              width="48"
-              class="ms-3 mb-3 lg:mb-0"
-            >
+            <dropdown :align="alignDropDown()" width="48" class="ms-3 mb-3 lg:mb-0">
               <template #trigger>
-                <span
-                  class="grid justify-items-center cursor-pointer hover:text-[#4099de]"
-                  :class="{
-                    'text-[#4099de]': $page.url.startsWith('/appointments'),
-                  }"
-                >
-                  <i class="fa fa-file"></i>
+                <span class="grid justify-items-center cursor-pointer hover:text-[#4099de]" :class="{
+                  'text-[#4099de]': $page.url.startsWith('/appointments'),
+                }">
+                  <i class="fa-solid fa-calendar-check"></i>
                   {{ __("Appointments") }}
                 </span>
               </template>
               <template #content>
                 <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg7')">
+                  <i class="fas fa-plus"></i>
                   {{ __("Add Appointment") }}
                 </dropdown-link>
               </template>
@@ -655,10 +653,7 @@
 
           <div class="flex flex-col md:flex-row md:items-center -mx-4 md:mx-5">
             <language-selector />
-            <dropdown
-              :align="$page.props.locale == 'en' ? 'right' : 'left'"
-              class="ms-3"
-            >
+            <dropdown :align="$page.props.locale == 'en' ? 'right' : 'left'" class="ms-3">
               <template #trigger>
                 <span class="cursor-pointer hover:text-blue-600">
                   <i class="fa fa-user"></i>
@@ -670,23 +665,14 @@
                   {{ __("Profile") }}
                 </dropdown-link>
 
-                <dropdown-link
-                  :href="route('api-tokens.index')"
-                  v-if="$page.props.auth.user.id == 1"
-                >
+                <dropdown-link :href="route('api-tokens.index')" v-if="$page.props.auth.user.id == 1">
                   {{ __("API Tokens") }}
                 </dropdown-link>
 
-                <dropdown-link
-                  :href="route('users.index')"
-                >
+                <dropdown-link :href="route('users.index')">
                   {{ __("Users") }}
                 </dropdown-link>
-                <dropdown-link
-                  as="a"
-                  @click.prevent="openDlg('dlg10')"
-                  href="#"
-                >
+                <dropdown-link as="a" @click.prevent="openDlg('dlg10')" href="#">
                   {{ __("Settings") }}
                 </dropdown-link>
 

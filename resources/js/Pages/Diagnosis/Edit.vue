@@ -1,85 +1,34 @@
 <template>
   <jet-dialog-modal :show="showDialog" @close="showDialog = false">
     <template #title>
-      {{ __("Doctor Information") }}
+      {{ __("diagnose Information") }}
     </template>
 
     <template #content>
       <jet-validation-errors class="mb-4" />
 
       <form @submit.prevent="submit">
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 gap-4">
           <div>
+
             <div class="mt-4">
-              <jet-label :value='__("Doctor Name")' />
-              <jet-input
-                type="text"
-                class="mt-1 block w-full"
-                v-model="form.name"
-                required
-                autofocus
-              />
-            </div>
-            <div class="mt-4">
-              <jet-label :value='__("Phone Number")' />
-              <jet-input
-                type="text"
-                class="mt-1 block w-full"
-                v-model="form.phone"
-                required
-                autofocus
-              />
-            </div>
-            <div class="mt-4">
-              <jet-label :value='__("Another Phone (optional)")' />
-              <jet-input
-                type="text"
-                class="mt-1 block w-full"
-                v-model="form.another_phone"
-                autofocus
-              />
-            </div>
-          </div>
-          <div>
-            <div class="mt-4">
-              <jet-label :value='__("Speciatly")' />
-              <select
-                class="mt-1 block w-full rounded border border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm"
-                v-model="form.specialty_id"
-                required
-                autofocus
-              >
-                <option
-                  v-for="specialty in specialties"
-                  :key="specialty.id"
-                  :value="specialty.id"
-                >
-                  {{ specialty.name }}
-                </option>
-              </select>
+              <jet-label for="type" :value='__("Diagnose Name")' />
+              <jet-input id="type" type="text" class="mt-1 block w-full" v-model="form.name" required />
             </div>
 
             <div class="mt-4">
-              <jet-label :value='__("Title")' />
-              <select
-                v-model="form.title"
-                class="mt-1 block w-full rounded border border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm"
-                required
-                >
-                <option value="أخصائي">{{ __("أخصائي") }}</option>
-                <option value="استشاري">{{ __("استشاري") }}</option>
-                <option value="أستاذ">{{ __("أستاذ") }}</option>
-              </select>
+              <jet-label for="type" :value='__("Diagnose Description")' />
+              <jet-input id="type" type="text" class="mt-1 block w-full" v-model="form.description" />
             </div>
+
             <div class="mt-4">
-              <jet-label :value='__("Date Of Birth")' />
-              <jet-input
-                type="date"
-                class="mt-1 block w-full"
-                v-model="form.date_of_birth"
-                required
-                autofocus
-              />
+              <jet-label for="branch" :value='__("Choose Specialty")' />
+              <select id="branch" required v-model="form.specialty_id"
+                class="mt-1 block w-full rounded border border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm">
+                <option v-for="cl in allSpecialties" :key="cl.id" :value="cl.id">
+                  {{ cl.name }}
+                </option>
+              </select>
             </div>
           </div>
         </div>
@@ -91,12 +40,7 @@
           {{ __("Cancel") }}
         </jet-secondary-button>
 
-        <jet-button
-          class="ms-2"
-          @click="submit"
-          :class="{ 'opacity-25': form.processing }"
-          :disabled="form.processing"
-        >
+        <jet-button class="ms-2" @click="submit" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
           {{ __("Save") }}
         </jet-button>
       </div>
@@ -140,7 +84,7 @@ export default {
   },
 
   props: {
-    doctor: {
+    diagnose: {
       Type: Object,
       default: null,
     },
@@ -148,15 +92,12 @@ export default {
 
   data() {
     return {
-      specialties: [],
       errors: [],
+      allSpecialties: [],
       form: this.$inertia.form({
         name: "",
-        phone: "",
-        another_phone: "",
-        specialty_id: "",
-        title: "",
-        date_of_birth: "",
+        desc: "",
+        specialty_id: ""
       }),
       showDialog: false,
     };
@@ -164,13 +105,10 @@ export default {
 
   methods: {
     ShowDialog() {
-      if (this.doctor !== null) {
-        this.form.name = this.doctor.name;
-        this.form.phone = this.doctor.phone;
-        this.form.another_phone = this.doctor.another_phone;
-        this.form.specialty_id = this.doctor.specialty_id;
-        this.form.title = this.doctor.title;
-        this.form.date_of_birth = this.doctor.date_of_birth;
+      if (this.diagnose !== null) {
+        this.form.name = this.diagnose.name;
+        this.form.description = this.diagnose.description;
+        this.form.doctor_id = this.diagnose.doctor_id;
       }
       this.showDialog = true;
     },
@@ -179,7 +117,10 @@ export default {
     },
     SaveCustomer() {
       axios
-        .put(route("doctors.update", { doctor: this.doctor.id }), this.form)
+        .put(
+          route("diagnosis.update", { diagnosi: this.diagnose.id }),
+          this.form
+        )
         .then((response) => {
           this.$store.dispatch("setSuccessFlashMessage", true);
           this.showDialog = false;
@@ -193,15 +134,11 @@ export default {
           this.$page.props.errors = error.response.data.errors;
           this.errors = error.response.data.errors; //.password[0];
           //this.$refs.password.focus()
-          // this.showDialog = false;
-          // setTimeout(() => {
-          //   window.location.reload();
-          // }, 500);
         });
     },
     SaveNewCustomer() {
       axios
-        .post(route("doctors.store"), this.form)
+        .post(route("diagnosis.store"), this.form)
         .then((response) => {
           this.$store.dispatch("setSuccessFlashMessage", true);
           this.processing = false;
@@ -221,18 +158,19 @@ export default {
         });
     },
     submit() {
-      if (this.doctor == null) this.SaveNewCustomer();
+      if (this.diagnose == null) this.SaveNewCustomer();
       else this.SaveCustomer();
     },
   },
-  created() {
+  created: function created() {
     axios
       .get(route("specialties.index"))
-      .then((res) => {
-        this.specialties = res.data;
+      .then((response) => {
+        // console.log(response.data);
+        this.allSpecialties = response.data;;
       })
-      .catch((err) => {
-        console.log(err);
+      .catch((error) => {
+        console.log(error);
       });
   },
 };

@@ -2,6 +2,7 @@
     <app-layout>
 
         <show-prescription ref="dlg1" :prescription="prescription_details" />
+        <add-analysis-dialog ref="dlg2" @Save="getAnalysis()"/>
 
         <!-- <jet-validation-errors class="mb-4 mt-4" /> -->
 
@@ -14,8 +15,8 @@
                             <jet-label class="py-4" :value='__("Patients")' />
                             <div class="flex justify-start flex-wrap">
                                 <div v-for="patient in patients" :key="patient.patient_id" class="my-2 mx-2">
-                                    <jet-button v-if="patient.patient_id !== null && patient.cancelled == null" 
-                                    :class="{ 'bg-green-400': patient.done, }"
+                                    <jet-button v-if="patient.patient_id !== null && patient.cancelled == null"
+                                        :class="{ 'bg-green-400': patient.done, }"
                                         @click.prevent="getHistory(patient.patient_id, patient.patient.name)">
                                         {{ patient.patient.name }}
                                     </jet-button>
@@ -28,22 +29,28 @@
 
                 <div class="grid grid-cols-3 gap-4 my-4">
 
-                    <div class=" col-span-1 border-r-2 relative shadow-lg sm:rounded-lg bg-white py-2 px-4">
+                    <div class=" col-span-1 border-r-2 relative shadow-lg sm:rounded-lg bg-white px-1">
                         <!-- <div>{{ __("History") }}</div> -->
                         <div class="h-full">
                             <div class="flex items-center border-b border-gray-200">
-                                <jet-button @click="tab_idx = 1" :disabled="tab_idx == 1" :isRounded="false" class="w-1/2">
-                                    {{ __("prescrption details") }}
+                                <jet-button @click="tab_idx = 1" :disabled="tab_idx == 1" :isRounded="false"
+                                    class="w-1/2 md:h-full">
+                                    {{ __("prescrption") }}
                                 </jet-button>
-                                <jet-button @click="tab_idx = 2" :disabled="tab_idx == 2" :isRounded="false" class="w-1/2">
+                                <jet-button @click="tab_idx = 2" :disabled="tab_idx == 2" :isRounded="false"
+                                    class="w-1/2 md:h-full">
                                     {{ __("history") }}
                                 </jet-button>
                             </div>
                             <div v-show="tab_idx == 1">
-                                <table class="w-full">
+                                <div v-if="current_patient_name" class="mx-auto w-full mt-4 border border-[#eceeef]">
+                                    <input class="text-center p-2 font-bold bg-[#f8f9fa] w-full"
+                                        v-model="current_patient_name" />
+                                </div>
+                                <table class="w-full" v-if="current_patient_name">
                                     <!-- start diagnosis -->
                                     <tr class="border">
-                                        <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Diagnosis") }}</td>
+                                        <td class="p-2 font-bold text-center bg-[#f8f9fa] w-1/3">{{ __("Diagnosis") }}</td>
                                         <td class="p-2">
                                             <ul v-for="diagnosis in all_diagnosis" class="list-disc list-inside">
                                                 <li v-if="diagnosis.selected">
@@ -58,9 +65,13 @@
                                         <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Drugs") }}</td>
                                         <td class="p-2">
                                             <!-- {{form.checkedDrugs}} -->
-                                            <ul v-for="line in form.prescriptionLines">
-                                                <li>
-                                                    {{ line.drg.name }}
+                                            <ul v-for="(line, idx) in form.prescriptionLines">
+                                                <li class="mb-2">
+                                                    <div class="flex justify-between items-center">
+                                                        <span class="font-bold">{{ line.name }}</span>
+                                                        <i class="fa fa-delete-left cursor-pointer text-red-500"
+                                                            @click="deleteItem(idx)"></i>
+                                                    </div>
                                                     <multiselect v-model="line.dose" label="name" :options="doses"
                                                         placeholder="Dose" :searchable="true" class="text-sm" />
                                                 </li>
@@ -99,7 +110,13 @@
                                     </tr>
                                     <!-- end notes -->
                                 </table>
-                                <div class="mt-4">
+                                <div v-else class="m-5">
+                                    <p class="text-center text-red-600">
+                                        <i class="fa fa-exclamation-circle mr-1"></i>
+                                        {{ __("Please select a patient") }}
+                                    </p>
+                                </div>
+                                <div class="mt-4" v-if="current_patient_name">
                                     <div class="flex items-center justify-end">
                                         <jet-secondary-button @click="onCancel()">
                                             {{ __("Cancel") }}
@@ -167,7 +184,8 @@
                             <div class="flex justify-start flex-wrap my-4">
                                 <button v-for="diagnosis in all_diagnosis" :key="diagnosis.id" class="my-4 mx-2">
                                     <input type="checkbox" class="peer sr-only" :id="diagnosis.name" name="diagnosis"
-                                        :value="diagnosis.name" v-model="diagnosis.selected" @change="getDrugs()" />
+                                        :value="diagnosis.name" v-model="diagnosis.selected"
+                                        @change="getDrugs(diagnosis)" />
                                     <label :for="diagnosis.name"
                                         class=" cursor-pointer p-2 rounded-md text-center text-sm border shadow peer-checked:bg-green-500">
                                         {{ diagnosis.name }}
@@ -184,7 +202,8 @@
                                 <div v-if="temp_drugs.length != 0" class="inline">
                                     <button v-for="(drug, idx) in temp_drugs" class="my-4 mx-2">
                                         <input type="checkbox" class="peer sr-only" :id="drug.name" name="drug"
-                                            :value="{ drg: drug, dose: null }" v-model="checkedDrugs" @change="check(drug)" />
+                                            :value="{ drg: drug, dose: null }" v-model="checkedDrugs"
+                                            @change="check(drug)" />
                                         <label :for="drug.name"
                                             class=" cursor-pointer p-2 text-sm rounded-md text-center border shadow peer-checked:bg-green-500">
                                             {{ drug.name }}
@@ -209,6 +228,9 @@
                                     </button>
                                 </div>
                                 <div class="flex items-center justify-end mt-4">
+                                    <jet-button class="ms-2" @click="AddNewAnalysis()">
+                                        <i class="fa fa-plus mr-1"></i>
+                                    </jet-button>
                                     <jet-button class="ms-2" @click="AddAnalysis()">
                                         {{ __("Add") }}
                                     </jet-button>
@@ -272,6 +294,7 @@ import DialogInvoiceLine from "@/Pages/Invoices/EditLine.vue";
 import axios from "axios";
 import SecondaryButton from "@/Jetstream/SecondaryButton.vue";
 import ShowPrescription from './Show.vue';
+import AddAnalysisDialog from '../Analysis/Edit.vue';
 
 export default {
     components: {
@@ -285,8 +308,10 @@ export default {
         Multiselect,
         SecondaryButton,
         ShowPrescription,
+        AddAnalysisDialog
     },
-    props: {},
+    props: {
+    },
     data() {
         return {
             //   clinics: [],
@@ -326,59 +351,102 @@ export default {
                 .get(route("appointment.today"))
                 .then((response) => {
                     this.patients = response.data;
-                    console.log(response.data);
+                    // console.log(response.data);
                 })
                 .catch((error) => { });
         },
         getDiagnosis() {
             axios
-                .get(route('json.Diagnosis'))
+                .get(route('diagnosi.allSpeciatlyDiagnosis'))
                 .then((response) => {
                     this.all_diagnosis = response.data;
+                    console.log(response.data)
                 })
         },
-        getDrugs: function () {
-            var temp_diagnosis = this.all_diagnosis.filter((d) => d.selected);
-            var temp_diagnosis_ids = temp_diagnosis.map((e) => Object.values(e.drugList))
+        getAnalysis() {
+            axios
+                .get(route('analysi.allSpeciatlyAnalysis'))
+                .then((response) => {
+                    this.all_analysis = response.data;
+                    console.log(response.data)
+                })
+        },
+        AddNewAnalysis() {
+            this.$nextTick(() => this.$refs.dlg2.ShowDialog());
+        },
+        getDrugs: function (diagnosis) {
 
-            var temp1 = []
-            var temp2 = []
-
-            if (temp_diagnosis_ids.length != 0) {
-                for (var i = 0; i < temp_diagnosis_ids.length; i++) {
-                    temp1 = this.drugs.filter((e) => { return temp_diagnosis_ids[i].includes(e.id) });
-                    for (var j = 0; j < temp1.length; j++) {
-                        if (temp2.length == 0) {
-                            temp2.push(temp1[j]);
-                        } else {
-                            var ids = temp2.map((e) => { return e.id })
-                            if (!ids.includes(temp1[j].id)) {
-                                temp2.push(temp1[j]);
-                            } else {
-                                continue;
-                            }
-                        }
+            // this.temp_drugs.push(diagnosis.drugs);
+            for (var i = 0; i < diagnosis.drugs.length; i++) {
+                var drug_ids = this.temp_drugs.map((d) => { return d.id });
+                if (this.temp_drugs.length != 0) {
+                    if (!drug_ids.includes(diagnosis.drugs[i].id)) {
+                        this.temp_drugs.push(diagnosis.drugs[i]);
+                    } else {
+                        continue;
                     }
+                } else {
+                    this.temp_drugs.push(diagnosis.drugs[i]);
                 }
-                this.temp_drugs = temp2;
-            } else {
-                temp2 = []
-                this.temp_drugs = temp2;
+
             }
+
+            // var temp_diagnosis = this.all_diagnosis.filter((d) => d.selected);
+            // var temp_diagnosis_ids = temp_diagnosis.map((e) => Object.values(e.drugList))
+
+            // var temp1 = []
+            // var temp2 = []
+
+            // if (temp_diagnosis_ids.length != 0) {
+            //     for (var i = 0; i < temp_diagnosis_ids.length; i++) {
+            //         temp1 = this.drugs.filter((e) => { return temp_diagnosis_ids[i].includes(e.id) });
+            //         for (var j = 0; j < temp1.length; j++) {
+            //             if (temp2.length == 0) {
+            //                 temp2.push(temp1[j]);
+            //             } else {
+            //                 var ids = temp2.map((e) => { return e.id })
+            //                 if (!ids.includes(temp1[j].id)) {
+            //                     temp2.push(temp1[j]);
+            //                 } else {
+            //                     continue;
+            //                 }
+            //             }
+            //         }
+            //     }
+            //     this.temp_drugs = temp2;
+            // } else {
+            //     temp2 = []
+            //     this.temp_drugs = temp2;
+            // }
 
         },
         check: function (drug) {
-            if (this.form.prescriptionLines.length == 0 || this.checkedDrugs.length == 0) {
-                this.form.prescriptionLines = this.checkedDrugs;
+            // console.log(drug)
+            if (this.form.prescriptionLines.length == 0) {
+                this.form.prescriptionLines.push(drug);
             } else {
-                for (var i = 0; i < this.checkedDrugs.length; i++) {
-                    if (drug.id == this.checkedDrugs[i].drg.id) {
-                        continue;
+                for (var i = 0; i < this.form.prescriptionLines.length; i++) {
+                    var drug_ids = this.form.prescriptionLines.map((line) => { return line.id });
+                    if (!drug_ids.includes(drug.id)) {
+                        this.form.prescriptionLines.push(drug);
                     } else {
-                        this.form.prescriptionLines = this.checkedDrugs;
+                        continue;
                     }
                 }
             }
+
+
+            // if (this.form.prescriptionLines.length == 0 || this.checkedDrugs.length == 0) {
+            //     this.form.prescriptionLines = this.checkedDrugs;
+            // } else {
+            //     for (var i = 0; i < this.checkedDrugs.length; i++) {
+            //         if (drug.id == this.checkedDrugs[i].drg.id) {
+            //             continue;
+            //         } else {
+            //             this.form.prescriptionLines = this.checkedDrugs;
+            //         }
+            //     }
+            // }
         },
         // AddItem: function (drug) {
         //     this.form.prescriptionLines.push({
@@ -386,9 +454,9 @@ export default {
         //         dose: "",
         //     });
         // },
-        // DeleteItem: function (idx) {
-        //     this.form.prescriptionLines.splice(idx, 1);
-        // },
+        deleteItem: function (idx) {
+            this.form.prescriptionLines.splice(idx, 1);
+        },
         AddAnalysis: function () {
             this.analysis = true;
         },
@@ -399,7 +467,7 @@ export default {
             return id + " - " + name;
         },
         openDlg(patient) {
-            console.log(patient);
+            // console.log(patient);
             this.prescription_details = patient;
             this.$nextTick(() => this.$refs.dlg1.ShowDialog());
         },
@@ -433,6 +501,7 @@ export default {
                     this.temp_drugs = [];
                     this.getAppointments();
                     this.getDiagnosis();
+                    this.getAnalysis();
                     // setTimeout(() => {
                     //     window.location.reload();
                     // }, 500);
@@ -449,6 +518,7 @@ export default {
         // this.AddItem();
         this.getAppointments();
         this.getDiagnosis();
+        this.getAnalysis();
         axios
             .get(route("drug.all"))
             .then((response) => {
@@ -466,11 +536,11 @@ export default {
                 // console.log(response.data)
                 this.durations = response.data;
             })
-        axios
-            .get(route('json.analysis'))
-            .then((response) => {
-                this.all_analysis = response.data;
-            })
+        // axios
+        //     .get(route('json.analysis'))
+        //     .then((response) => {
+        //         this.all_analysis = response.data;
+        //     })
         axios
             .get(route('json.rays'))
             .then((response) => {

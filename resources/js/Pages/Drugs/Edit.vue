@@ -32,6 +32,12 @@
                                 v-model="form.description"
                             />
                         </div>
+                        <div class="mt-4">
+                            <jet-label :value="__('Related Diagnosis')"/>
+                            <multiselect v-model="form.diagnose" label="name" :hide-selected="true" 
+                            :options="allDiagnosis" :searchable="true" :multiple="true" track-by="id" 
+                            placeholder="Select Diagnose"/>
+                        </div>
 
                     </div>
                 </div>
@@ -71,6 +77,7 @@ import JetLabel from "@/Jetstream/Label.vue";
 import JetSecondaryButton from "@/Jetstream/SecondaryButton.vue";
 import JetSectionBorder from "@/Jetstream/SectionBorder.vue";
 import JetValidationErrors from "@/Jetstream/ValidationErrors.vue";
+import Multiselect from "@suadelabs/vue3-multiselect";
 import axios from 'axios';
 
 export default {
@@ -89,6 +96,7 @@ export default {
         JetSecondaryButton,
         JetSectionBorder,
         JetValidationErrors,
+        Multiselect,
     },
 
     props: {
@@ -101,9 +109,11 @@ export default {
     data() {
         return {
             errors: [],
+            allDiagnosis:[],
             form: this.$inertia.form({
                 name: "",
-                description:""
+                description: "",
+                diagnose:""
             }),
             showDialog: false,
         };
@@ -167,24 +177,13 @@ export default {
             else this.SaveCustomer();
         }
     },
-    // created: function created() {
-    //     axios
-    //         .get("/json/Countries.json")
-    //         .then((response) => {
-    //             this.countries = response.data.map((country) => {
-    //                 return {
-    //                     name: country.countryName,
-    //                     code: country.countryShortCode,
-    //                 };
-    //             });
-    //             this.allStates = response.data;
-    //             this.allStates.find((state) => {
-    //                 if (state.countryShortCode == this.form.address.country) {
-    //                     this.states = state.regions;
-    //                 }
-    //             });
-    //         })
-    //         .catch((error) => {});
-    // },
+    created: function created() {
+        axios
+            .get(route("diagnosi.all"))
+            .then((response) => {
+                this.allDiagnosis = response.data;
+            })
+            .catch((error) => {});
+    },
 };
 </script>

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 
 class Drug extends Model
@@ -19,5 +20,10 @@ class Drug extends Model
     public function prescriptionItem(): HasMany
     {
         return $this->hasMany('App\Models\PrescriptionItems','drug_id','id');
+    }
+
+    public function diagnosis() : BelongsToMany
+    {
+        return $this->belongsToMany('App\Models\Diagnosis');
     }
 }

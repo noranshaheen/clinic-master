@@ -11,6 +11,7 @@ use Spatie\QueryBuilder\QueryBuilder;
 use ProtoneMedia\LaravelQueryBuilderInertiaJs\InertiaTable;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 
 class AppointmentController extends Controller
 {
@@ -98,22 +99,34 @@ class AppointmentController extends Controller
         $today = Carbon::parse('today');
         $timesArr = array();
 
-        // dd($request);
 
         $data = $request->validate([
-            'doctor_id' =>['numeric','required'],
-            'clinic_id' =>['numeric','required'],
+            'doctor_id' => ['numeric', 'required'],
+            'clinic_id' => ['numeric', 'required'],
             'records' => ['required', 'array', 'min:1'],
-            'records.*.date' =>['date','required','after_or_equal:'.$today], 
-            'records.*.room_id' =>['numeric','required'],
-            'records.*.num_of_cases'=>['numeric','min:1','required'],
-            'records.*.from'=>['required'],
-            'records.*.to'=>['required']
+            'records.*.date' => ['date', 'required', 'after_or_equal:' . $today],
+            'records.*.room_id' => ['numeric', 'required'],
+            'records.*.num_of_cases' => ['numeric', 'min:1', 'required'],
+            'records.*.from' => ['required'],
+            'records.*.to' => ['required']
         ]);
 
-        foreach($data['records'] as $item) {
+        //transaction begin
+        // DB::beginTransaction();
+        foreach ($data['records'] as $item) {
             $from = $item['date'] . " " . $item['from'];
             $to = $item['date'] . " " . $item['to'];
+
+            //validate that the range of dates in this room is free
+            // $conflicFrom = DB::table('appointments')
+            // ->where('date',$item['date'])
+            // ->where('room_id',$item['room_id'])
+            // ->get();
+            // $r = $conflicFrom->groupBy('doctor_id');
+            // dd($r);
+
+
+            // if ($confilctCount == 0) {
             $interval = $this->timeInterval($from, $to, $item['num_of_cases']);
             $timesObjs = CarbonInterval::minutes($interval)->toPeriod($from, $to)->toArray();
             $timesArr = array_map(fn ($time) => $time->format('H:i'), $timesObjs);
@@ -129,12 +142,15 @@ class AppointmentController extends Controller
                 $apt->to = $item['date'] . " " . $timesArr[$j];
                 $apt->save();
             }
+            // }
         }
+        // DB::commit();
     }
+
 
     public function show(Appointment $appointment)
     {
-        return array($appointment,$appointment->patient) ;
+        return array($appointment, $appointment->patient);
     }
 
 
@@ -157,25 +173,25 @@ class AppointmentController extends Controller
 
     public function searchData(Request $request)
     {
-        if($request->doctor_id == -1){
+        if ($request->doctor_id == -1) {
             $result = Appointment::where('date', '=', $request->date)
-            ->with('doctor')
-            ->get();
+                ->with('doctor')
+                ->get();
 
             $appointments = $result->groupBy('doctor_id');
-
-        }else {
+        } else {
             $result = Appointment::where('doctor_id', '=', $request->doctor_id)
-            ->where('date', '=', $request->date)
-            ->with('doctor')
-            ->get();
+                ->where('date', '=', $request->date)
+                ->with('doctor')
+                ->get();
 
             $appointments = $result->groupBy('doctor_id');
         }
         return $appointments;
     }
 
-    public function reserve(Request $request){
+    public function reserve(Request $request)
+    {
         $appointment = Appointment::find($request->input('appointment_id'));
         $appointment->patient_id = $request->form["patient"]["id"];
         $appointment->type = $request->form["type"];
@@ -183,18 +199,19 @@ class AppointmentController extends Controller
         // dd($request->form);
     }
 
-    public function reserveNewPatient(Request $request){
+    public function reserveNewPatient(Request $request)
+    {
 
         $today = Carbon::parse('today');
 
         $request->validate([
-            'name' =>['string','max:255','min:2','required'],
-            'phone' =>['numeric','min:11','required'],
-            'type' =>['required',Rule::in(['I','P'])],
-            'gender' =>['required',Rule::in(['M','F'])],
-            'date_of_birth' => ['date','required','before_or_equal:'.$today],
-            'insurance_number' =>['string','max:255','nullable'],
-            'insurance_company' =>['string','max:255','nullable'],
+            'name' => ['string', 'max:255', 'min:2', 'required'],
+            'phone' => ['numeric', 'min:11', 'required'],
+            'type' => ['required', Rule::in(['I', 'P'])],
+            'gender' => ['required', Rule::in(['M', 'F'])],
+            'date_of_birth' => ['date', 'required', 'before_or_equal:' . $today],
+            'insurance_number' => ['string', 'max:255', 'nullable'],
+            'insurance_company' => ['string', 'max:255', 'nullable'],
         ]);
 
         $patient = new Patient();
@@ -213,35 +230,52 @@ class AppointmentController extends Controller
         // dd($request);
     }
 
-    public function cancelUnreserved(Request $request){
-        $appointments = Appointment::where('doctor_id','=',$request->doctor_id)
-                                    ->with('doctor')
-                                    ->where('date','=',$request->date)
-                                    ->where('patient_id','=',null)
-                                    ->get();
+    public function cancelUnreserved(Request $request)
+    {
+        $appointments = Appointment::where('doctor_id', '=', $request->doctor_id)
+            ->with('doctor')
+            ->where('date', '=', $request->date)
+            ->where('patient_id', '=', null)
+            ->get();
         // dd($appointments);
-        foreach($appointments as $appointment){
+        foreach ($appointments as $appointment) {
             $appointment->delete();
-        } 
-        return "unreserverd appointments of doctor ".$appointments[0]['doctor']['name']." in date ".$request->date." have been cancelled";   
+        }
+        return "unreserverd appointments of doctor " . $appointments[0]['doctor']['name'] . " in date " . $request->date . " have been cancelled";
     }
 
-    public function cancelAll(Request $request){
-        $appointments = Appointment::where('doctor_id','=',$request->doctor_id)
-                                    ->with('doctor')
-                                    ->with('patient')
-                                    ->where('date','=',$request->date)
-                                    ->get();
-        foreach($appointments as $appointment){
-            if($appointment->patient_id != null){
+    public function cancelAll(Request $request)
+    {
+        $appointments = Appointment::where('doctor_id', '=', $request->doctor_id)
+            ->with('doctor')
+            ->with('patient')
+            ->where('date', '=', $request->date)
+            ->get();
+        foreach ($appointments as $appointment) {
+            if ($appointment->patient_id != null) {
                 $appointment->cancelled = 1;
                 $appointment->update();
-            }else{
+            } else {
                 $appointment->delete();
             }
-            
         }
         // dd($appointments);
         return $appointments;
+    }
+
+    public function pay(Request $request)
+    {
+        $appointment = Appointment::find($request->appointment_id);
+        $appointment->amount = $request->amount;
+        $appointment->status = "paid";
+        if($request->notes){
+            $appointment->notes = $request->notes;
+        }
+        $appointment->save();
+    }
+
+    public function showHistory($patient_id){
+        $patient_appointments = Appointment::where('patient_id','=',$patient_id)->get();
+        return $patient_appointments;
     }
 }

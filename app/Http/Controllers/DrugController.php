@@ -64,17 +64,21 @@ class DrugController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request);
         $request->validate([
-            'name' =>['required','string','max:255'],
-            'description' =>['nullable','string','max:255']
+            'name' =>['required','string','max:255','regex:/^[\p{Arabic}A-Za-z0-9\s]+$/u'],
+            'description' =>['nullable','string','max:255'],
+            'diagnose.*.id' =>['required']
         ]);
 
         $drug = new Drug();
         $drug->name = $request->name;
         $drug->description = $request->description;
         $drug->save();
-
-        return redirect()->back();
+        foreach($request->diagnose as $diagnose){
+            $drug->diagnosis()->attach($diagnose['id']);
+        }
+        // return redirect()->back();
     }
 
     /**
@@ -99,7 +103,7 @@ class DrugController extends Controller
     public function update(Request $request, Drug $drug)
     {
         $data = $request->validate([
-            'name' =>['required','string','max:255'],
+            'name' =>['required','string','max:255','regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
             'description' =>['nullable','string','max:255']
         ]);
 

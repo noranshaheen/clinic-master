@@ -28,6 +28,9 @@ use App\Http\Controllers\ClinicController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\DrugController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\ReseptionistController;
+use App\Http\Controllers\DiagnosisController;
+use App\Http\Controllers\AnalysisController;
 use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\PrescriptionItemsController;
 use App\Http\Controllers\RoomController;
@@ -98,7 +101,10 @@ Route::middleware(['auth:sanctum', 'verified', 'ETASettings'])->group(function (
         'drugs'=>DrugController::class,
         'prescriptions'=>PrescriptionController::class,
         'appointments' =>AppointmentController::class,
-        'specialties' => SpecialtyController::class
+        'specialties' => SpecialtyController::class,
+        'reseptionists'=>ReseptionistController::class,
+        'diagnosis'=>DiagnosisController::class,
+        'analysis'=>AnalysisController::class
     ]);
 
     Route::get('/clinic/all', [ClinicController::class, 'all'])->name("clinic.all");
@@ -106,12 +112,18 @@ Route::middleware(['auth:sanctum', 'verified', 'ETASettings'])->group(function (
     Route::get('/room/all', [RoomController::class, 'all'])->name("room.all");
     Route::get('/patient/all', [PatientController::class, 'all'])->name("patient.all");
     Route::get('/drug/all', [DrugController::class, 'all'])->name("drug.all");
+    Route::get('/diagnosi/all', [DiagnosisController::class, 'all'])->name("diagnosi.all");
+    Route::get('/diagnosi/allSpeciatlyDiagnosis', [DiagnosisController::class, 'allSpeciatlyDiagnosis'])->name("diagnosi.allSpeciatlyDiagnosis");
+    Route::get('/analysi/allSpeciatlyAnalysis', [AnalysisController::class, 'allSpeciatlyAnalysis'])->name("analysi.allSpeciatlyAnalysis");
+    Route::get('/reseptionist/all', [ReseptionistController::class, 'all'])->name("reseptionist.all");
 
     Route::post('/appointment/searchData', [AppointmentController::class, 'searchData'])->name("appointment.searchData");
     Route::post('/appointment/reserve', [AppointmentController::class, 'reserve'])->name("appointment.reserve");
     Route::post('/appointment/reserveNewPatient', [AppointmentController::class, 'reserveNewPatient'])->name("appointment.reserveNewPatient");
+    Route::post('/appointment/pay', [AppointmentController::class, 'pay'])->name("appointment.pay");
     Route::post('/appointment/cancelUnreserved', [AppointmentController::class, 'cancelUnreserved'])->name("appointment.cancel.unreserved");
     Route::post('/appointment/cancelAll', [AppointmentController::class, 'cancelAll'])->name("appointment.cancel.all");
+    Route::get('/appointment/showHistory/{patient_id}', [AppointmentController::class, 'showHistory'])->name("appointment.showHistory");
     
     Route::get('/invoice/search', [InvoiceController::class, 'search'])->name("invoices.search");
     Route::post('/invoice/searchData', [InvoiceController::class, 'searchData'])->name("invoices.searchData");

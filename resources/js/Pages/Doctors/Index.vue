@@ -13,6 +13,9 @@
                         <template #cell(date_of_birth)="{ item: doctor }">
                             {{ new Date().getFullYear() - new Date(doctor.date_of_birth).getFullYear() }}
                         </template>
+                        <template #cell(specialty_id)="{ item: doctor }">
+                            {{ doctor.specialties.name }}
+                        </template>
                         <template #cell(actions)="{ item: doctor }">
                             <secondary-button @click="editCustomer(doctor)">
                                 <i class="fa fa-edit"></i> {{ __("Edit") }}

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Patient;
+use App\Models\Reseptionist;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use ProtoneMedia\LaravelQueryBuilderInertiaJs\InertiaTable;
@@ -10,20 +10,20 @@ use Spatie\QueryBuilder\QueryBuilder;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 
-class PatientController extends Controller
+class ReseptionistController extends Controller
 {
 
     public function index()
     {
-        $patients = QueryBuilder::for (Patient::class)
+        $reseptionists = QueryBuilder::for (Reseptionist::class)
         ->defaultSort('id')
         ->allowedSorts(['id','name','date_of_birth'])
-        ->allowedFilters(['name','phone','type','date_of_birth','insurance_number','insurance_company','gender'])
+        ->allowedFilters(['name','phone','date_of_birth','gender'])
         ->paginate(Request()->input('perPage',20))
         ->withQueryString();
 
-        return Inertia::render('Patients/Index', [
-            'patients' => $patients
+        return Inertia::render('Reseptionists/Index', [
+            'reseptionists' => $reseptionists
         ])->table(function (InertiaTable $table) {
             $table->column(
                 key:"id",
@@ -53,27 +53,6 @@ class PatientController extends Controller
                 sortable:true,
                 searchable:true
             )->column(
-                key:"type",
-                label: __("Type"),
-                canBeHidden:true,
-                hidden:false,
-                sortable:true,
-                searchable:true
-            )->column(
-                key:"insurance_number",
-                label: __("Insurance Number"),
-                canBeHidden:true,
-                hidden:false,
-                sortable:true,
-                searchable:true
-            )->column(
-                key:"insurance_company",
-                label: __("Insurance Company"),
-                canBeHidden:true,
-                hidden:false,
-                sortable:true,
-                searchable:true
-            )->column(
                 key:"phone",
                 label: __("Phone Number"),
                 canBeHidden:true,
@@ -98,25 +77,17 @@ class PatientController extends Controller
 
         $request->validate([
             'name' =>['string','max:255','min:2','required','regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
-            'phone' =>['numeric','min:11','required','unique:patients,phone'],
-            'type' =>['required',Rule::in(['I','P'])],
+            'phone' =>['numeric','min:11','required','unique:reseptionists,phone'],
             'gender' =>['required',Rule::in(['M','F'])],
             'date_of_birth' => ['date','required','before_or_equal:'.$today],
-            'insurance_number' =>['string','max:255','nullable'],
-            'insurance_company' =>['string','max:255','nullable'],
         ]);
 
-        $patient = new Patient();
+        $patient = new Reseptionist();
         $patient->name = $request->name;
         $patient->phone = $request->phone;
-        $patient->type = $request->type;
         $patient->gender = $request->gender;
         $patient->date_of_birth = $request->date_of_birth;
-        $patient->insurance_number = $request->insurance_number;
-        $patient->insurance_company = $request->insurance_company;
         $patient->save();
-
-        return redirect()->back();
     }
 
     public function show(Patient $patient)
@@ -136,11 +107,8 @@ class PatientController extends Controller
         $date =  $request->validate([
             'name' =>['string','max:255','min:2','required','regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
             'phone' =>['numeric','min:11','required','unique:patients,phone'],
-            'type' =>['required',Rule::in(['I','P'])],
             'gender' =>['required',Rule::in(['M','F'])],
             'date_of_birth' => ['date','required','before_or_equal:'.$today],
-            'insurance_number' =>['string','max:255','nullable'],
-            'insurance_company' =>['string','max:255','nullable'],
         ]);
 
         $patient->update($date);
@@ -152,6 +120,6 @@ class PatientController extends Controller
     }
 
     public function all(){
-        return Patient::all();
+        return Reseptionist::all();
     }
 }

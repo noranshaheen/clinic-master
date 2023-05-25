@@ -1,42 +1,32 @@
 <template>
   <app-layout>
-    <edit-patient ref="dlg2" :patient="patient" />
+    <edit-patient ref="dlg2" :reseptionist="reseptionist" />
     <confirm ref="dlg1" @confirmed="remove()">
-      {{ __("Are you sure you want to delete this patient ?") }}
+      {{ __("Are you sure you want to delete this reseptionist ?") }}
     </confirm>
     <div class="py-4">
       <div class="mx-auto sm:px-6 lg:px-8">
-        <div class="wrapper Gbg-white shadow-xl sm:rounded-lg p-4">
-          <Table :resource="patients">
-            <template #cell(type)="{ item: patient }">
+        <div
+          class="wrapper Gbg-white shadow-xl sm:rounded-lg p-4"
+        >
+          <Table :resource="reseptionists">
+            <template #cell(gender)="{ item: reseptionist }">
               {{
-                patient.type == "I"
-                ? __("Insurance")
-                : patient.type == "P"
-                  ? __("Personal")
-                  : null
-              }}
-            </template>
-            <template #cell(gender)="{ item: patient }">
-              {{
-                patient.gender == "F"
-                ? __("Female")
-                : patient.gender == "M"
+                reseptionist.gender == "F"
+                  ? __("Female")
+                  : reseptionist.gender == "M"
                   ? __("Male")
                   : null
               }}
             </template>
-            <template #cell(date_of_birth)="{ item: patient }">
-              {{ new Date().getFullYear() - new Date(patient.date_of_birth).getFullYear() }}
+            <template #cell(date_of_birth)="{ item: reseptionist }">
+              {{ new Date().getFullYear() - new Date(reseptionist.date_of_birth).getFullYear() }}
             </template>
-            <template #cell(actions)="{ item: patient }">
-              <secondary-button @click="showHistory(patient)">
-                <i class="fa fa-history"></i> {{ __("History") }}
-              </secondary-button>
-              <secondary-button class="ms-2" @click="editCustomer(patient)">
+            <template #cell(actions)="{ item: reseptionist }">
+              <secondary-button @click="editCustomer(reseptionist)">
                 <i class="fa fa-edit"></i> {{ __("Edit") }}
               </secondary-button>
-              <jet-button class="ms-2" @click="removeCustomer(patient)">
+              <jet-button class="ms-2" @click="removeCustomer(reseptionist)">
                 <i class="fa fa-trash"></i> {{ __("Delete") }}
               </jet-button>
             </template>
@@ -50,7 +40,7 @@
 <script>
 import AppLayout from "@/Layouts/AppLayout.vue";
 import Confirm from "@/UI/Confirm.vue";
-import EditPatient from "@/Pages/Patients/Edit.vue";
+import EditPatient from "@/Pages/Reseptionists/Edit.vue";
 import { Table } from "@protonemedia/inertiajs-tables-laravel-query-builder";
 import SecondaryButton from "@/Jetstream/SecondaryButton.vue";
 import JetButton from "@/Jetstream/Button.vue";
@@ -64,53 +54,35 @@ export default {
     Table,
     SecondaryButton,
     JetButton,
-    axios
   },
   props: {
-    patients: Object,
+    reseptionists: Object,
   },
   data() {
     return {
-      patient: Object,
-      patient_appointments: "",
-      patient_prescription:""
+      reseptionist: Object,
     };
   },
   methods: {
     editCustomer(cust) {
-      this.patient = cust;
+      this.reseptionist = cust;
       this.$nextTick(() => this.$refs.dlg2.ShowDialog());
       //this.$refs.dlg2.ShowDialog();
     },
     removeCustomer(cust) {
-      this.patient = cust;
+      this.reseptionist = cust;
       this.$refs.dlg1.ShowModal();
-    },
-    showHistory(patient) {
-      axios
-        .get(route("patient.history", patient.id))
-        .then((response) => {
-          console.log(response.data)
-          this.patient_prescription = response.data;
-        })
-      axios
-        .get(route("appointment.showHistory", patient.id))
-        .then((response) => {
-          console.log(response.data)
-          this.patient_appointments = response.data;
-        })
-
     },
     remove() {
       axios
-        .delete(route("patients.destroy", { patient: this.patient.id }))
+        .delete(route("reseptionists.destroy", { reseptionist: this.reseptionist.id }))
         .then((response) => {
           this.$store.dispatch("setSuccessFlashMessage", true);
           setTimeout(() => {
             window.location.reload();
           }, 500);
         })
-        .catch((error) => { });
+        .catch((error) => {});
     },
     showColumn(columnKey) {
       if (!this.$inertia.page.props.queryBuilderProps.default.columns) {

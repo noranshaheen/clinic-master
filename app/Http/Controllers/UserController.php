@@ -26,6 +26,8 @@ use App\Models\TeamInvitation;
 use App\Models\Team;
 use App\Models\User;
 use App\Models\ETA\Value;
+use App\Models\Doctor;
+use App\Models\Reseptionist;
 
 class UserController extends Controller
 {
@@ -101,19 +103,44 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-		$data = $request->validate([
-            'name' 		=> ['required', 'string', 'max:255'],
-			'email' 	=> ['required', 'string', 'email', 'max:255', Rule::unique('users')],
-            'password'	=> ['required', 'min:8'], 
-            'current_team_id'	=> ['required', 'integer', Rule::in([1,2])]
-        ]);
-		
-        $item2 = new User($data);
-		$item2->password = Hash::make($item2->password);
-		$item2->save();
+        $user = new User();
+        if($request->doctor_id != ""){
+            $data = $request->validate([
+                'doctor_id'=>['required', 'integer'],
+                'email' 	=> ['required', 'string', 'email', 'max:255', Rule::unique('users')],
+                'password'	=> ['required', 'min:8'], 
+                'current_team_id'	=> ['required', 'integer', Rule::in([1,2])],
+            ]);
+            $doc = Doctor::find($request->doctor_id);
+            $user->name = $doc->name;
+            $user->doc_res_id = $request->doctor_id;
+            
+        }else{
+            $data = $request->validate([
+                'reseptionist_id'=>['required', 'integer'],
+                'email' 	=> ['required', 'string', 'email', 'max:255', Rule::unique('users')],
+                'password'	=> ['required', 'min:8'], 
+                'current_team_id'	=> ['required', 'integer', Rule::in([1,2])],
+            ]);
+            $doc = Reseptionist::find($request->reseptionist_id);
+            $user->name = $doc->name;
+            $user->doc_res_id = $request->reseptionist_id;
+        }
+        
+        $user->email = $request->email;
+        $user->password = Hash::make($request->password);
+        $user->current_team_id = $request->current_team_id;
+        $user->save();
 
-        return $item2;
-    }
+        return $user;
+		
+		
+        // $item2 = new User($data);
+		// $item2->password = Hash::make($item2->password);
+		// $item2->save();
+
+        // return $item2;   
+     }
 
     /**
      * Display the specified resource.
@@ -147,7 +174,7 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
 		$data = $request->validate([
-            'name' 		=> ['required', 'string', 'max:255'],
+            'name' 		=> ['required', 'string', 'max:255','regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
 			'email' 	=> ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($id)], 
             'current_team_id'	=> ['required', 'integer', Rule::in([1,2])]
         ]);

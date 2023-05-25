@@ -12,8 +12,8 @@
                         <div class="grid grid-cols-2 gap-8">
                             <!-- all doctors -->
                             <div class="text-lg">
-                                <jet-label :value="__('Doctor')" />
-                                <select v-model="form.doctor_id" class="mt-1 block w-full border-slate-300 rounded-md">
+                                <jet-label for="doctor-name" :value="__('Doctor')" />
+                                <select id="doctor-name" v-model="form.doctor_id" class="mt-1 block w-full border-slate-300 rounded-md">
                                     <option v-for="doctor in allDoctors" :value="doctor.id" :key="doctor.id">
                                         {{ doctor.name }}
                                     </option>
@@ -21,14 +21,14 @@
                             </div>
                             <!-- select date -->
                             <div class="text-lg">
-                                <jet-label :value="__('Date')" class="mt-4" />
-                                <jet-input type="date" v-model="form.date" class="mt-1 block w-full text-sm" required />
+                                <jet-label for="date" :value="__('Date')" class="mt-4" />
+                                <jet-input id="date" type="date" v-model="form.date" class="mt-1 block w-full text-sm" required />
                             </div>
                         </div>
                     </div>
                     <!-- search botton -->
                     <div class="w-1/5 flex flex-col justify-end items-end">
-                        <jet-button @click="searchData()" class="text-lg w-1/2 h-1/2 md:flex justify-around">
+                        <jet-button id="search" @click="searchData()" class="text-lg w-1/2 h-1/2 md:flex justify-around">
                             <i class="fa-solid fa-magnifying-glass mx-1"></i>
                             <span>{{ __("Search") }}</span>
                         </jet-button>
@@ -70,12 +70,12 @@
                                         <jet-secondary-button v-else-if="apnt.cancelled == null" 
                                         @click.prevent="showDetails(apnt.id)"
                                         class="m-1 text-neutral-200 border-neutral-200 hover:bg-[#b7d5ed] hover:text-white">
-                                                {{ new Date(apnt.from).toLocaleTimeString() }} 
+                                                {{ subtractHours(apnt.from,3) }} 
                                         </jet-secondary-button>
                                         <jet-secondary-button v-else-if="apnt.cancelled == 1" 
                                         @click.prevent="showDetails(apnt.id)"
                                         class="m-1 text-red-200 border border-red-200 text-bold hover:bg-red-200 hover:text-white">
-                                                {{ new Date(apnt.from).toLocaleTimeString() }} 
+                                                {{ subtractHours(apnt.from,3) }} 
                                         </jet-secondary-button>
                                     </div>
                                 </div>
@@ -99,7 +99,7 @@
                     <i class="fa fa-exclamation-circle mr-1"></i>
                     {{ __("No Records Were Found") }}
                 </p>
-            </div>
+            </div> 
         </div>
     </app-layout>
 </template>
