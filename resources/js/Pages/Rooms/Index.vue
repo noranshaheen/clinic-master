@@ -86,9 +86,9 @@ export default {
       return column ? !column.hidden : false;
     },
   },
-//   created: function created() {
-//     console.log(this.rooms);
-//   },
+  // created: function created() {
+  //   console.log(this.rooms);
+  // },
 };
 </script>
 <style scoped>

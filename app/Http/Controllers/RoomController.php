@@ -76,7 +76,7 @@ class RoomController extends Controller
         $room->clinic_id = $request->clinic_id;
         $room->save();
 
-        return redirect()->back();
+        return 'ok';
     }
 
     /**

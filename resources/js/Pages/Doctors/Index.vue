@@ -91,6 +91,9 @@ export default {
           return column ? !column.hidden : false;
         },
     },
+//     created: function created() {
+//     console.log(this.doctors);
+//   },
 };
 </script>
 <style scoped>
