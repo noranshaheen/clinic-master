@@ -67,10 +67,25 @@
                                             class="m-1 text-blue-500 border-blue-500 hover:bg-[#4099de] hover:text-white">
                                             {{ subtractHours(apnt.from,3) }}
                                         </jet-secondary-button>
-                                        <jet-secondary-button v-else-if="apnt.cancelled == null" 
+                                        <jet-secondary-button v-else-if="apnt.cancelled == null && apnt.done == null" 
                                         @click.prevent="showDetails(apnt.id)"
-                                        class="m-1 text-neutral-200 border-neutral-200 hover:bg-[#b7d5ed] hover:text-white">
-                                                {{ subtractHours(apnt.from,3) }} 
+                                        class="m-1 text-neutral-300 border-neutral-300 hover:bg-[#b7d5ed] hover:text-white">
+                                                <span>
+                                                    {{ apnt.patient.name }}
+                                                </span>
+                                                <p>
+                                                    {{ subtractHours(apnt.from,3) }}
+                                                </p> 
+                                        </jet-secondary-button>
+                                        <jet-secondary-button v-else-if="apnt.cancelled == null && apnt.done == 1" 
+                                        @click.prevent="showDetails(apnt.id)"
+                                        class="m-1 text-green-500 border-green-500 hover:bg-green-500 hover:text-white">
+                                                <span>
+                                                    {{ apnt.patient.name }}
+                                                </span>
+                                                <p>
+                                                    {{ subtractHours(apnt.from,3) }}
+                                                </p> 
                                         </jet-secondary-button>
                                         <jet-secondary-button v-else-if="apnt.cancelled == 1" 
                                         @click.prevent="showDetails(apnt.id)"

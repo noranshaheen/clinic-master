@@ -16,6 +16,7 @@ class DrugController extends Controller
     public function index()
     {
         $drugs = QueryBuilder::for (Drug::class)
+        ->with('diagnosis')
         ->defaultSort('id')
         ->allowedSorts(['id','name'])
         ->allowedFilters(['name','description'])
@@ -78,7 +79,7 @@ class DrugController extends Controller
         foreach($request->diagnose as $diagnose){
             $drug->diagnosis()->attach($diagnose['id']);
         }
-        // return redirect()->back();
+        return redirect()->back();
     }
 
     /**

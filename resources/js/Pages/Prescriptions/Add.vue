@@ -2,7 +2,8 @@
     <app-layout>
 
         <show-prescription ref="dlg1" :prescription="prescription_details" />
-        <add-analysis-dialog ref="dlg2" @Save="getAnalysis()"/>
+        <add-analysis-dialog ref="dlg2" @Save="getAnalysis()" />
+        <add-xrays-dialog ref="dlg3" @Save="getXray()" />
 
         <!-- <jet-validation-errors class="mb-4 mt-4" /> -->
 
@@ -11,14 +12,22 @@
                 <div class="bg-white shadow-xl sm:rounded-lg px-2 pb-2 pt-0">
                     <div class="flex justify-start sm:grid-cols-1 mt-2">
                         <!-- patients -->
+                        <div>
+                            <jet-label class="py-4" :value='__("Select Clinic")' />
+                             <multiselect v-model="form.selected_clinic" label="name" :options="allClinics"
+                                placeholder="Branch" :searchable="true" class="text-sm" />
+                            <jet-button @click="getAppointments">
+                                {{"Search"}}
+                            </jet-button>
+                        </div>
                         <div class="">
                             <jet-label class="py-4" :value='__("Patients")' />
-                            <div class="flex justify-start flex-wrap">
-                                <div v-for="patient in patients" :key="patient.patient_id" class="my-2 mx-2">
-                                    <jet-button v-if="patient.patient_id !== null && patient.cancelled == null"
-                                        :class="{ 'bg-green-400': patient.done, }"
-                                        @click.prevent="getHistory(patient.patient_id, patient.patient.name)">
-                                        {{ patient.patient.name }}
+                            <div class="flex justify-start flex-wrap" v-if="appointments.length > 0">
+                                <div v-for="appointment in appointments" :key="appointment.patient_id" class="my-2 mx-2">
+                                    <jet-button v-if="appointment.patient_id !== null && appointment.cancelled == null"
+                                        :class="{ 'bg-green-400': appointment.done, }"
+                                        @click.prevent="getHistory(appointment.patient_id, appointment.patient.name,appointment.id)">
+                                        {{ appointment.patient.name }}
                                     </jet-button>
                                 </div>
                             </div>
@@ -72,8 +81,21 @@
                                                         <i class="fa fa-delete-left cursor-pointer text-red-500"
                                                             @click="deleteItem(idx)"></i>
                                                     </div>
-                                                    <multiselect v-model="line.dose" label="name" :options="doses"
-                                                        placeholder="Dose" :searchable="true" class="text-sm" />
+                                                    <!-- <multiselect v-model="line.dose" label="name" :options="doses"
+                                                        placeholder="Dose" :searchable="true" class="text-sm" /> -->
+                                                   <div class="flex justify-between">
+                                                    <input list="doses" id="dose" 
+                                                    v-model="line.dose"
+                                                    placeholder="dose"
+                                                    class="border w-3/5 pl-2">
+                                                    <datalist id="doses">
+                                                        <option v-for="dose in doses" :value="dose.name"></option>
+                                                    </datalist>
+                                                    <input type="text" 
+                                                    v-model="line.cost"
+                                                    placeholder="cost"
+                                                    class="w-2/5"/>
+                                                   </div>
                                                 </li>
                                             </ul>
                                         </td>
@@ -202,7 +224,7 @@
                                 <div v-if="temp_drugs.length != 0" class="inline">
                                     <button v-for="(drug, idx) in temp_drugs" class="my-4 mx-2">
                                         <input type="checkbox" class="peer sr-only" :id="drug.name" name="drug"
-                                            :value="{ drg: drug, dose: null }" v-model="checkedDrugs"
+                                            :value="{ drg: drug, dose: null ,cost:null}" v-model="checkedDrugs"
                                             @change="check(drug)" />
                                         <label :for="drug.name"
                                             class=" cursor-pointer p-2 text-sm rounded-md text-center border shadow peer-checked:bg-green-500">
@@ -255,6 +277,9 @@
                                     </button>
                                 </div>
                                 <div class="flex items-center justify-end mt-4">
+                                    <jet-button class="ms-2" @click="AddNewXray()">
+                                        <i class="fa fa-plus mr-1"></i>
+                                    </jet-button>
                                     <jet-button class="ms-2" @click="AddRays()">
                                         {{ __("Add") }}
                                     </jet-button>
@@ -295,6 +320,7 @@ import axios from "axios";
 import SecondaryButton from "@/Jetstream/SecondaryButton.vue";
 import ShowPrescription from './Show.vue';
 import AddAnalysisDialog from '../Analysis/Edit.vue';
+import AddXraysDialog from '../XRays/Edit.vue';
 
 export default {
     components: {
@@ -308,7 +334,8 @@ export default {
         Multiselect,
         SecondaryButton,
         ShowPrescription,
-        AddAnalysisDialog
+        AddAnalysisDialog,
+        AddXraysDialog
     },
     props: {
     },
@@ -317,8 +344,9 @@ export default {
             //   clinics: [],
             //   doctors: [],
             tab_idx: 1,
+            allClinics:[],
             prescription_details: "",
-            patients: [],
+            appointments: [],
             current_patient_name: "",
             patient_history: [],
             drugs: [],
@@ -334,24 +362,25 @@ export default {
             checkedDiagnosis: [],
             checkedDrugs: [],
             form: this.$inertia.form({
-                // doctor_id: "",
+                appointment_id: "",
                 patient_id: "",
                 dateTimeIssued: new Date().toISOString().slice(0, 16),
                 prescriptionLines: [],
                 diagnosis: [],
                 analysis: [],
                 rays: [],
-                notes: ""
+                notes: "",
+                selected_clinic:"",
             }),
         };
     },
     methods: {
         getAppointments() {
             axios
-                .get(route("appointment.today"))
+                .get(route("appointment.today",this.form.selected_clinic.id))
                 .then((response) => {
-                    this.patients = response.data;
-                    // console.log(response.data);
+                    this.appointments = response.data;
+                    console.log(response.data);
                 })
                 .catch((error) => { });
         },
@@ -371,8 +400,19 @@ export default {
                     console.log(response.data)
                 })
         },
+        getXray() {
+            axios
+                .get(route('xray.allSpeciatlyRays'))
+                .then((response) => {
+                    this.all_rays = response.data;
+                    console.log(response.data)
+                })
+        },
         AddNewAnalysis() {
             this.$nextTick(() => this.$refs.dlg2.ShowDialog());
+        },
+        AddNewXray() {
+            this.$nextTick(() => this.$refs.dlg3.ShowDialog());
         },
         getDrugs: function (diagnosis) {
 
@@ -471,7 +511,7 @@ export default {
             this.prescription_details = patient;
             this.$nextTick(() => this.$refs.dlg1.ShowDialog());
         },
-        getHistory(patient_id, patient_name) {
+        getHistory(patient_id, patient_name,appointment_id) {
             axios
                 .get(route("patient.history", patient_id))
                 .then((response) => {
@@ -480,6 +520,7 @@ export default {
                     this.form.patient_id = patient_id;
                     this.patient_history = response.data;
                     this.current_patient_name = patient_name;
+                    this.form.appointment_id = appointment_id;
                 })
         },
         // DeleteItem: function (idx) {
@@ -508,7 +549,7 @@ export default {
                 })
                 .catch((error) => {
                     this.form.processing = false;
-                    this.$page.props.errors = error.response.data.errors;
+                    // this.$page.props.errors = error.response.data.errors;
                     this.errors = error.response.data.errors; //.password[0];
                     //this.$refs.password.focus()
                 });
@@ -516,9 +557,10 @@ export default {
     },
     created: function created() {
         // this.AddItem();
-        this.getAppointments();
+        // this.getAppointments();
         this.getDiagnosis();
         this.getAnalysis();
+        this.getXray();
         axios
             .get(route("drug.all"))
             .then((response) => {
@@ -536,16 +578,21 @@ export default {
                 // console.log(response.data)
                 this.durations = response.data;
             })
+        axios
+            .get(route('clinic.all'))
+            .then((response) => {
+                this.allClinics = response.data;
+        })
         // axios
         //     .get(route('json.analysis'))
         //     .then((response) => {
         //         this.all_analysis = response.data;
         //     })
-        axios
-            .get(route('json.rays'))
-            .then((response) => {
-                this.all_rays = response.data;
-            })
+        // axios
+        //     .get(route('json.rays'))
+        //     .then((response) => {
+        //         this.all_rays = response.data;
+        //     })
     },
 };
 </script>

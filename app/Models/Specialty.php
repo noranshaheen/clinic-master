@@ -19,6 +19,9 @@ class Specialty extends Model
     public function analysis(): HasMany{
         return $this->hasMany('App\Models\Analysis', 'specialty_id', 'id');
     }
+    public function xray(): HasMany{
+        return $this->hasMany('App\Models\XRay', 'specialty_id', 'id');
+    }
 
     public function doctors(): HasMany{
         return $this->hasMany('App\Models\Doctor', 'specialty_id', 'id');

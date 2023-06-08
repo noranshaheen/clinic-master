@@ -122,6 +122,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('doctor_id');
             $table->foreignId('patient_id');
+            $table->foreignId('appointment_id');
             $table->string('diagnosis', 4000)->nullable();
             $table->string('analysis', 4000)->nullable();
             $table->string('rays', 4000)->nullable();
@@ -134,13 +135,31 @@ return new class extends Migration
             $table->id();
             $table->foreignId('prescription_id');
             $table->foreignId('drug_id');
-            $table->string('notes')->nullable();
+            $table->string('dose')->nullable();
+            $table->string('service_fees',2000)->nullable();
             $table->timestamps();
         });
 
         Schema::create('doses', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->timestamps();
+        });
+
+        Schema::create('detection_prices', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->integer('price');
+            $table->timestamps();
+        });
+
+        Schema::create('patient_payments', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('patient_id');
+            $table->foreignId('appointment_id');
+            $table->foreignId('doctor_id');
+            $table->integer('detection_fees');
+            $table->integer('service_fees');
             $table->timestamps();
         });
 

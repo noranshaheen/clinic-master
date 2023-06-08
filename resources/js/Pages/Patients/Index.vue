@@ -30,7 +30,7 @@
               {{ new Date().getFullYear() - new Date(patient.date_of_birth).getFullYear() }}
             </template>
             <template #cell(actions)="{ item: patient }">
-              <secondary-button @click="showHistory(patient)">
+              <secondary-button v-if="patient.prescriptions.length > 0" @click="showHistory(patient)">
                 <i class="fa fa-history"></i> {{ __("History") }}
               </secondary-button>
               <secondary-button class="ms-2" @click="editCustomer(patient)">
@@ -73,7 +73,7 @@ export default {
     return {
       patient: Object,
       patient_appointments: "",
-      patient_prescription:""
+      patient_prescription: ""
     };
   },
   methods: {
@@ -87,43 +87,35 @@ export default {
       this.$refs.dlg1.ShowModal();
     },
     showHistory(patient) {
-      axios
-        .get(route("patient.history", patient.id))
-        .then((response) => {
-          console.log(response.data)
-          this.patient_prescription = response.data;
-        })
-      axios
-        .get(route("appointment.showHistory", patient.id))
-        .then((response) => {
-          console.log(response.data)
-          this.patient_appointments = response.data;
-        })
-
+      window.open(route("patient.getHistory", patient.id));
     },
-    remove() {
-      axios
-        .delete(route("patients.destroy", { patient: this.patient.id }))
-        .then((response) => {
-          this.$store.dispatch("setSuccessFlashMessage", true);
-          setTimeout(() => {
-            window.location.reload();
-          }, 500);
-        })
-        .catch((error) => { });
-    },
-    showColumn(columnKey) {
-      if (!this.$inertia.page.props.queryBuilderProps.default.columns) {
-        return false;
-      }
-      const column =
-        this.$inertia.page.props.queryBuilderProps.default.columns.find(
-          (item) => item.key === columnKey
-        );
-      return column ? !column.hidden : false;
-    },
+  remove() {
+    axios
+      .delete(route("patients.destroy", { patient: this.patient.id }))
+      .then((response) => {
+        this.$store.dispatch("setSuccessFlashMessage", true);
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+      })
+      .catch((error) => { });
   },
-};
+  showColumn(columnKey) {
+    if (!this.$inertia.page.props.queryBuilderProps.default.columns) {
+      return false;
+    }
+    const column =
+      this.$inertia.page.props.queryBuilderProps.default.columns.find(
+        (item) => item.key === columnKey
+      );
+    return column ? !column.hidden : false;
+  }
+},
+  created() {
+  console.log(this.patients)
+}
+}
+
 </script>
 <style scoped>
 :deep(table th) {

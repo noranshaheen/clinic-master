@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\File;
 use Carbon\Carbon;
 use App\Models\Appointment;
 use App\Models\Doctor;
+use App\Models\Payment;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -90,6 +91,7 @@ class PrescriptionController extends Controller
         // dd($request);
         $request->validate([
             'patient_id'=>['required'],
+            'appointment_id'=>['required'],
             'dateTimeIssued'=>['required'],
         ]);
         $today = Carbon::parse('today')->format('Y-m-d');
@@ -99,6 +101,8 @@ class PrescriptionController extends Controller
 
         $prescription = new Prescription();
         $prescription->patient_id = $request->patient_id;
+        $prescription->appointment_id = $request->appointment_id;
+        $prescription->clinic_id = $request->selected_clinic['id'];
         $prescription->doctor_id = Auth::user()->doc_res_id;
         $prescription->dateTimeIssued = $request->dateTimeIssued;
 
@@ -118,8 +122,17 @@ class PrescriptionController extends Controller
         for ($i = 0; $i < count($request->prescriptionLines); $i++) {
             $prescriptionItem = new PrescriptionItems();
             $prescriptionItem->drug_id = $request->prescriptionLines[$i]['id'];
-            $prescriptionItem->notes = $request->prescriptionLines[$i]['dose']['name'];
-                // . " for ". $request->prescriptionLines[$i]['time']['duration'];
+            if(array_key_exists("dose",$request->prescriptionLines[$i])){
+                $prescriptionItem->dose = $request->prescriptionLines[$i]['dose'];
+            }else{
+                $prescriptionItem->dose= null;
+            }
+            if(array_key_exists("cost",$request->prescriptionLines[$i])){
+                $prescriptionItem->service_fees = $request->prescriptionLines[$i]['cost'];
+            }else{
+                $prescriptionItem->service_fees=null;
+            }
+
             $prescription->prescriptionItems()->save($prescriptionItem);
         }
     }
@@ -132,14 +145,30 @@ class PrescriptionController extends Controller
     }
 
     public function getHistory($patient_id){
-        $patient_history=Prescription::where('patient_id','=',$patient_id)->get();
+        $patient_history=Prescription::with('patient')->with('doctor')->where('patient_id','=',$patient_id)->get();
         return $patient_history;
     }
 
-    public function getTodaysPatients(){
+    public function getTodaysPatients($clinic_id){
         $today = Carbon::parse('today')->format('Y-m-d');
-        $appointmentsToday = Appointment::where('date','=',$today)->where('doctor_id',Auth::user()->doc_res_id)->with('patient')->get();
+        $appointmentsToday = Appointment::where('date','=',$today)
+                            ->where('doctor_id',Auth::user()->doc_res_id)->with('patient')
+                            ->where('clinic_id',$clinic_id)
+                            ->get();
         return $appointmentsToday;
+    }
+
+    public function getItemsFees($patient_id){
+        
+        $today = Carbon::parse('today')->format('Y-m-d');
+        // dd($today);
+        $prescriptionItems = Prescription::where('patient_id','=',$patient_id)
+        ->whereDate('dateTimeIssued','=',$today)
+        ->with('prescriptionItems')
+        ->with('prescriptionItems.drugs')
+        ->get()->last();
+        return $prescriptionItems;
+        // dd($prescriptionItems);
     }
 
     /**

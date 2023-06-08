@@ -17,4 +17,12 @@ class Clinic extends Model
     public function rooms():HasMany{
         return $this->hasMany('App\Models\Room','clinic_id','id');
     }
+
+    public function appointments():HasMany{
+        return $this->hasMany('App\Models\Appointment','clinic_id','id');
+    }
+
+    public function bill():HasMany{
+        return $this->hasMany('App\Models\Bill','clinic_id','id');
+    }
 }

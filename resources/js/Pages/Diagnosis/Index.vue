@@ -66,7 +66,7 @@ export default {
     },
     remove() {
       axios
-        .delete(route("diagnosis.destroy", { diagnose: this.diagnose.id }))
+        .delete(route("diagnosis.destroy", { diagnosi: this.diagnose.id }))
         .then((response) => {
           this.$store.dispatch("setSuccessFlashMessage", true);
           setTimeout(() => {

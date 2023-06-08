@@ -228,6 +228,31 @@
               </template>
             </dropdown>
 
+            <!-- Bill -->
+            <dropdown :align="alignDropDown()" width="48" class="ms-3 mb-3 lg:mb-0">
+              <template #trigger>
+                <span class="grid justify-items-center cursor-pointer hover:text-[#4099de]" :class="{
+                  'text-[#4099de]': $page.url.startsWith('/bill'),
+                }">
+                  <i class="fa-solid fa-calendar-check"></i>
+                  {{ __("Expenses") }}
+                </span>
+              </template>
+              <template #content>
+                <dropdown-link as="a" :href="route('bills.index')">
+                  <i class="fas fa-plus"></i>
+                  {{ __("Add Bill") }}
+                </dropdown-link>
+                <dropdown-link as="a" :href="route('bills.search')">
+                  <i class="fas fa-plus"></i>
+                  {{ __("Search Expenses") }}
+                </dropdown-link>
+              </template>
+            </dropdown>
+
+
+
+
             <!-- <dropdown :align="alignDropDown()" class="ms-3 mb-3 lg:mb-0">
               <template #trigger>
                 <span

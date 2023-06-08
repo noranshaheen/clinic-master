@@ -33,4 +33,8 @@ class Doctor extends Model
     {
         return $this->belongsTo('App\Models\Specialty', 'specialty_id', 'id');
     }
+
+    public function bills():HasMany{
+        return $this->hasMany('App\Models\Bill','doctor_id','id');
+    }
 }

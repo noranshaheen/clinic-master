@@ -85,6 +85,9 @@ export default {
           return column ? !column.hidden : false;
         },
     },
+    created() {
+        console.log(this.drugs);
+    }
 };
 </script>
 <style scoped>

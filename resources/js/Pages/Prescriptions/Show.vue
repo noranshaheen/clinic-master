@@ -52,7 +52,7 @@
                         <td class="p-2">
                             <ul class="list-disc list-inside">
                                 <li v-for="prescription in prescription_detail" :key="prescription.id">
-                                {{ prescription.drugs.name + ' - ' + prescription.notes }}
+                                {{ prescription.drugs.name + ' - ' + prescription.dose }}
                                 </li>
                             </ul>
                         </td>

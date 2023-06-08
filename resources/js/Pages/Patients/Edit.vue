@@ -13,24 +13,24 @@
           <div>
             <div class="mt-4">
               <jet-label :value='__("Patient Name")' />
-              <jet-input type="text" class="mt-1 block w-full" v-model="form.name" required />
+              <jet-input type="text" class="mt-1 block w-full" v-model="form.name" required id="name"/>
             </div>
 
             <div class="mt-4">
               <jet-label :value='__("Phone Number")' />
-              <jet-input type="text" class="mt-1 block w-full" v-model="form.phone" required />
+              <jet-input type="text" class="mt-1 block w-full" v-model="form.phone" required id="phone"/>
             </div>
 
             <div class="mt-4">
               <jet-label :value='__("Date Of Birth")' />
-              <jet-input type="date" class="mt-1 block w-full" v-model="form.date_of_birth" required autofocus />
+              <jet-input type="date" class="mt-1 block w-full" v-model="form.date_of_birth" autofocus id="Birthdate" />
             </div>
 
             <div class="mt-4" v-if="appointment_id != null">
               <jet-label :value='__("Detection Type")'/>
               <div class="mt-2">
                 <div class="mb-2">
-                  <input id="1" type="radio" name="type" value="Normal" v-model="form.appointment_type" />
+                  <input id="1" type="radio" name="type" value="Normal" v-model="form.appointment_type"/>
                   <label for="1" class="ml-2">Normal</label>
                 </div>
                 <div class="mb-2">
@@ -48,7 +48,7 @@
           <div>
             <div class="mt-4">
               <jet-label for="gender" :value='__("Gender")' />
-              <select id="gender" v-model="form.gender" required
+              <select id="gender" v-model="form.gender" required 
                 class="mt-1 block w-full rounded border border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm">
                 <option value="M">{{ __("Male") }}</option>
                 <option value="F">{{ __("Female") }}</option>

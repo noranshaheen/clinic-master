@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
+use App\Models\Payment;
 use App\Models\Patient;
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
@@ -176,6 +177,7 @@ class AppointmentController extends Controller
         if ($request->doctor_id == -1) {
             $result = Appointment::where('date', '=', $request->date)
                 ->with('doctor')
+                ->with('patient')
                 ->get();
 
             $appointments = $result->groupBy('doctor_id');
@@ -183,6 +185,7 @@ class AppointmentController extends Controller
             $result = Appointment::where('doctor_id', '=', $request->doctor_id)
                 ->where('date', '=', $request->date)
                 ->with('doctor')
+                ->with('patient')
                 ->get();
 
             $appointments = $result->groupBy('doctor_id');
@@ -272,6 +275,13 @@ class AppointmentController extends Controller
             $appointment->notes = $request->notes;
         }
         $appointment->save();
+        
+        $payments= new Payment;
+        $payments->patient_id = $appointment->patient_id;
+        $payments->appointment_id = $appointment->id;
+        $payments->doctor_id = $appointment->doctor_id;
+        $payments->detection_fees = $request->amount;
+        $payments->save();
     }
 
     public function showHistory($patient_id){

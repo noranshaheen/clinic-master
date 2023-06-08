@@ -24,6 +24,6 @@ class Drug extends Model
 
     public function diagnosis() : BelongsToMany
     {
-        return $this->belongsToMany('App\Models\Diagnosis');
+        return $this->belongsToMany('App\Models\Diagnosis','diagnosis_drug');
     }
 }

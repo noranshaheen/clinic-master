@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Patient;
+use App\Models\Appointment;
+use App\Models\Payment;
+use App\Models\Prescription;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use ProtoneMedia\LaravelQueryBuilderInertiaJs\InertiaTable;
@@ -16,6 +19,7 @@ class PatientController extends Controller
     public function index()
     {
         $patients = QueryBuilder::for (Patient::class)
+        ->with('prescriptions')
         ->defaultSort('id')
         ->allowedSorts(['id','name','date_of_birth'])
         ->allowedFilters(['name','phone','type','date_of_birth','insurance_number','insurance_company','gender'])
@@ -101,7 +105,7 @@ class PatientController extends Controller
             'phone' =>['numeric','min:11','required','unique:patients,phone'],
             'type' =>['required',Rule::in(['I','P'])],
             'gender' =>['required',Rule::in(['M','F'])],
-            'date_of_birth' => ['date','required','before_or_equal:'.$today],
+            'date_of_birth' => ['date','before_or_equal:'.$today],
             'insurance_number' =>['string','max:255','nullable'],
             'insurance_company' =>['string','max:255','nullable'],
         ]);
@@ -135,7 +139,7 @@ class PatientController extends Controller
 
         $date =  $request->validate([
             'name' =>['string','max:255','min:2','required','regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
-            'phone' =>['numeric','min:11','required','unique:patients,phone'],
+            'phone' =>['numeric','min:11','required'],
             'type' =>['required',Rule::in(['I','P'])],
             'gender' =>['required',Rule::in(['M','F'])],
             'date_of_birth' => ['date','required','before_or_equal:'.$today],
@@ -153,5 +157,22 @@ class PatientController extends Controller
 
     public function all(){
         return Patient::all();
+    }
+
+    public function getHistory($patient_id){
+       
+        // $patient_appointments = Appointment::with('patient')->where('patient_id','=',$patient_id)->get();
+        $patient_history=Prescription::with('doctor')
+                                        ->with('prescriptionItems')
+                                        ->with('prescriptionItems.drugs')
+                                        ->with('appointment')
+                                        ->with('appointment.payment')
+                                        ->with('patient')
+                                        ->where('patient_id','=',$patient_id)->get();
+        $payments = Payment::where('patient_id','=',$patient_id)->with('appointment')->get();
+        return Inertia::render('Patients/History',[
+            'prescriptions'=>$patient_history,
+            'payments' => $payments
+        ]);
     }
 }

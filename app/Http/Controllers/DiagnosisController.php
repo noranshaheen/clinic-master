@@ -114,9 +114,9 @@ class DiagnosisController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Diagnosis $diagnosis)
+    public function destroy(Diagnosis $diagnosi)
     {
-        $diagnosis->delete();
+        $diagnosi->delete();
     }
 
     public function allSpeciatlyDiagnosis(){
@@ -124,6 +124,7 @@ class DiagnosisController extends Controller
         $specialty_id = $doc->specialty_id;
         return Diagnosis::with('drugs')->where('specialty_id','=',$specialty_id)->get();
     }
+    
     public function all(){
         return Diagnosis::with('drugs')->get();
     }
