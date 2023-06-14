@@ -13,6 +13,7 @@
         <new-diagnosis-dialog ref="dlg6" />
         <new-appointment-dialog ref="dlg7" />
         <new-user-dialog ref="dlg8" />
+        <upload-drugs-dialog ref="dlg12"/>
 
         <!-- <new-customer-dialog ref="dlg1" />
         <new-branch-dialog ref="dlg2" />
@@ -64,6 +65,7 @@ import LoadInvoicesDialog from "@/Pages/Invoices/Load.vue";
 import NewItemDialog from "@/Pages/Items/Edit.vue";
 import UploadInvoicesDialog from "@/Pages/Invoices/Upload.vue";
 import UploadCustomersDialog from "@/Pages/Customers/Upload.vue";
+import UploadDrugsDialog from "@/Pages/Drugs/Upload.vue";
 import SettingsDialog1 from "@/Pages/Reports/Settings.vue";
 import SettingsDialog2 from "@/Pages/Application/Settings.vue";
 import UploadItemsDialog from "@/Pages/Items/Upload.vue";
@@ -90,6 +92,7 @@ export default {
         UploadItemsDialog,
         UploadInvoicesDialog,
         UploadCustomersDialog,
+        UploadDrugsDialog,
         NewCustomerDialog,
         NewItemDialog,
         NewUserDialog,

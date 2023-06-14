@@ -12,7 +12,7 @@
 					</label>
                 </div>
                 <div class="flex justify-end">
-                    <a href="/ExcelTemplates/CustomerUpload.xlsx">{{__('Download excel template')}}</a>
+                    <a href="/ExcelTemplates/DrugUpload.xlsx">{{__('Download excel template')}}</a>
                 </div>
             </template>
 
@@ -91,7 +91,7 @@
 				this.processing = true;
 				let temp = this;
 
-				axios.post(route('eta.customer.upload'),
+				axios.post(route('eta.drug.upload'),
 				  formData,
 				  {
 					headers: {

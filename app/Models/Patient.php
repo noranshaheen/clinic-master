@@ -27,4 +27,9 @@ class Patient extends Model
     {
         return $this->hasMany('App\Models\Appointment', 'patient_id', 'id');
     }
+
+    public function spendings(): HasMany
+    {
+        return $this->hasMany('App\Models\Spendings', 'patient_id', 'id');
+    }
 }

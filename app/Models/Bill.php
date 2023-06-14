@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Bill extends Model
 {
     use HasFactory;
-    protected $table = 'expenses';
+    protected $table = 'bills';
 
     public $primaryKey = 'id';
     protected $fillable = ['doctor_id', 'clinic_id','totalAmount'];
@@ -30,8 +30,8 @@ class Bill extends Model
         return $this->belongsTo('App\Models\Clinic', 'clinic_id', 'id');
     }
 
-    public function billLines(): HasMany
+    public function billDetails(): HasMany
     {
-        return $this->hasMany('App\Models\BillLine', 'expenses_id', 'id');
+        return $this->hasMany('App\Models\BillDetails', 'bill_id', 'id');
     }
 }

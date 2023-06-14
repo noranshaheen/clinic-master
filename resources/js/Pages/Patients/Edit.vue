@@ -13,12 +13,12 @@
           <div>
             <div class="mt-4">
               <jet-label :value='__("Patient Name")' />
-              <jet-input type="text" class="mt-1 block w-full" v-model="form.name" required id="name"/>
+              <jet-input type="text" class="mt-1 block w-full" v-model="form.name" required id="name" />
             </div>
 
             <div class="mt-4">
               <jet-label :value='__("Phone Number")' />
-              <jet-input type="text" class="mt-1 block w-full" v-model="form.phone" required id="phone"/>
+              <jet-input type="text" class="mt-1 block w-full" v-model="form.phone" required id="phone" />
             </div>
 
             <div class="mt-4">
@@ -26,11 +26,16 @@
               <jet-input type="date" class="mt-1 block w-full" v-model="form.date_of_birth" autofocus id="Birthdate" />
             </div>
 
+            <div class="mt-4">
+              <TextField v-model="form.additionalInformation" itemType="text"
+                :itemLabel="__('Additional Information (optional)')" />
+            </div>
+
             <div class="mt-4" v-if="appointment_id != null">
-              <jet-label :value='__("Detection Type")'/>
+              <jet-label :value='__("Detection Type")' />
               <div class="mt-2">
                 <div class="mb-2">
-                  <input id="1" type="radio" name="type" value="Normal" v-model="form.appointment_type"/>
+                  <input id="1" type="radio" name="type" value="Normal" v-model="form.appointment_type" />
                   <label for="1" class="ml-2">Normal</label>
                 </div>
                 <div class="mb-2">
@@ -48,7 +53,7 @@
           <div>
             <div class="mt-4">
               <jet-label for="gender" :value='__("Gender")' />
-              <select id="gender" v-model="form.gender" required 
+              <select id="gender" v-model="form.gender" required
                 class="mt-1 block w-full rounded border border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm">
                 <option value="M">{{ __("Male") }}</option>
                 <option value="F">{{ __("Female") }}</option>
@@ -107,6 +112,7 @@ import JetDialogModal from "@/Jetstream/DialogModal.vue";
 import JetFormSection from "@/Jetstream/FormSection.vue";
 import JetInput from "@/Jetstream/Input.vue";
 import JetCheckbox from "@/Jetstream/Checkbox.vue";
+import TextField from "@/UI/TextField.vue";
 import JetInputError from "@/Jetstream/InputError.vue";
 import JetLabel from "@/Jetstream/Label.vue";
 import JetSecondaryButton from "@/Jetstream/SecondaryButton.vue";
@@ -130,6 +136,7 @@ export default {
     JetSecondaryButton,
     JetSectionBorder,
     JetValidationErrors,
+    TextField
   },
 
   props: {
@@ -153,7 +160,8 @@ export default {
         gender: "",
         insurance_number: "",
         insurance_company: "",
-        appointment_type:""
+        appointment_type: "",
+        additionalInformation:""
       }),
       showDialog: false,
     };
@@ -169,6 +177,7 @@ export default {
         this.form.gender = this.patient.gender;
         this.form.insurance_number = this.patient.insurance_number;
         this.form.insurance_company = this.patient.insurance_company;
+        this.form.additionalInformation = this.patient.additionalInformation;
       }
       this.showDialog = true;
     },

@@ -37,6 +37,7 @@ return new class extends Migration
             $table->date('date_of_birth')->nullable();
             $table->string('insurance_number')->nullable();
             $table->string('insurance_company')->nullable();
+            $table->string('additionalInformation',4000)->nullable();
             $table->timestamps();
         });
 
@@ -168,6 +169,43 @@ return new class extends Migration
             $table->string('name');
             $table->timestamps();
         });
+
+        Schema::create('items', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->float('weight');
+            $table->string('measurement_unit');
+            $table->float('selling_price');
+            $table->timestamps();
+        });
+        Schema::create('bills', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('doctor_id');
+            $table->foreignId('clinic_id');
+            $table->date('date');
+            $table->string('totalAmount');
+            $table->timestamps();
+        });
+        Schema::create('bill_details', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('item_id');
+            $table->float('purches_price');
+            $table->float('quantity');
+            $table->string('total');
+            $table->date('date');
+            $table->foreignId('bill_id');
+            $table->timestamps();
+        });
+        Schema::create('spendings', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('doctor_id');
+            $table->foreignId('clinic_id');
+            $table->foreignId('item_id');
+            $table->float('quantity');
+            $table->foreignId('patient_id');
+            $table->timestamps();
+        });
+
     }
 
     /**

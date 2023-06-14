@@ -1,9 +1,10 @@
 <template>
     <app-layout>
+        <NewItemDialog ref="dlg1"/>
         <div class="py-4">
             <div class="mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg px-4 pb-4 pt-0">
-                    <div class="grid lg:grid-cols-3 gap-4 sm:grid-cols-1 h-1/2 overflow">
+                <div class="bg-white overflow-visible shadow-xl sm:rounded-lg px-4 pb-4 pt-0">
+                    <div class="grid lg:grid-cols-3 gap-4 sm:grid-cols-1 h-1/2 overflow-visible">
                         <div class="">
                             <jet-label :value="__('Clinic')" />
                             <multiselect v-model="form.clinic" label="name" :options="clinics"
@@ -78,35 +79,41 @@
                                 {{ __("Please Add at least one item") }}
                             </jet-label>
                         </div> -->
-                            <div>
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>{{ __('Item') }}</th>
-                                            <!-- <th>{{ __('Unit Price') }}</th> -->
-                                            <th>{{ __('Quantity') }}</th>
-                                            <th>{{ __('total') }}</th>
-                                            <th>{{ __('Action') }}</th>
-                                        </tr>
+                            <div class="result my-5 w-full">
+                                <table class="w-full mx-auto max-w-4xl lg:max-w-full">
+                                    <thead class="text-center bg-gray-300">
+                                            <th class="bg-[#f8f9fa] p-1 border border-[#eceeef] w-5/12">
+                                                {{ __('Item') }}
+                                                <button @click="addNewItemDialog()" class="cursor-pointer ml-4">
+                                                    <i class="fa-solid fa-plus"></i>
+                                                </button>
+                                                
+                                            </th>
+                                            <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">{{ __('Purches Price Per Unit') }}</th>
+                                            <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">{{ __('Quantity') }}</th>
+                                            <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">{{ __('Total') }}</th>
+                                            <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">{{ __('Action') }}</th>
                                     </thead>
-                                    <tbody>
-                                        <tr v-for="(billLine, idx) in form.billLines">
-                                            <td>
-                                                <TextField v-model="billLine.item" itemType="text" />
+                                    <tbody class="text-center border border-[#eceeef] w-5/12">
+                                        <tr v-for="(billLine, idx) in form.billLines" class="border border-[#eceeef]">
+                                            <td class="p-1 border border-[#eceeef]">
+                                                <!-- <TextField v-model="billLine.item" itemType="text" /> -->
+                                                <multiselect v-model="billLine.item" label="name" :options="items"
+                                                    placeholder="Select Item" :searchable="true"/>
                                             </td>
-                                            <!-- <td> -->
-                                            <!-- <TextField v-model="billLine.unitPrice" itemType="number"/>  -->
-                                            <!-- </td> -->
-                                            <td>
-                                                <TextField v-model="billLine.quantity" itemType="number" />
+                                            <td class="p-1 border border-[#eceeef]"> 
+                                            <TextField v-model="billLine.unitPrice" itemType="number"/> 
+                                            </td> 
+                                            <td class="p-1 border border-[#eceeef]">
+                                                <TextField v-model="billLine.quantity" itemType="number"/>
                                             </td>
-                                            <td>
+                                            <td class="p-1 border border-[#eceeef]">
                                                 <TextField v-model="billLine.total" itemType="number" />
                                             </td>
-                                            <td>
-                                                <jet-button class="ms-2" @click="DeleteItem(idx)">
-                                                    {{ __("Delete Item") }}
-                                                </jet-button>
+                                            <td class="p-1 border border-[#eceeef]">
+                                                <jet-danger-button class="ms-2" @click="DeleteItem(idx)">
+                                                    {{ __("Delete") }}
+                                                </jet-danger-button>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -156,10 +163,12 @@ import TextField from "@/UI/TextField.vue";
 import Multiselect from "@suadelabs/vue3-multiselect";
 import DialogInvoiceLine from "@/Pages/Invoices/EditLine.vue";
 import axios from 'axios';
+import NewItemDialog from "@/Pages/Items/Edit.vue";
 
 export default {
     components: {
         AppLayout,
+        NewItemDialog,
         JetLabel,
         JetButton,
         JetSecondaryButton,
@@ -174,6 +183,7 @@ export default {
         return {
             doctors: [],
             clinics: [],
+            items: [],
             errors: [],
             form: this.$inertia.form({
                 billLines: [],
@@ -204,6 +214,9 @@ export default {
             //     this.$refs.dlg1.ShowDialog();
             // });
             // this.RecalculateTax();
+        },
+        addNewItemDialog() {
+            this.$refs.dlg1.ShowDialog();
         },
         DeleteItem: function (idx) {
             this.form.billLines.splice(idx, 1);
@@ -250,6 +263,12 @@ export default {
             .get(route('clinic.all'))
             .then((response) => {
                 this.clinics = response.data;
+            })
+        axios
+            .get((route('items.index')))
+            .then((response) => {
+                this.items = response.data;
+                console.log(this.items);
             })
 
     },

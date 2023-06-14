@@ -108,6 +108,7 @@ class PatientController extends Controller
             'date_of_birth' => ['date','before_or_equal:'.$today],
             'insurance_number' =>['string','max:255','nullable'],
             'insurance_company' =>['string','max:255','nullable'],
+            'additionalInformation' =>['string','max:4000','nullable'],
         ]);
 
         $patient = new Patient();
@@ -118,6 +119,7 @@ class PatientController extends Controller
         $patient->date_of_birth = $request->date_of_birth;
         $patient->insurance_number = $request->insurance_number;
         $patient->insurance_company = $request->insurance_company;
+        $patient->additionalInformation = $request->additionalInformation;
         $patient->save();
 
         return redirect()->back();
@@ -145,8 +147,10 @@ class PatientController extends Controller
             'date_of_birth' => ['date','required','before_or_equal:'.$today],
             'insurance_number' =>['string','max:255','nullable'],
             'insurance_company' =>['string','max:255','nullable'],
+            'additionalInformation' =>['string','max:4000','nullable'],
         ]);
-
+        $patient->additionalInformation = $request->additionalInformation;
+        $patient->save();
         $patient->update($date);
     }
 

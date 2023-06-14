@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bill;
-use App\Models\BillLine;
+use App\Models\BillDetails;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Prescription;
@@ -40,13 +40,14 @@ class BillController extends Controller
         $item->save();
 
         foreach ($request->billLines as $line) {
-            $item2 = new BillLine();
-            $item2->item = $line['item'];
-            $item2->unit_price = 0;
+            $item2 = new BillDetails();
+            $item2->item_id = $line['item']['id'];
+            $item2->purches_price = $line['unitPrice'];
             $item2->quantity = $line['quantity'];
             $item2->total = $line['total'];
+            $item2->date = $request->date;
             // $item2->save();
-            $item->billLines()->save($item2);
+            $item->billDetails()->save($item2);
         }
     }
 
@@ -91,40 +92,65 @@ class BillController extends Controller
 
     public function searchIncomeData(Request $request)
     {
-        $doctor_prescriptions = Prescription::with('doctor')
-            ->with('prescriptionItems')
-            ->with('appointment')
-            ->with('appointment.payment')
-            ->where('doctor_id', '=', $request->doctor['id'])
-            ->where('clinic_id', '=', $request->clinic['id'])
-            ->whereBetween('dateTimeIssued', [$request->startDate, $request->endDate])
-            ->get();
+        if ($request->clinic['id'] == -1) {
+            $doctor_prescriptions = Prescription::with('doctor')
+                ->with('prescriptionItems')
+                ->with('clinic')
+                ->with('appointment')
+                ->with('appointment.payment')
+                ->where('doctor_id', '=', $request->doctor['id'])
+                ->whereBetween('dateTimeIssued', [$request->startDate, $request->endDate])
+                ->get();
+            return $doctor_prescriptions;
+        } elseif ($request->doctor['id'] == -1) {
+            $doctor_prescriptions = Prescription::with('doctor')
+                ->with('prescriptionItems')
+                ->with('clinic')
+                ->with('appointment')
+                ->with('appointment.payment')
+                ->where('clinic_id', '=', $request->clinic['id'])
+                ->whereBetween('dateTimeIssued', [$request->startDate, $request->endDate])
+                ->get();
+            return $doctor_prescriptions;
+        } else {
+            $doctor_prescriptions = Prescription::with('doctor')
+                ->with('prescriptionItems')
+                ->with('clinic')
+                ->with('appointment')
+                ->with('appointment.payment')
+                ->where('doctor_id', '=', $request->doctor['id'])
+                ->where('clinic_id', '=', $request->clinic['id'])
+                ->whereBetween('dateTimeIssued', [$request->startDate, $request->endDate])
+                ->get();
+            return $doctor_prescriptions;
+        }
         // $doctor_incomes = array_filter((array)$doctor_prescriptions,function($var){
         //     global $request;
         //     $var['appointment']['clinic_id'] == $request->clinic['id'];
         // });
-        // dd($doctor_prescriptions);
-        return $doctor_prescriptions;
-        
     }
 
     public function searchExpensesData(Request $request)
     {
         // dd($request);
         if ($request->doctor['id'] == -1) {
-            $bills = Bill::with('billLines')
+            $bills = Bill::with('billDetails')
+                ->with('doctor')
+                ->with('clinic')
                 ->where('clinic_id', '=', $request->clinic['id'])
                 ->whereBetween('date', [$request->startDate, $request->endDate])
                 ->get();
         } elseif ($request->clinic['id'] == -1) {
-            $bills = Bill::with('billLines')
+            $bills = Bill::with('billDetails')
                 ->with('doctor')
+                ->with('clinic')
                 ->where('doctor_id', '=', $request->doctor['id'])
                 ->whereBetween('date', [$request->startDate, $request->endDate])
                 ->get();
         } else {
-            $bills = Bill::with('billLines')
+            $bills = Bill::with('billDetails')
                 ->with('doctor')
+                ->with('clinic')
                 ->where('doctor_id', '=', $request->doctor['id'])
                 ->where('clinic_id', '=', $request->clinic['id'])
                 ->whereBetween('date', [$request->startDate, $request->endDate])

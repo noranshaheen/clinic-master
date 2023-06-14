@@ -1,6 +1,6 @@
 <template>
     <app-layout>
-
+        <patient-info ref="dlg4" :patient="current_patient_info" />
         <show-prescription ref="dlg1" :prescription="prescription_details" />
         <add-analysis-dialog ref="dlg2" @Save="getAnalysis()" />
         <add-xrays-dialog ref="dlg3" @Save="getXray()" />
@@ -10,29 +10,34 @@
         <div class="py-2 mx-auto">
             <div class="mx-auto sm:px-4 lg:px-6">
                 <div class="bg-white shadow-xl sm:rounded-lg px-2 pb-2 pt-0">
-                    <div class="flex justify-start sm:grid-cols-1 mt-2">
-                        <!-- patients -->
-                        <div>
+                    <div class="grid grid-cols-12 gap-4">
+                        <div class="mx-2 col-span-3">
                             <jet-label class="py-4" :value='__("Select Clinic")' />
-                             <multiselect v-model="form.selected_clinic" label="name" :options="allClinics"
+                            <multiselect v-model="selected_clinic" label="name" :options="allClinics"
                                 placeholder="Branch" :searchable="true" class="text-sm" />
-                            <jet-button @click="getAppointments">
-                                {{"Search"}}
+                            <jet-button @click="getAppointments" class="my-2">
+                                {{ "Search" }}
                             </jet-button>
                         </div>
-                        <div class="">
-                            <jet-label class="py-4" :value='__("Patients")' />
-                            <div class="flex justify-start flex-wrap" v-if="appointments.length > 0">
-                                <div v-for="appointment in appointments" :key="appointment.patient_id" class="my-2 mx-2">
-                                    <jet-button v-if="appointment.patient_id !== null && appointment.cancelled == null"
-                                        :class="{ 'bg-green-400': appointment.done, }"
-                                        @click.prevent="getHistory(appointment.patient_id, appointment.patient.name,appointment.id)">
-                                        {{ appointment.patient.name }}
-                                    </jet-button>
+                        <div class="col-span-9">
+                            <div class="flex justify-start sm:grid-cols-1 mt-2">
+                                <!-- patients -->
+                                <div class="">
+                                    <jet-label class="py-4" :value='__("Patients")' />
+                                    <div class="flex justify-start flex-wrap" v-if="appointments.length > 0">
+                                        <div v-for="appointment in appointments" :key="appointment.patient_id"
+                                            class="my-2 mx-2">
+                                            <jet-button
+                                                v-if="appointment.patient_id !== null && appointment.cancelled == null"
+                                                :class="{ 'bg-green-400': appointment.done, }"
+                                                @click.prevent="getHistory(appointment.patient_id, appointment.patient.name, appointment.id)">
+                                                {{ appointment.patient.name }}
+                                            </jet-button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <!-- patients -->
                     </div>
                 </div>
 
@@ -53,8 +58,11 @@
                             </div>
                             <div v-show="tab_idx == 1">
                                 <div v-if="current_patient_name" class="mx-auto w-full mt-4 border border-[#eceeef]">
-                                    <input class="text-center p-2 font-bold bg-[#f8f9fa] w-full"
-                                        v-model="current_patient_name" />
+                                    <div class="text-center p-2 font-bold bg-[#f8f9fa] w-full">
+                                        <i @click="getPatientInfo(patient_history)"
+                                            class="fa fa-exclamation-circle mr-2 cursor-pointer border rounded-full"></i>
+                                        <span>{{ current_patient_name }}</span>
+                                    </div>
                                 </div>
                                 <table class="w-full" v-if="current_patient_name">
                                     <!-- start diagnosis -->
@@ -79,23 +87,19 @@
                                                     <div class="flex justify-between items-center">
                                                         <span class="font-bold">{{ line.name }}</span>
                                                         <i class="fa fa-delete-left cursor-pointer text-red-500"
-                                                            @click="deleteItem(idx)"></i>
+                                                            @click="deleteItem(idx,form.prescriptionLines)"></i>
                                                     </div>
                                                     <!-- <multiselect v-model="line.dose" label="name" :options="doses"
                                                         placeholder="Dose" :searchable="true" class="text-sm" /> -->
-                                                   <div class="flex justify-between">
-                                                    <input list="doses" id="dose" 
-                                                    v-model="line.dose"
-                                                    placeholder="dose"
-                                                    class="border w-3/5 pl-2">
-                                                    <datalist id="doses">
-                                                        <option v-for="dose in doses" :value="dose.name"></option>
-                                                    </datalist>
-                                                    <input type="text" 
-                                                    v-model="line.cost"
-                                                    placeholder="cost"
-                                                    class="w-2/5"/>
-                                                   </div>
+                                                    <div class="flex justify-between">
+                                                        <input list="doses" id="dose" v-model="line.dose" placeholder="dose"
+                                                            class="border w-3/5 pl-2">
+                                                        <datalist id="doses">
+                                                            <option v-for="dose in doses" :value="dose.name"></option>
+                                                        </datalist>
+                                                        <input type="text" v-model="line.cost" placeholder="cost"
+                                                            class="w-2/5" />
+                                                    </div>
                                                 </li>
                                             </ul>
                                         </td>
@@ -125,6 +129,32 @@
                                         </td>
                                     </tr>
                                     <!-- end rays -->
+                                    <!-- start consumables -->
+                                    <tr class="border">
+                                        <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Consumables") }}</td>
+                                        <td class="p-2">
+                                            <!-- {{checkedItems}} -->
+                                            <ul v-for="(item, idx) in form.checkedItems">
+                                                <li class="mb-2">
+                                                    <div class="flex justify-between items-center">
+                                                        <span class="font-bold">{{ item.name + " (" + item.measurement_unit+")" }}</span>
+                                                        <!-- <i class="fa fa-delete-left cursor-pointer text-red-500"
+                                                            @click="deleteItem(idx,checkedItems)"></i> -->
+                                                    </div>
+                                                    <!-- <multiselect v-model="line.dose" label="name" :options="doses"
+                                                        placeholder="Dose" :searchable="true" class="text-sm" /> -->
+                                                    <div class="flex justify-between">
+                                                        <input type="number" step="0.1" v-model="item.quantity" placeholder="quantity"
+                                                            class="w-2/5" @change=""/>
+                                                        <input type="text" v-model="item.selling_price" :vlaue="item.selling_price" 
+                                                        placeholder="cost"
+                                                        class="w-3/5" />
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                    <!-- end consumables -->
                                     <!-- start nots -->
                                     <tr class="border">
                                         <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Notes") }}</td>
@@ -224,7 +254,7 @@
                                 <div v-if="temp_drugs.length != 0" class="inline">
                                     <button v-for="(drug, idx) in temp_drugs" class="my-4 mx-2">
                                         <input type="checkbox" class="peer sr-only" :id="drug.name" name="drug"
-                                            :value="{ drg: drug, dose: null ,cost:null}" v-model="checkedDrugs"
+                                            :value="{ drg: drug, dose: null, cost: null }" v-model="checkedDrugs"
                                             @change="check(drug)" />
                                         <label :for="drug.name"
                                             class=" cursor-pointer p-2 text-sm rounded-md text-center border shadow peer-checked:bg-green-500">
@@ -287,6 +317,23 @@
                             </div>
                             <!-- end adding rays -->
 
+                            <!-- start consumables -->
+                            <div class="mb-4 pb-2 border-b-2">
+                                <jet-label :value="__('Consumables')" />
+                                <span class="m-2 text-gray-400 text-sm">{{ __("(you can choose multiple options)") }}</span>
+                                <div class="flex justify-start flex-wrap my-4">
+                                    <button v-for="item in allItems" :key="item.id" class="my-4 mx-2">
+                                        <input type="checkbox" class="peer sr-only" :id="item.name" name="item"
+                                        :value="item" v-model="form.checkedItems"/>
+                                        <label :for="item.name"
+                                            class=" cursor-pointer p-2 rounded-md text-center text-sm border shadow peer-checked:bg-green-500">
+                                            {{ item.name }}
+                                        </label>
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- end consumables -->
+
                             <!-- start notes -->
                             <div class="my-1">
                                 <jet-label :value="__('Notes')" class="my-1" />
@@ -321,6 +368,7 @@ import SecondaryButton from "@/Jetstream/SecondaryButton.vue";
 import ShowPrescription from './Show.vue';
 import AddAnalysisDialog from '../Analysis/Edit.vue';
 import AddXraysDialog from '../XRays/Edit.vue';
+import PatientInfo from "@/Pages/Patients/Information.vue";
 
 export default {
     components: {
@@ -335,7 +383,8 @@ export default {
         SecondaryButton,
         ShowPrescription,
         AddAnalysisDialog,
-        AddXraysDialog
+        AddXraysDialog,
+        PatientInfo
     },
     props: {
     },
@@ -344,7 +393,9 @@ export default {
             //   clinics: [],
             //   doctors: [],
             tab_idx: 1,
-            allClinics:[],
+            allClinics: [],
+            selected_clinic:"",
+            allItems: [],
             prescription_details: "",
             appointments: [],
             current_patient_name: "",
@@ -361,6 +412,7 @@ export default {
             rays: false,
             checkedDiagnosis: [],
             checkedDrugs: [],
+            current_patient_info: "",
             form: this.$inertia.form({
                 appointment_id: "",
                 patient_id: "",
@@ -370,14 +422,15 @@ export default {
                 analysis: [],
                 rays: [],
                 notes: "",
-                selected_clinic:"",
+                selected_clinic: "",
+                checkedItems:[]
             }),
         };
     },
     methods: {
         getAppointments() {
             axios
-                .get(route("appointment.today",this.form.selected_clinic.id))
+                .get(route("appointment.today", this.selected_clinic.id))
                 .then((response) => {
                     this.appointments = response.data;
                     console.log(response.data);
@@ -494,8 +547,8 @@ export default {
         //         dose: "",
         //     });
         // },
-        deleteItem: function (idx) {
-            this.form.prescriptionLines.splice(idx, 1);
+        deleteItem: function (idx ,arr) {
+            arr.splice(idx, 1);
         },
         AddAnalysis: function () {
             this.analysis = true;
@@ -511,11 +564,11 @@ export default {
             this.prescription_details = patient;
             this.$nextTick(() => this.$refs.dlg1.ShowDialog());
         },
-        getHistory(patient_id, patient_name,appointment_id) {
+        getHistory(patient_id, patient_name, appointment_id) {
             axios
                 .get(route("patient.history", patient_id))
                 .then((response) => {
-                    // console.log(patient_name)
+                    console.log(response.data)
                     // this.current_patient_id = patient_id;
                     this.form.patient_id = patient_id;
                     this.patient_history = response.data;
@@ -526,12 +579,18 @@ export default {
         // DeleteItem: function (idx) {
         //     this.form.prescriptionLines.splice(idx, 1);
         // },
+        getPatientInfo(currentPatient) {
+            this.current_patient_info = currentPatient[0].patient;
+            this.$nextTick(() => this.$refs.dlg4.ShowDialog());
+
+        },
         onCancel: function () {
             window.location.reload();
         },
         onSave: function () {
             var temp = this.all_diagnosis.filter((e) => e.selected)
             this.form.diagnosis = temp.map((e) => e.name);
+            this.form.selected_clinic = this.selected_clinic;
             axios
                 .post(route("prescriptions.store"), this.form)
                 .then((response) => {
@@ -582,7 +641,13 @@ export default {
             .get(route('clinic.all'))
             .then((response) => {
                 this.allClinics = response.data;
-        })
+            })
+        axios
+            .get(route('items.index'))
+            .then((response) => {
+                this.allItems = response.data;
+                console.log("items", response.data);
+            })
         // axios
         //     .get(route('json.analysis'))
         //     .then((response) => {

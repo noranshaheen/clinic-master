@@ -37,4 +37,7 @@ class Doctor extends Model
     public function bills():HasMany{
         return $this->hasMany('App\Models\Bill','doctor_id','id');
     }
+    public function spendings():HasMany{
+        return $this->hasMany('App\Models\Spendings','doctor_id','id');
+    }
 }

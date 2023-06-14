@@ -36,4 +36,8 @@ class Prescription extends Model
     {
         return $this->belongsTo('App\Models\Appointment', 'appointment_id', 'id');
     }
+    public function clinic():BelongsTo
+    {
+        return $this->belongsTo('App\Models\Clinic', 'clinic_id', 'id');
+    }
 }

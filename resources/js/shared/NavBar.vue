@@ -161,6 +161,9 @@
                   <i class="fas fa-eye"></i>
                   {{ __("Show Drugs") }}
                 </dropdown-link>
+                <dropdown-link as="a" @click.prevent="openDlg('dlg12')" href="#">
+                  {{ __("Upload Drugs") }}
+                </dropdown-link>
               </template>
             </dropdown>
 
@@ -234,8 +237,8 @@
                 <span class="grid justify-items-center cursor-pointer hover:text-[#4099de]" :class="{
                   'text-[#4099de]': $page.url.startsWith('/bill'),
                 }">
-                  <i class="fa-solid fa-calendar-check"></i>
-                  {{ __("Expenses") }}
+                  <i class="fa fa-file-invoice"></i>
+                  {{ __("Reports") }}
                 </span>
               </template>
               <template #content>
@@ -244,8 +247,12 @@
                   {{ __("Add Bill") }}
                 </dropdown-link>
                 <dropdown-link as="a" :href="route('bills.search')">
-                  <i class="fas fa-plus"></i>
-                  {{ __("Search Expenses") }}
+                  <i class="fa-solid fa-magnifying-glass mx-1"></i>
+                  {{ __("Search Expensess & Incomes") }}
+                </dropdown-link>
+                <dropdown-link as="a" href="#">
+                  <i class="fa-solid fa-magnifying-glass mx-1"></i>
+                  {{ __("Check Balance") }}
                 </dropdown-link>
               </template>
             </dropdown>
