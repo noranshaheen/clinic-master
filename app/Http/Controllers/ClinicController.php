@@ -27,34 +27,34 @@ class ClinicController extends Controller
         ])->table(function (InertiaTable $table) {
             $table->column(
                 key:"id",
-                label:"ID",
+                label:__("ID"),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true
             )->column(
                 key:"name",
-                label:"Name",
+                label:__("Clinic"),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true,
                 searchable:true
             )->column(
                 key:"phone",
-                label:"Phone",
+                label:__("Phone Number"),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true,
                 searchable:true
             )->column(
                 key:"address",
-                label:"Address",
+                label:__("Address"),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true,
                 searchable:true
             )->column(
                 key:"actions",
-                label:"Actions",
+                label:__("Actions"),
             );
         });
     }
@@ -73,8 +73,8 @@ class ClinicController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => ['required','string','max:255'],
-            'phone'=> ['required','string','max:100'],
+            'name' => ['required','string','max:255','min:2','regex:/^[\p{Arabic}A-Za-z0-9\s]+$/u'],
+            'phone'=> ['required','numeric','min:7','unique:clinics,phone'],
             'address' =>['required','string','max:255'],
         ]);
 
@@ -110,9 +110,9 @@ class ClinicController extends Controller
     public function update(Request $request, Clinic $clinic)
     {
         $date = $request->validate([
-            'name' => ['required','string','max:255'],
-            'phone'=> ['required','string','max:100'],
-            'city' =>['required','string','max:255'],
+            'name' => ['required','string','max:255','min:2'],
+            'phone'=> ['required','numeric'],
+            'address' =>['required','string','max:255'],
         ]);
 
         $clinic->update($date);

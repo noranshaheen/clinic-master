@@ -9,7 +9,7 @@ namespace App\Models\ETA;
  */
 class TaxTotal extends \Illuminate\Database\Eloquent\Model
 {
-    protected $table = 'TaxTotal';
+    protected $table = 'taxtotal';
 
     public $primaryKey = 'Id';
 

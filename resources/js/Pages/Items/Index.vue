@@ -1,64 +1,101 @@
 <template>
-	<app-layout>
-		<div class="py-4">
-			<div class="mx-auto sm:px-6 lg:px-8">
-				<div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-4">
-					<Table :resource="items">
-						<template #cell(description)="{ item: item }"> {{ __(item.description) }}</template>
-						<template #cell(internal_code)="{ item: item }"> {{ __(item.internal_code) }}</template>
-						<template #cell(gs1_code)="{ item: item }"> {{ __(item.gs1_code) }}</template>
-						<template #cell(egs_code)="{ item: item }"> {{ __(item.egs_code) }}</template>
-						<template #cell(unit_type)="{ item: item }"> {{ __(item.unit_type) }}</template>
-						<template #cell(unit_value)="{ item: item }"> {{ __(item.unit_value) }}</template>
-						<template #cell(actions)="{ item: item }">
-							<jet-button type="button">
-								<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px"
-									fill="#FFFFFF">
-									<path d="M0 0h24v24H0V0z" fill="none" />
-									<path
-										d="M14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29zm-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z" />
-								</svg>
-							</jet-button>
+    <app-layout>
+        <edit-item ref="dlg2" :item="item" />
+        <confirm ref="dlg1" @confirmed="remove()">
+            {{ __("Are you sure you want to delete this item?") }}
+        </confirm>
+        <div class="py-4">
+            <div class="mx-auto sm:px-6 lg:px-8">
+                <div
+                    class="wrapper Gbg-white shadow-xl sm:rounded-lg p-4"
+                >
+                    <Table :resource="items" >
+						<template #cell(hidden)="{item:item}">
+							{{ item.hidden == 0? "No":"Yes" }}
 						</template>
-					</Table>
-				</div>
-			</div>
-		</div>
-	</app-layout>
+                        <template #cell(actions)="{ item: item }">
+                            <secondary-button @click="editCustomer(item)">
+                                <i class="fa fa-edit"></i> {{ __("Edit") }}
+                            </secondary-button>
+                            <!-- <jet-button class="ms-2" @click="removeCustomer(item)">
+                                <i class="fa fa-trash"></i> {{ __("Delete") }}
+                            </jet-button> -->
+                        </template>
+                    </Table>
+                </div>
+            </div>
+        </div>
+    </app-layout>
 </template>
 
 <script>
-import AppLayout from '@/Layouts/AppLayout.vue'
-import { Table } from '@protonemedia/inertiajs-tables-laravel-query-builder';
-import JetButton from '@/Jetstream/Button.vue';
-import AddEditItem from '@/Pages/Items/AddEdit.vue';
+import AppLayout from "@/Layouts/AppLayout.vue";
+import Confirm from "@/UI/Confirm.vue";
+import EditItem from "@/Pages/Items/Edit.vue";
+import { Table } from "@protonemedia/inertiajs-tables-laravel-query-builder";
+import SecondaryButton from "@/Jetstream/SecondaryButton.vue";
+import JetButton from "@/Jetstream/Button.vue";
 import axios from 'axios';
 
 export default {
-	components: {
-		AppLayout,
-		Table,
-		JetButton,
-		AddEditItem,
-	},
-	props: {
-		items: Object
-	},
-	methods: {
-		editItem: function (item_id) {
-			//alert(JSON.stringify(item_id));
-		}
-	}
-}
+    components: {
+        EditItem,
+        Confirm,
+        AppLayout,
+        Table,
+        SecondaryButton,
+        JetButton,
+    },
+    props: {
+        items: Object,
+    },
+    data() {
+        return {
+            item: Object,
+        };
+    },
+    methods: {
+        editCustomer(cust) {
+            this.item = cust;
+            this.$nextTick(() => this.$refs.dlg2.ShowDialog());
+            //this.$refs.dlg2.ShowDialog();
+        },
+        removeCustomer(cust) {
+            this.item = cust;
+            this.$refs.dlg1.ShowModal();
+        },
+        remove() {
+            axios
+                .delete(
+                    route("items.destroy", { item: this.item.id })
+                )
+                .then((response) => {
+                    this.$store.dispatch("setSuccessFlashMessage", true);
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
+                })
+                .catch((error) => {
+                });
+        },
+        showColumn(columnKey) {
+          if (!this.$inertia.page.props.queryBuilderProps.default.columns) {
+            return false;
+          }
+          const column = this.$inertia.page.props.queryBuilderProps.default.columns.find(
+            item => item.key === columnKey
+          );
+          return column ? !column.hidden : false;
+        },
+    },
+    created() {
+        console.log(this.items);
+    }
+};
 </script>
 <style scoped>
-:deep(table td) {
-	text-align: start;
-	white-space: pre-line;
-}
-
 :deep(table th) {
-	text-align: start;
-	white-space: pre-line;
+    text-align: start;
+    margin-block-start: 4px;
 }
 </style>

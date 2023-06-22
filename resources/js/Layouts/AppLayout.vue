@@ -6,21 +6,25 @@
 
         <new-doctor-dialog ref="dlg1" />
         <new-patient-dialog ref="dlg2" />
+        <new-reseptionist-dialog ref="dlg11" />
         <new-clinic-dialog ref="dlg3" />
         <new-room-dialog ref="dlg4" />
         <new-drug-dialog ref="dlg5" />
-        <!-- <new-prescription-dialog ref="dlg6" /> -->
+        <new-diagnosis-dialog ref="dlg6" />
         <new-appointment-dialog ref="dlg7" />
-        <new-reservation-dialog ref="dlg8" />
+        <new-user-dialog ref="dlg8" />
+        <upload-drugs-dialog ref="dlg12"/>
+        <upload-patients-dialog ref="dlg14"/>
+        <new-item-dialog ref="dlg13" />
 
         <!-- <new-customer-dialog ref="dlg1" />
         <new-branch-dialog ref="dlg2" />
         <load-items-dialog ref="dlg3" />
-        <new-item-dialog ref="dlg4" />
+        
         <load-invoices-dialog ref="dlg5" />
         <upload-invoices-dialog ref="dlg6" />
         <upload-items-dialog ref="dlg7" />
-        <new-user-dialog ref="dlg8" />
+        
         <archive-request-dialog ref="dlg11" />
         <add-pos ref="addPOS" />
         <load-receipts ref="loadReceipts" />
@@ -49,12 +53,12 @@
 // modals
 import NewDoctorDialog from "@/Pages/Doctors/Edit.vue";
 import NewPatientDialog from "@/Pages/Patients/Edit.vue";
+import NewReseptionistDialog from "@/Pages/Reseptionists/Edit.vue";
 import NewClinicDialog from "@/Pages/Clinics/Edit.vue";
 import NewRoomDialog from "@/Pages/Rooms/Edit.vue";
 import NewDrugDialog from "@/Pages/Drugs/Edit.vue";
-// import NewPrescriptionDialog from "@/Pages/Prescriptions/Edit.vue";
+import NewDiagnosisDialog from "@/Pages/Diagnosis/Edit.vue";
 import NewAppointmentDialog from "@/Pages/Appointments/Edit.vue";
-import NewReservationDialog from "@/Pages/Appointments/Reservation.vue"
 import NewCustomerDialog from "@/Pages/Customers/Edit.vue";
 import NewBranchDialog from "@/Pages/Branches/Edit.vue";
 import NewUserDialog from "@/Pages/Users/Edit.vue";
@@ -63,6 +67,8 @@ import LoadInvoicesDialog from "@/Pages/Invoices/Load.vue";
 import NewItemDialog from "@/Pages/Items/Edit.vue";
 import UploadInvoicesDialog from "@/Pages/Invoices/Upload.vue";
 import UploadCustomersDialog from "@/Pages/Customers/Upload.vue";
+import UploadPatientsDialog from "@/Pages/Patients/Upload.vue";
+import UploadDrugsDialog from "@/Pages/Drugs/Upload.vue";
 import SettingsDialog1 from "@/Pages/Reports/Settings.vue";
 import SettingsDialog2 from "@/Pages/Application/Settings.vue";
 import UploadItemsDialog from "@/Pages/Items/Upload.vue";
@@ -89,6 +95,8 @@ export default {
         UploadItemsDialog,
         UploadInvoicesDialog,
         UploadCustomersDialog,
+        UploadPatientsDialog,
+        UploadDrugsDialog,
         NewCustomerDialog,
         NewItemDialog,
         NewUserDialog,
@@ -106,9 +114,9 @@ export default {
         NewClinicDialog,
         NewRoomDialog,
         NewDrugDialog,
-        // NewPrescriptionDialog,
+        NewDiagnosisDialog,
         NewAppointmentDialog,
-        NewReservationDialog,
+        NewReseptionistDialog
     },
 
     data() {

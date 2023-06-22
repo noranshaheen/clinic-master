@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use ProtoneMedia\LaravelQueryBuilderInertiaJs\InertiaTable;
 use Spatie\QueryBuilder\QueryBuilder;
+use Carbon\Carbon;
 
 class DoctorController extends Controller
 {
@@ -16,11 +17,14 @@ class DoctorController extends Controller
     public function index()
     {
         $doctors = QueryBuilder::for (Doctor::class)
+            ->with('specialties')
             ->defaultSort('id')
-            ->allowedSorts(['name','phone','specialty','date_of_birth','tilte'])
-            ->allowedFilters(['name','phone','anther_phone','specialty','date_of_birth','tilte'])
+            ->allowedSorts(['name','phone','date_of_birth','tilte'])
+            ->allowedFilters(['name','phone','anther_phone','date_of_birth','tilte'])
             ->paginate(Request()->input('perPage', 20))
             ->withQueryString();
+
+            // dd($doctors);
 
         return Inertia::render('Doctors/Index', [
             'doctors' => $doctors
@@ -54,8 +58,8 @@ class DoctorController extends Controller
                 sortable:true,
                 searchable:true
             )->column(
-                key:'specialty',
-                label:__('Specialty'),
+                key:'specialty_id',
+                label:__('Speciatly'),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true,
@@ -76,7 +80,7 @@ class DoctorController extends Controller
                 searchable:true
             )->column(
                 key:'actions',
-                label:"Actions"
+                label:__("Actions")
             );
         });
     }
@@ -94,12 +98,14 @@ class DoctorController extends Controller
      */
     public function store(Request $request)
     {
+        $today = Carbon::parse('1-1-2023')->subYears(25);;
+
         $request->validate([
-            'name' => ['string','max:255','required'],
-            'phone' => ['string','max:255','required'],
-            'another_phone' => ['nullable','string','max:255'],
-            'date_of_birth' => ['date','required'],
-            'specialty' => ['string','max:255','required'],
+            'name' => ['string','max:255','min:2','required','regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
+            'phone' => ['numeric','min:11','required','unique:doctors,phone'],
+            'another_phone' => ['nullable','numeric','min:11','unique:doctors,another_phone'],
+            'date_of_birth' => ['date','required','before_or_equal:'.$today],
+            'specialty_id' => ['string','max:255','required'],
             'title' => ['string','max:255','required'],
         ]);
         $doc = new Doctor();
@@ -107,7 +113,7 @@ class DoctorController extends Controller
         $doc->phone = $request->phone;
         $doc->another_phone = $request->another_phone;
         $doc->date_of_birth = $request->date_of_birth;
-        $doc->specialty = $request->specialty;
+        $doc->specialty_id = $request->specialty_id;
         $doc->title = $request->title;
         $doc->save();
     }
@@ -133,16 +139,20 @@ class DoctorController extends Controller
      */
     public function update(Request $request, Doctor $doctor)
     {
+        // dd($request);
+        $today = Carbon::parse('today');
+
         $date = $request->validate([
-            'name' => ['string','max:255','required'],
-            'phone' => ['string','max:255','required'],
-            'another_phone' => ['nullable','string','max:255'],
-            'date_of_birth' => ['date','required'],
-            'specialty' => ['string','max:255','required'],
+            'name' => ['string','max:255','min:2','required','regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
+            'phone' => ['numeric','min:11','required','unique:doctors,phone'],
+            'another_phone' => ['nullable','numeric','min:11','unique:doctors,another_phone'],
+            'date_of_birth' => ['date','required','before_or_equal:'.$today],
+            'specialty_id' => ['required'],
             'title' => ['string','max:255','required'],
         ]);
         $doctor->update($date);
-        return redirect()->back();
+        return "Ok";
+        // return redirect()->back();
     }
 
     /**

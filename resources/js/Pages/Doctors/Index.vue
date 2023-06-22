@@ -7,11 +7,14 @@
         <div class="py-4">
             <div class="mx-auto sm:px-6 lg:px-8">
                 <div
-                    class="wrapper Gbg-white overflow-hidden shadow-xl sm:rounded-lg p-4"
+                    class="wrapper Gbg-white shadow-xl sm:rounded-lg p-4"
                 >
                     <Table :resource="doctors" >
                         <template #cell(date_of_birth)="{ item: doctor }">
                             {{ new Date().getFullYear() - new Date(doctor.date_of_birth).getFullYear() }}
+                        </template>
+                        <template #cell(specialty_id)="{ item: doctor }">
+                            {{ doctor.specialties.name }}
                         </template>
                         <template #cell(actions)="{ item: doctor }">
                             <secondary-button @click="editCustomer(doctor)">
@@ -88,6 +91,9 @@ export default {
           return column ? !column.hidden : false;
         },
     },
+//     created: function created() {
+//     console.log(this.doctors);
+//   },
 };
 </script>
 <style scoped>

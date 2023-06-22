@@ -14,7 +14,7 @@ class Prescription extends Model
     protected $table = 'prescriptions';
 
     public $primaryKey = 'id';
-    protected $fillable = ['doctor_id','patient_id','dateTimeIssued'];
+    protected $fillable = ['doctor_id','patient_id','appointment_id','clinic_id','rays','diagnosis','analysis','notes','dateTimeIssued'];
     protected $casts = [
         'dateTimeIssued' =>'datetime'
     ];
@@ -31,5 +31,13 @@ class Prescription extends Model
     public function patient():BelongsTo
     {
         return $this->belongsTo('App\Models\Patient', 'patient_id', 'id');
+    }
+    public function appointment():BelongsTo
+    {
+        return $this->belongsTo('App\Models\Appointment', 'appointment_id', 'id');
+    }
+    public function clinic():BelongsTo
+    {
+        return $this->belongsTo('App\Models\Clinic', 'clinic_id', 'id');
     }
 }

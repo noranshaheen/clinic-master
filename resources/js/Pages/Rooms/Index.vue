@@ -7,7 +7,7 @@
     <div class="py-4">
       <div class="mx-auto sm:px-6 lg:px-8">
         <div
-          class="wrapper Gbg-white overflow-hidden shadow-xl sm:rounded-lg p-4"
+          class="wrapper Gbg-white shadow-xl sm:rounded-lg p-4"
         >
           <Table :resource="rooms">
             <template #cell(branch)="{item : room}">
@@ -86,9 +86,9 @@ export default {
       return column ? !column.hidden : false;
     },
   },
-//   created: function created() {
-//     console.log(this.rooms);
-//   },
+  // created: function created() {
+  //   console.log(this.rooms);
+  // },
 };
 </script>
 <style scoped>

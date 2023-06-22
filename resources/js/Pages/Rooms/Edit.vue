@@ -12,7 +12,7 @@
           <div>
 
             <div class="mt-4">
-                <jet-label for="type" value="Room Name" />
+                <jet-label for="type" :value='__("Room Name")' />
                 <jet-input
                   id="type"
                   type="text"
@@ -23,9 +23,10 @@
               </div>
 
             <div>
-              <jet-label for="branch" value="Choose Clinic" />
+              <jet-label for="branch" :value='__("Choose Clinic")' />
               <select
                 id="branch"
+                required
                 v-model="form.clinic_id"
                 class="mt-1 block w-full rounded border border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm"
               >
@@ -168,15 +169,6 @@ export default {
       if (this.room == null) this.SaveNewCustomer();
       else this.SaveCustomer();
     },
-    // onCountryChange(event){
-    //     alert(event.target.value);
-    //     this.allStates.find((state) => {
-    //         if (state.countryShortCode == event.target.value) {
-    //             this.states = state.regions;
-    //         }
-    //     });
-    //     console.log(this.states);
-    // }
   },
   created: function created() {
     axios

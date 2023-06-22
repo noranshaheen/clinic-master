@@ -1,9 +1,5 @@
 <template>
-    <jet-dialog-modal
-        :show="showDialog"
-        max-width="lg"
-        @close="showDialog = false"
-    >
+    <jet-dialog-modal :show="showDialog" max-width="lg" @close="showDialog = false">
         <template #title>
             {{ __("User Information") }}
         </template>
@@ -11,68 +7,46 @@
         <template #content>
             <jet-validation-errors class="mb-4" />
 
-            <form v-if="$page.props.auth.user.is_admin" @submit.prevent="submit">
+            <form @submit.prevent="submit">
                 <div class="grid grid-cols-2 gap-4">
                     <div>
+                        <jet-label :value="__('Role')" />
+                        <select id="type" v-model="form.current_team_id" class="mt-1 block w-full"
+                            @change="getAll(form.current_team_id)">
+                            <option value="1">{{ __("Reseptionist") }}</option>
+                            <option value="2">{{ __("Doctor") }}</option>
+                        </select>
+                    </div>
+                    <div>
                         <jet-label for="name" :value="__('Name')" />
-                        <jet-input
-                            id="name"
-                            type="text"
-                            class="mt-1 block w-full"
-                            v-model="form.name"
-                            required
-                            autofocus
-                        />
+                        <select required v-model="form.doctor_id"
+                            class="mt-1 block w-full border-slate-300 rounded-md text-sm" v-if="all_doctors.length != 0">
+                            <option v-for="doctor in all_doctors" :value="doctor.id" :key="doctor.id">
+                                {{ doctor.name }}
+                            </option>
+                        </select>
+                        <select required v-model="form.reseptionist_id"
+                            class="mt-1 block w-full border-slate-300 rounded-md text-sm" v-if="all_reseptionists.length != 0">
+                            <option v-for="reseptionist in all_reseptionists" 
+                            :value="reseptionist.id" :key="reseptionist.id">
+                                {{ reseptionist.name }}
+                            </option>
+                        </select>
                     </div>
                     <div>
                         <jet-label for="Email" :value="__('Email')" />
-                        <jet-input
-                            id="Email"
-                            type="Email"
-                            class="mt-1 block w-full"
-                            v-model="form.email"
-                            required
-                        />
+                        <jet-input id="Email" type="Email" class="mt-1 block w-full" v-model="form.email" required />
                     </div>
                     <div>
                         <jet-label for="password" :value="__('Password')" />
-                        <jet-input
-                            id="password"
-                            type="password"
-                            class="mt-1 block w-full"
-                            v-model="form.password"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <jet-label :value="__('Role')" />
-                        <select
-                            id="type"
-                            v-model="form.current_team_id"
-                            class="mt-1 block w-full"
-                        >
-                            <option value="1">{{ __("Administrator") }}</option>
-                            <option value="2">{{ __("Reviewer") }}</option>
-                            <option value="3">{{ __("Data Entry") }}</option>
-                            <option value="4">{{ __("ETA") }}</option>
-                            <option value="5">{{ __("Viewer") }}</option>
-                        </select>
-                    </div>
-                    <div class="col-span-2">
-                        <jet-label :value="__('Branches')" />
-                        <multiselect
-                            v-model="issuers"
-                            :options="branches"
-                            label="name"
-                            :placeholder="__('Select Branches')"
-                            :multiple="true"
-                        />
+                        <jet-input id="password" type="password" class="mt-1 block w-full" v-model="form.password"
+                            required />
                     </div>
                 </div>
             </form>
-            <div v-else>
+            <!-- <div v-else>
                 {{__("You are not authorized to add/edit users")}}
-            </div>
+            </div> -->
         </template>
         <template #footer>
             <div class="flex items-center justify-end mt-4">
@@ -80,13 +54,8 @@
                     {{ __("Cancel") }}
                 </jet-secondary-button>
 
-                <jet-button
-                    class="ms-2"
-                    @click="submit"
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                    v-if="$page.props.auth.user.is_admin"
-                >
+                <jet-button class="ms-2" @click="submit" :class="{ 'opacity-25': form.processing }"
+                    :disabled="form.processing">
                     {{ __("Save") }}
                 </jet-button>
             </div>
@@ -142,15 +111,15 @@ export default {
 
     data() {
         return {
-            branches: [],
-            customers: [],
-            issuers: [],
+            all_doctors: [],
+            all_reseptionists: [],
             errors: [],
             form: this.$inertia.form({
-                name: "",
+                reseptionist_id: "",
+                doctor_id:"",
                 email: "",
                 password: "",
-                issuers: [],
+                current_team_id: ""
             }),
             showDialog: false,
         };
@@ -158,17 +127,10 @@ export default {
 
     methods: {
         ShowDialog() {
-            this.issuers = [];
             if (this.pUser !== null) {
                 this.form.name = this.pUser.name;
                 this.form.email = this.pUser.email;
                 this.form.current_team_id = this.pUser.current_team_id;
-                for (var i = 0; i < this.pUser.issuers.length; i++)
-                    this.issuers.push(
-                        this.branches.find(
-                            (option) => option.Id === this.pUser.issuers[i].Id
-                        )
-                    );
             }
             this.showDialog = true;
         },
@@ -176,9 +138,6 @@ export default {
             this.showDialog = false;
         },
         SaveUser() {
-            this.form.issuers = [];
-            for (var i = 0; i < this.issuers.length; i++)
-                this.form.issuers.push(this.issuers[i].Id);
             axios
                 .put(route("users.update", { user: this.pUser.id }), this.form)
                 .then((response) => {
@@ -192,9 +151,6 @@ export default {
                 });
         },
         SaveNewUser() {
-            this.form.issuers = [];
-            for (var i = 0; i < this.issuers.length; i++)
-                this.form.issuers.push(this.issuers[i].Id);
             axios
                 .post(route("users.store"), this.form)
                 .then((response) => {
@@ -212,26 +168,48 @@ export default {
                     //this.$refs.password.focus()
                 });
         },
+        getAll(team_id) {
+            // console.log(team_id);
+            if (team_id == 1) {
+                axios
+                    .get(route("reseptionist.all"))
+                    .then((response) => {
+                        this.all_doctors = [];
+                        this.form.doctor_id = "";
+                        this.all_reseptionists = response.data;
+                        console.log(response.data);
+                    })
+            } else if (team_id == 2) {
+                axios
+                    .get(route("doctor.all"))
+                    .then((response) => {
+                        this.all_reseptionists = [];
+                        this.form.reseptionist_id = "";
+                        this.all_doctors = response.data;
+                        console.log(response.data);
+                    })
+            }
+        },
         submit() {
             if (this.pUser == null) this.SaveNewUser();
             else this.SaveUser();
         },
     },
-    created: function created() {
-        axios
-            .get(route("json.branches"))
-            .then((response) => {
-                this.branches = response.data;
-                if (this.pUser)
-                    for (var i = 0; i < this.pUser.issuers.length; i++)
-                        this.issuers.push(
-                            this.branches.find(
-                                (option) =>
-                                    option.Id === this.pUser.issuers[i].Id
-                            )
-                        );
-            })
-            .catch((error) => {});
-    },
+    // created: function created() {
+    //     axios
+    //         .get(route("json.branches"))
+    //         .then((response) => {
+    //             this.branches = response.data;
+    //             if (this.pUser)
+    //                 for (var i = 0; i < this.pUser.issuers.length; i++)
+    //                     this.issuers.push(
+    //                         this.branches.find(
+    //                             (option) =>
+    //                                 option.Id === this.pUser.issuers[i].Id
+    //                         )
+    //                     );
+    //         })
+    //         .catch((error) => {});
+    // },
 };
 </script>

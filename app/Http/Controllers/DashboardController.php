@@ -8,30 +8,20 @@ use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
-    public function dashboard(Invoice $invoice)
+    public function dashboard()
     {
-        $firstDayOfLastWeek = now()->subWeek()->toDateString();
+        // $firstDayOfLastWeek = now()->subWeek()->toDateString();
 
-        $today = now()->toDateString();
+        // $today = now()->toDateString();
 
-        $firstDayOfTheLastMonth = now()->startOfMonth()->subMonth()->toDateString();
+        // $firstDayOfTheLastMonth = now()->startOfMonth()->subMonth()->toDateString();
 
-        $lastDayOfTheLastMonth = Carbon::parse('last day of last month')->toDateString();
+        // $lastDayOfTheLastMonth = Carbon::parse('last day of last month')->toDateString();
 
-        $firstDayOfTheCurrentMonth = now()->startOfMonth()->toDateString();
+        // $firstDayOfTheCurrentMonth = now()->startOfMonth()->toDateString();
 
-        $lastDayOfTheCurrentMonth = now()->lastOfMonth()->toDateString();
+        // $lastDayOfTheCurrentMonth = now()->lastOfMonth()->toDateString();
 
-        return Inertia::render('Dashboard/index', [
-            'firstDayOfLastWeek' => $firstDayOfLastWeek,
-            'today' => $today,
-            'firstDayOfTheLastMonth' => $firstDayOfTheLastMonth,
-            'lastDayOfTheLastMonth' => $lastDayOfTheLastMonth,
-            'firstDayOfTheCurrentMonth' => $firstDayOfTheCurrentMonth,
-            'lastDayOfTheCurrentMonth' => $lastDayOfTheCurrentMonth,
-            'lastWeekData' => $invoice->getDashboardStatisticsByDate($firstDayOfLastWeek, $today),
-            'lastMonthData' => $invoice->getDashboardStatisticsByDate($firstDayOfTheLastMonth, $lastDayOfTheLastMonth),
-            'monthlyData' => $invoice->getDashboardStatisticsByDate($firstDayOfTheCurrentMonth, $lastDayOfTheCurrentMonth),
-        ]);
+        return Inertia::render('Dashboard/index');
     }
 }

@@ -9,28 +9,28 @@
 
             <form @submit.prevent="submit">
                 <div class="grid grid-cols-1">
-					<div>
+                    <div>
 
                         <div class="mt-4">
-                            <jet-label
-                                value="Drug Name"
-                            />
-                            <jet-input
-                                type="text"
-                                class="mt-1 block w-full"
-                                v-model="form.name"
-                                required
-                            />
+                            <jet-label :value='__("Drug Name")' />
+                            <jet-input type="text" class="mt-1 block w-full" v-model="form.name" required />
                         </div>
                         <div class="mt-4">
-                            <jet-label
-                                value="Drug Description"
-                            />
-                            <jet-input
-                                type="text"
-                                class="mt-1 block w-full"
-                                v-model="form.description"
-                            />
+                            <jet-label :value='__("Drug Description")' />
+                            <jet-input type="text" class="mt-1 block w-full" v-model="form.description" />
+                        </div>
+                        <div class="mt-4">
+                            <jet-label :value="__('Related Diagnosis')" />
+                            <multiselect v-model="form.diagnose" label="name" :hide-selected="true" 
+                            :options="allDiagnosis" :searchable="true" :multiple="true" track-by="id" 
+                            :placeholder='__("Select Diagnose")'/>
+                        
+                            <!-- <select v-model="form.diagnose" multiple
+                            class="mt-1 block w-full border-slate-300 rounded-md">
+                                <option v-for="diagnose in allDiagnosis" :value="diagnose.id" :key="diagnose.id">
+                                    {{ diagnose.name }}
+                                </option>
+                            </select> -->
                         </div>
 
                     </div>
@@ -43,12 +43,8 @@
                     {{ __("Cancel") }}
                 </jet-secondary-button>
 
-                <jet-button
-                    class="ms-2"
-                    @click="submit"
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                >
+                <jet-button class="ms-2" @click="submit" :class="{ 'opacity-25': form.processing }"
+                    :disabled="form.processing">
                     {{ __("Save") }}
                 </jet-button>
             </div>
@@ -71,6 +67,7 @@ import JetLabel from "@/Jetstream/Label.vue";
 import JetSecondaryButton from "@/Jetstream/SecondaryButton.vue";
 import JetSectionBorder from "@/Jetstream/SectionBorder.vue";
 import JetValidationErrors from "@/Jetstream/ValidationErrors.vue";
+import Multiselect from "@suadelabs/vue3-multiselect";
 import axios from 'axios';
 
 export default {
@@ -89,6 +86,7 @@ export default {
         JetSecondaryButton,
         JetSectionBorder,
         JetValidationErrors,
+        Multiselect,
     },
 
     props: {
@@ -101,9 +99,11 @@ export default {
     data() {
         return {
             errors: [],
+            allDiagnosis: [],
             form: this.$inertia.form({
                 name: "",
-                description:""
+                description: "",
+                diagnose: ""
             }),
             showDialog: false,
         };
@@ -167,24 +167,13 @@ export default {
             else this.SaveCustomer();
         }
     },
-    // created: function created() {
-    //     axios
-    //         .get("/json/Countries.json")
-    //         .then((response) => {
-    //             this.countries = response.data.map((country) => {
-    //                 return {
-    //                     name: country.countryName,
-    //                     code: country.countryShortCode,
-    //                 };
-    //             });
-    //             this.allStates = response.data;
-    //             this.allStates.find((state) => {
-    //                 if (state.countryShortCode == this.form.address.country) {
-    //                     this.states = state.regions;
-    //                 }
-    //             });
-    //         })
-    //         .catch((error) => {});
-    // },
+    created: function created() {
+        axios
+            .get(route("diagnosi.all"))
+            .then((response) => {
+                this.allDiagnosis = response.data;
+            })
+            .catch((error) => { });
+    },
 };
 </script>

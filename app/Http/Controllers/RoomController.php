@@ -28,27 +28,27 @@ class RoomController extends Controller
         ])->table(function (InertiaTable $table) {
             $table->column(
                 key:"id",
-                label:"ID",
+                label:__("ID"),
                 canBeHidden:false,
                 hidden:false,
                 sortable:true
             )->column(
                 key:"name",
-                label:"Type",
+                label:__("Name"),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true,
                 searchable:true
             )->column(
                 key:"branch",
-                label:"Branch",
+                label:__("Branch"),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true,
                 searchable:true
             )->column(
                 key:"actions",
-                label:"Actions"
+                label:__("Actions")
             );
         });
     }
@@ -67,7 +67,7 @@ class RoomController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => ['required','string','max:255'],
+            'name' => ['required','string','max:255','min:1','regex:/^[\p{Arabic}A-Za-z1-9\s]+$/u'],
             'clinic_id' => ['required'],
         ]);
 
@@ -76,7 +76,7 @@ class RoomController extends Controller
         $room->clinic_id = $request->clinic_id;
         $room->save();
 
-        return redirect()->back();
+        return 'ok';
     }
 
     /**
@@ -101,7 +101,7 @@ class RoomController extends Controller
     public function update(Request $request, Room $room)
     {
         $data = $request->validate([
-            'name' => ['required','string','max:255'],
+            'name' => ['required','string','max:255','regex:/^[\p{Arabic}A-Za-z1-9\s]+$/u'],
             'clinic_id' => ['required'],
         ]);
 

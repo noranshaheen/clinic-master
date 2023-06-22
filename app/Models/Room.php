@@ -13,7 +13,7 @@ class Room extends Model
     protected $table = 'rooms';
 
     public $primaryKey = 'id';
-    protected $fillable = ['name'];
+    protected $fillable = ['name','clinic_id'];
 
     public function clinic(): BelongsTo
     {

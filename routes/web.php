@@ -28,9 +28,20 @@ use App\Http\Controllers\ClinicController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\DrugController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\ReseptionistController;
+use App\Http\Controllers\DiagnosisController;
+use App\Http\Controllers\AnalysisController;
+use App\Http\Controllers\BillController;
+use App\Http\Controllers\BillDetailsController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PrescriptionController;
+use App\Http\Controllers\PrescriptionItemsController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SpecialtyController;
+use App\Http\Controllers\XRayController;
+use App\Models\Appointment;
+use App\Models\Item;
+use App\Models\Patient;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -81,7 +92,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
 Route::middleware(['auth:sanctum', 'verified', 'ETASettings'])->group(function () {
 
-    Route::get('/', [DashboardController::class, 'dashboard'])->name('dashboard');
+    Route::get('/', [DashboardController::class, 'dashboard'])->middleware('guest')->name('dashboard');
 
     Route::resources([
         'invoices' => InvoiceController::class,
@@ -96,7 +107,13 @@ Route::middleware(['auth:sanctum', 'verified', 'ETASettings'])->group(function (
         'drugs'=>DrugController::class,
         'prescriptions'=>PrescriptionController::class,
         'appointments' =>AppointmentController::class,
-        'specialties' => SpecialtyController::class
+        'specialties' => SpecialtyController::class,
+        'reseptionists'=>ReseptionistController::class,
+        'diagnosis'=>DiagnosisController::class,
+        'analysis'=>AnalysisController::class,
+        'xray' => XRayController::class,
+        'bills' => BillController::class,
+        'billDetails' => BillDetailsController::class,
     ]);
 
     Route::get('/clinic/all', [ClinicController::class, 'all'])->name("clinic.all");
@@ -104,11 +121,48 @@ Route::middleware(['auth:sanctum', 'verified', 'ETASettings'])->group(function (
     Route::get('/room/all', [RoomController::class, 'all'])->name("room.all");
     Route::get('/patient/all', [PatientController::class, 'all'])->name("patient.all");
     Route::get('/drug/all', [DrugController::class, 'all'])->name("drug.all");
+    Route::get('/diagnosi/all', [DiagnosisController::class, 'all'])->name("diagnosi.all");
+    Route::get('/diagnosi/allSpeciatlyDiagnosis', [DiagnosisController::class, 'allSpeciatlyDiagnosis'])->name("diagnosi.allSpeciatlyDiagnosis");
+    Route::get('/analysi/allSpeciatlyAnalysis', [AnalysisController::class, 'allSpeciatlyAnalysis'])->name("analysi.allSpeciatlyAnalysis");
+    Route::get('/xrays/allSpeciatlyRays', [XRayController::class, 'allSpeciatlyRays'])->name("xray.allSpeciatlyRays");
+    Route::get('/reseptionist/all', [ReseptionistController::class, 'all'])->name("reseptionist.all");
+
+    Route::get('patient/history/{patient_id}',[PatientController::class, 'getHistory'])->name("patient.getHistory");
+
+    Route::post('/appointment/searchData', [AppointmentController::class, 'searchData'])->name("appointment.searchData");
+    Route::post('/appointment/reserve', [AppointmentController::class, 'reserve'])->name("appointment.reserve");
+    Route::post('/appointment/reserveNewPatient', [AppointmentController::class, 'reserveNewPatient'])->name("appointment.reserveNewPatient");
+    Route::post('/appointment/pay', [AppointmentController::class, 'pay'])->name("appointment.pay");
+    Route::post('/appointment/cancelUnreserved', [AppointmentController::class, 'cancelUnreserved'])->name("appointment.cancel.unreserved");
+    Route::post('/appointment/cancelAll', [AppointmentController::class, 'cancelAll'])->name("appointment.cancel.all");
+    Route::get('/appointment/showHistory/{patient_id}', [AppointmentController::class, 'showHistory'])->name("appointment.showHistory");
     
+    Route::get('/item/show', [ItemController::class, 'showAll'])->name("items.showAll");
+
+    Route::get('/bill/show', [BillController::class, 'showAll'])->name("bills.showAll");  
+    Route::get('/bill/search', [BillController::class, 'search'])->name("bills.search");
+    Route::post('/bill/searchExpensesData', [BillController::class, 'searchExpensesData'])->name("bills.expenses.searchData");
+    Route::post('/bill/searchIncomeData', [BillController::class, 'searchIncomeData'])->name("bills.income.searchData");
+    Route::post('/bill/items/balance', [BillController::class, 'getItemsBalance'])->name("bills.items.balance");
+
     Route::get('/invoice/search', [InvoiceController::class, 'search'])->name("invoices.search");
     Route::post('/invoice/searchData', [InvoiceController::class, 'searchData'])->name("invoices.searchData");
 
     Route::get('/getBranchesImages/{ids}', [BranchController::class, 'getBranchesimages'])->name('branches.getImages');
+
+    Route::get('/json/Diagnosis', [PrescriptionController::class, 'indexDiagnosis_json'])->name("json.Diagnosis");
+    Route::get('/json/analysis', [PrescriptionController::class, 'indexAnalysis_json'])->name("json.analysis");
+    Route::get('/json/rays', [PrescriptionController::class, 'indexRays_json'])->name("json.rays");
+    Route::get('/doses', [PrescriptionController::class, 'index_doses'])->name("doses");
+    Route::get('/durations', [PrescriptionController::class, 'index_duration'])->name("durations");
+    Route::get('/history/{patient_id}', [PrescriptionController::class, 'getHistory'])->name("patient.history");
+    Route::get('/prescription/itemsFees/{appointment_id}',[PrescriptionController::class,'getItemsFees'])->name("prescription.serviceFees");
+
+    Route::get('/appointment/today/{clinic_id}',[PrescriptionController::class, 'getTodaysPatients'])->name("appointment.today");
+
+    Route::get('/prescription/items/{prescription_id}',[PrescriptionItemsController::class,'getItems'])->name("prescriptionItems.details");
+
+    Route::post('payment/serviceFees',[PaymentController::class,'payServiceFees'])->name('payments.payServiceFees');
 
     Route::get('/json/branches', [BranchController::class, 'index_json'])->name("json.branches");
     Route::get('/json/customers', [CustomerController::class, 'index_json'])->name("json.customers");
@@ -116,6 +170,8 @@ Route::middleware(['auth:sanctum', 'verified', 'ETASettings'])->group(function (
     Route::get('/json/eta/vendors', [ETAController::class, 'indexVendors_json'])->name("json.eta.vendors");
 
     Route::post('/ETA/customers/Upload', [ETAController::class, 'UploadCustomer'])->name("eta.customer.upload");
+    Route::post('/drugs/Upload', [DrugController::class, 'UploadDrugs'])->name("eta.drug.upload");
+    Route::post('/patients/Upload', [PatientController::class, 'UploadPatients'])->name("eta.patient.upload");
 
     Route::post('/invoice/copy', [ETAController::class, 'saveCopy'])->name('invoices.copy');
     Route::post('/ETA/Items/Upload', [ETAController::class, 'UploadItem'])->name("eta.items.upload");
@@ -197,8 +253,11 @@ Route::middleware(['auth:sanctum', 'verified', 'ETASettings'])->group(function (
     Route::post('/json/top/items', [ChartsController::class, 'topItems'])->name("json.top.items");
     Route::post('/json/top/receivers', [ChartsController::class, 'topReceivers'])->name("json.top.receivers");
     #pdf stuff
+    Route::get('/pdf/payment/{id}', [PDFController::class, 'previewPayment'])->name('pdf.payment.preview');
+    Route::get('/pdf/prescription/{id}', [PDFController::class, 'previewPrescription'])->name('pdf.prescription.preview');
     Route::get('/pdf/invoice/{Id}', [PDFController::class, 'previewInvoice'])->name('pdf.invoice.preview');
     Route::get('/pdf/invoices/{Ids}', [PDFController::class, 'previewInvoices'])->name('pdf.invoices.preview');
+    Route::get('/pdf/payment/download/{id}', [PDFController::class, 'downloadPayment'])->name('pdf.payment.download');
     Route::get('/pdf/invoice/download/{id}', [PDFController::class, 'downloadInvoice'])->name('pdf.invoice.download');
 
     Route::get('/reports/branches/purchases/{Ids}', [ETAInvoiceController::class, 'branchesPurchases'])->name("pdf.purchases");

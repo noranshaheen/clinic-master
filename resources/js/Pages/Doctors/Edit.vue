@@ -1,7 +1,7 @@
 <template>
   <jet-dialog-modal :show="showDialog" @close="showDialog = false">
     <template #title>
-      {{ __("doctor Information") }}
+      {{ __("Doctor Information") }}
     </template>
 
     <template #content>
@@ -11,7 +11,7 @@
         <div class="grid grid-cols-2 gap-4">
           <div>
             <div class="mt-4">
-              <jet-label value="Doctor Name" />
+              <jet-label :value='__("Doctor Name")' />
               <jet-input
                 type="text"
                 class="mt-1 block w-full"
@@ -21,7 +21,7 @@
               />
             </div>
             <div class="mt-4">
-              <jet-label value="Phone Number" />
+              <jet-label :value='__("Phone Number")' />
               <jet-input
                 type="text"
                 class="mt-1 block w-full"
@@ -31,29 +31,28 @@
               />
             </div>
             <div class="mt-4">
-              <jet-label value="Another Phone Number (optinal)" />
+              <jet-label :value='__("Another Phone (optional)")' />
               <jet-input
                 type="text"
                 class="mt-1 block w-full"
                 v-model="form.another_phone"
-                placeholder="enter another phone if exist"
                 autofocus
               />
             </div>
           </div>
           <div>
             <div class="mt-4">
-              <jet-label value="Speciatly" />
+              <jet-label :value='__("Speciatly")' />
               <select
                 class="mt-1 block w-full rounded border border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm"
-                v-model="form.specialty"
+                v-model="form.specialty_id"
                 required
                 autofocus
               >
                 <option
                   v-for="specialty in specialties"
                   :key="specialty.id"
-                  :value="specialty.name"
+                  :value="specialty.id"
                 >
                   {{ specialty.name }}
                 </option>
@@ -61,18 +60,19 @@
             </div>
 
             <div class="mt-4">
-              <jet-label value="Title" />
+              <jet-label :value='__("Title")' />
               <select
                 v-model="form.title"
                 class="mt-1 block w-full rounded border border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm"
-              >
+                required
+                >
                 <option value="أخصائي">{{ __("أخصائي") }}</option>
                 <option value="استشاري">{{ __("استشاري") }}</option>
                 <option value="أستاذ">{{ __("أستاذ") }}</option>
               </select>
             </div>
             <div class="mt-4">
-              <jet-label value="Date Of Birth" />
+              <jet-label :value='__("Date Of Birth")' />
               <jet-input
                 type="date"
                 class="mt-1 block w-full"
@@ -154,7 +154,7 @@ export default {
         name: "",
         phone: "",
         another_phone: "",
-        specialty: "",
+        specialty_id: "",
         title: "",
         date_of_birth: "",
       }),
@@ -168,7 +168,7 @@ export default {
         this.form.name = this.doctor.name;
         this.form.phone = this.doctor.phone;
         this.form.another_phone = this.doctor.another_phone;
-        this.form.specialty = this.doctor.specialty;
+        this.form.specialty_id = this.doctor.specialty_id;
         this.form.title = this.doctor.title;
         this.form.date_of_birth = this.doctor.date_of_birth;
       }
@@ -193,6 +193,10 @@ export default {
           this.$page.props.errors = error.response.data.errors;
           this.errors = error.response.data.errors; //.password[0];
           //this.$refs.password.focus()
+          // this.showDialog = false;
+          // setTimeout(() => {
+          //   window.location.reload();
+          // }, 500);
         });
     },
     SaveNewCustomer() {
@@ -220,35 +224,7 @@ export default {
       if (this.doctor == null) this.SaveNewCustomer();
       else this.SaveCustomer();
     },
-    // onCountryChange(event){
-    //     alert(event.target.value);
-    //     this.allStates.find((state) => {
-    //         if (state.countryShortCode == event.target.value) {
-    //             this.states = state.regions;
-    //         }
-    //     });
-    //     console.log(this.states);
-    // }
   },
-  // created: function created() {
-  //     axios
-  //         .get("/json/Countries.json")
-  //         .then((response) => {
-  //             this.countries = response.data.map((country) => {
-  //                 return {
-  //                     name: country.countryName,
-  //                     code: country.countryShortCode,
-  //                 };
-  //             });
-  //             this.allStates = response.data;
-  //             this.allStates.find((state) => {
-  //                 if (state.countryShortCode == this.form.address.country) {
-  //                     this.states = state.regions;
-  //                 }
-  //             });
-  //         })
-  //         .catch((error) => {});
-  // },
   created() {
     axios
       .get(route("specialties.index"))

@@ -6,15 +6,13 @@
     </confirm>
     <div class="py-4">
       <div class="mx-auto sm:px-6 lg:px-8">
-        <div
-          class="wrapper Gbg-white overflow-hidden shadow-xl sm:rounded-lg p-4"
-        >
+        <div class="wrapper Gbg-white shadow-xl sm:rounded-lg p-4">
           <Table :resource="patients">
             <template #cell(type)="{ item: patient }">
               {{
                 patient.type == "I"
-                  ? __("Insurance")
-                  : patient.type == "P"
+                ? __("Insurance")
+                : patient.type == "P"
                   ? __("Personal")
                   : null
               }}
@@ -22,8 +20,8 @@
             <template #cell(gender)="{ item: patient }">
               {{
                 patient.gender == "F"
-                  ? __("Female")
-                  : patient.gender == "M"
+                ? __("Female")
+                : patient.gender == "M"
                   ? __("Male")
                   : null
               }}
@@ -32,7 +30,10 @@
               {{ new Date().getFullYear() - new Date(patient.date_of_birth).getFullYear() }}
             </template>
             <template #cell(actions)="{ item: patient }">
-              <secondary-button @click="editCustomer(patient)">
+              <secondary-button v-if="patient.prescriptions.length > 0" @click="showHistory(patient)">
+                <i class="fa fa-history"></i> {{ __("History") }}
+              </secondary-button>
+              <secondary-button class="ms-2" @click="editCustomer(patient)">
                 <i class="fa fa-edit"></i> {{ __("Edit") }}
               </secondary-button>
               <jet-button class="ms-2" @click="removeCustomer(patient)">
@@ -63,6 +64,7 @@ export default {
     Table,
     SecondaryButton,
     JetButton,
+    axios
   },
   props: {
     patients: Object,
@@ -70,6 +72,8 @@ export default {
   data() {
     return {
       patient: Object,
+      patient_appointments: "",
+      patient_prescription: ""
     };
   },
   methods: {
@@ -82,29 +86,36 @@ export default {
       this.patient = cust;
       this.$refs.dlg1.ShowModal();
     },
-    remove() {
-      axios
-        .delete(route("patients.destroy", { patient: this.patient.id }))
-        .then((response) => {
-          this.$store.dispatch("setSuccessFlashMessage", true);
-          setTimeout(() => {
-            window.location.reload();
-          }, 500);
-        })
-        .catch((error) => {});
+    showHistory(patient) {
+      window.open(route("patient.getHistory", patient.id));
     },
-    showColumn(columnKey) {
-      if (!this.$inertia.page.props.queryBuilderProps.default.columns) {
-        return false;
-      }
-      const column =
-        this.$inertia.page.props.queryBuilderProps.default.columns.find(
-          (item) => item.key === columnKey
-        );
-      return column ? !column.hidden : false;
-    },
+  remove() {
+    axios
+      .delete(route("patients.destroy", { patient: this.patient.id }))
+      .then((response) => {
+        this.$store.dispatch("setSuccessFlashMessage", true);
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+      })
+      .catch((error) => { });
   },
-};
+  showColumn(columnKey) {
+    if (!this.$inertia.page.props.queryBuilderProps.default.columns) {
+      return false;
+    }
+    const column =
+      this.$inertia.page.props.queryBuilderProps.default.columns.find(
+        (item) => item.key === columnKey
+      );
+    return column ? !column.hidden : false;
+  }
+},
+  created() {
+  console.log(this.patients)
+}
+}
+
 </script>
 <style scoped>
 :deep(table th) {

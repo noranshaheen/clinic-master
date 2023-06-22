@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\PrescriptionItems;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
 
 class PrescriptionItemsController extends Controller
 {
@@ -37,6 +39,13 @@ class PrescriptionItemsController extends Controller
     public function show(PrescriptionItems $prescriptionItems)
     {
         //
+    }
+
+    public function getItems($prescription_id){
+        // dd($prescription_id);
+        $prescriptionItems = PrescriptionItems::where('prescription_id',$prescription_id)
+        ->with('drugs')->with('prescription')->get();
+        return $prescriptionItems;
     }
 
     /**

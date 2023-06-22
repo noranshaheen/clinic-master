@@ -3,18 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\Patient;
+use App\Models\Appointment;
+use App\Models\Payment;
+use App\Models\Prescription;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use ProtoneMedia\LaravelQueryBuilderInertiaJs\InertiaTable;
 use Spatie\QueryBuilder\QueryBuilder;
 use Illuminate\Validation\Rule;
+use Carbon\Carbon;
+use App\Http\Traits\ExcelWrapper;
 
 class PatientController extends Controller
 {
+    use ExcelWrapper;
 
     public function index()
     {
         $patients = QueryBuilder::for (Patient::class)
+        ->with('prescriptions')
         ->defaultSort('id')
         ->allowedSorts(['id','name','date_of_birth'])
         ->allowedFilters(['name','phone','type','date_of_birth','insurance_number','insurance_company','gender'])
@@ -26,62 +33,62 @@ class PatientController extends Controller
         ])->table(function (InertiaTable $table) {
             $table->column(
                 key:"id",
-                label:"ID",
+                label:__("ID"),
                 canBeHidden:false,
                 hidden:false,
                 sortable:true,
             )->column(
                 key:"name",
-                label: "Name",
+                label: __("Name"),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true,
                 searchable:true
             )->column(
                 key:"gender",
-                label: "Gender",
+                label: __("Gender"),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true,
                 searchable:true
             )->column(
                 key:"date_of_birth",
-                label: "Age",
+                label: __("Age"),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true,
                 searchable:true
             )->column(
                 key:"type",
-                label: "Type",
+                label: __("Type"),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true,
                 searchable:true
             )->column(
                 key:"insurance_number",
-                label: "Insurance Number",
+                label: __("Insurance Number"),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true,
                 searchable:true
             )->column(
                 key:"insurance_company",
-                label: "Insurance Company",
+                label: __("Insurance Company"),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true,
                 searchable:true
             )->column(
                 key:"phone",
-                label: "Phone Number",
+                label: __("Phone Number"),
                 canBeHidden:true,
                 hidden:false,
                 sortable:true,
                 searchable:true
             )->column(
                 key:"actions",
-                label: "Actions",
+                label: __("Actions"),
             );
         });
     }
@@ -93,14 +100,17 @@ class PatientController extends Controller
 
     public function store(Request $request)
     {
+        $today = Carbon::parse('today');
+
         $request->validate([
-            'name' =>['string','max:255','required'],
-            'phone' =>['string','max:255','required'],
+            'name' =>['string','max:255','min:2','required','regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
+            'phone' =>['numeric','min:11','required','unique:patients,phone'],
             'type' =>['required',Rule::in(['I','P'])],
             'gender' =>['required',Rule::in(['M','F'])],
-            'date_of_birth' =>['date','required'],
+            'date_of_birth' => ['date','before_or_equal:'.$today],
             'insurance_number' =>['string','max:255','nullable'],
             'insurance_company' =>['string','max:255','nullable'],
+            'additionalInformation' =>['string','max:4000','nullable'],
         ]);
 
         $patient = new Patient();
@@ -111,6 +121,7 @@ class PatientController extends Controller
         $patient->date_of_birth = $request->date_of_birth;
         $patient->insurance_number = $request->insurance_number;
         $patient->insurance_company = $request->insurance_company;
+        $patient->additionalInformation = $request->additionalInformation;
         $patient->save();
 
         return redirect()->back();
@@ -128,16 +139,20 @@ class PatientController extends Controller
 
     public function update(Request $request, Patient $patient)
     {
-        $date = $request->validate([
-            'name' =>['string','max:255','required'],
-            'phone' =>['string','max:255','required'],
+        $today = Carbon::parse('today');
+
+        $date =  $request->validate([
+            'name' =>['string','max:255','min:2','required','regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
+            'phone' =>['numeric','min:11','required'],
             'type' =>['required',Rule::in(['I','P'])],
             'gender' =>['required',Rule::in(['M','F'])],
-            'date_of_birth' =>['date','max:100','required'],
+            'date_of_birth' => ['date','required','before_or_equal:'.$today],
             'insurance_number' =>['string','max:255','nullable'],
             'insurance_company' =>['string','max:255','nullable'],
+            'additionalInformation' =>['string','max:4000','nullable'],
         ]);
-
+        $patient->additionalInformation = $request->additionalInformation;
+        $patient->save();
         $patient->update($date);
     }
 
@@ -148,5 +163,63 @@ class PatientController extends Controller
 
     public function all(){
         return Patient::all();
+    }
+
+    public function getHistory($patient_id){
+       
+        // $patient_appointments = Appointment::with('patient')->where('patient_id','=',$patient_id)->get();
+        $patient_history=Prescription::with('doctor')
+                                        ->with('prescriptionItems')
+                                        ->with('prescriptionItems.drugs')
+                                        ->with('appointment')
+                                        ->with('appointment.payment')
+                                        ->with('patient')
+                                        ->where('patient_id','=',$patient_id)->get();
+        $payments = Payment::where('patient_id','=',$patient_id)->with('appointment')->get();
+        return Inertia::render('Patients/History',[
+            'prescriptions'=>$patient_history,
+            'payments' => $payments
+        ]);
+    }
+
+    public function UploadPatients(Request $request)
+    {
+        $temp = [];
+        $extension = $request->file->extension();
+        if ($extension == 'xlsx' || $extension == 'xls')
+            $temp = $this->xlsxToArray($request->file, $extension);
+        elseif($extension == 'csv')
+            $temp = $this->csvToArray($request->file);
+        else
+            return json_encode(["Error" => true, "Message" => __("Unsupported File Type!")]);
+
+        foreach($temp as $key=>$value){
+            $patient = Patient::where("name","=",$temp[$key]["name"])->first();
+            if(!$patient){
+                $new_patient = new Patient();
+                $new_patient->name = $temp[$key]['name'];
+                $new_patient->gender = $temp[$key]['gender (M|F)'];
+                $new_patient->phone = $temp[$key]['phone'];
+                $new_patient->type = $temp[$key]['type (P|I)'];
+                $new_patient->date_of_birth = $this->excelDateToDatetime($temp[$key]['date_of_birth']);
+                $new_patient->insurance_number = $temp[$key]['insurance_number']?$temp[$key]['insurance_number']:null;
+                $new_patient->insurance_company = $temp[$key]['insurance_company']?$temp[$key]['insurance_company']:null;
+                $new_patient->additionalInformation = $temp[$key]['additionalInformation']?$temp[$key]['additionalInformation']:null;
+                $new_patient->save();
+            }else{
+                $data = [
+                    "name" => $temp[$key]['name'],
+                    "gender" => $temp[$key]['gender (M|F)'],
+                    "phone" => $temp[$key]['phone'],
+                    "type" => $temp[$key]['type (P|I)'],
+                    "date_of_birth" => $this->excelDateToDatetime($temp[$key]['date_of_birth']),
+                    "insurance_number" => $temp[$key]['insurance_number']?$temp[$key]['insurance_number']:null,
+                    "insurance_company" =>$temp[$key]['insurance_company']?$temp[$key]['insurance_company']:null,
+                    "additionalInformation" => $temp[$key]['additionalInformation']?$temp[$key]['additionalInformation']:null,
+                ];
+                $patient->update($data);
+            }
+        }
+
     }
 }
