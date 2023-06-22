@@ -3,63 +3,63 @@
     <div>
         <jet-dialog-modal :show="showDialog" @close="showDialog = amount = false" maxWidth="md">
             <template #title>
-                {{ __("appointment details") }}
+                {{ __("Appointment Details") }}
             </template>
             <template #content>
                 <div v-if="appointment_Details[0].cancelled">
                     <p class="text-center text-red-600 my-5">
                         <i class="fa fa-exclamation-circle mr-1"></i>
-                        {{ __("This appointment has been cancelled please contact with patient to let him know") }}
+                        {{ __("This appointment has been cancelled please contact with patient") }}
                     </p>
                 </div>
                 <table class="w-full">
                     <tr class="border">
-                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">Reservation Time</th>
+                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">{{__("Reservation Time")}}</th>
                         <td class="pl-5">{{ subtractHours(appointment_Details[0].from, 3) }}</td>
                     </tr>
                     <tr class="border">
-                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">Patient Name</th>
+                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">{{__("Patient Name")}}</th>
                         <td class="pl-5">{{ appointment_Details[1].name }}</td>
                     </tr>
                     <tr class="border">
-                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">Phone Number</th>
+                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">{{__("Phone Number")}}</th>
                         <td class="pl-5">{{ appointment_Details[1].phone }}</td>
                     </tr>
                     <tr class="border">
-                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">Appointment Type</th>
+                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">{{__("Appointment Type")}}</th>
                         <td class="pl-5">{{ appointment_Details[0].type }}</td>
                     </tr>
                     <tr class="border">
-                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">Payment Status</th>
+                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">{{ __("Payment Status") }}</th>
                         <td class="pl-5">
                             <div class="flex justify-between items-center">
                                 <span class="font-bold text-green-500" v-if="appointment_Details[0].status == 'paid'">
-                                    {{ appointment_Details[0].status }}
+                                    {{ __(appointment_Details[0].status) }}
                                 </span>
                                 <span class="font-bold text-red-500" v-if="appointment_Details[0].status == 'hold'">
-                                    {{ appointment_Details[0].status }}
+                                    {{ __(appointment_Details[0].status) }}
                                 </span>
                                 <JetButton
                                     v-if="appointment_Details[0].amount == null && appointment_Details[0].cancelled == null"
                                     @click=" amount = true" class="font-sm">
-                                    pay
+                                    {{ __("Pay")}}
                                 </JetButton>
                                 <JetButton
                                     v-else-if="appointment_Details[0].cancelled !== null || appointment_Details[0].amount !== null"
                                     :disabled="true" class="font-sm bg-green-400 ">
-                                    pay
+                                    {{ __("Pay")}}
                                 </JetButton>
                             </div>
                         </td>
                     </tr>
                     <tr class="border" v-if="amount == true">
-                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">Payment Amount</th>
+                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">{{ __("Payment Amount") }}</th>
                         <td class="px-5">
                             <jet-input id="type" type="text" class=" block w-full " v-model="form.amount" required />
                         </td>
                     </tr>
                     <tr class="border" v-if="appointment_Details[0].status == 'paid'">
-                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">Payment Amount</th>
+                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">{{__("Payment Amount")}}</th>
                         <td class="px-5">
                             <jet-input id="type" type="text" class=" block w-full " :value="appointment_Details[0].amount"
                                 :disabled="true" />
@@ -80,16 +80,16 @@
                         </td>
                     </tr> -->
                 </table>
-                <JetSecondaryButton class="my-2" @click="additionalPayments(appointment_Details[1].id)">
-                    additional payments
+                <JetSecondaryButton class="my-2" @click="additionalPayments(appointment_Details[0].id)">
+                    {{ __("Additional Payments") }}
                 </JetSecondaryButton>
             </template>
             <template #footer>
                 <JetButton class="ml-2"
                     v-if="appointment_Details[0].amount == null && appointment_Details[0].cancelled == null" @click="save()">
-                    save</JetButton>
-                <JetButton class="ml-2" v-else :disabled="true">save</JetButton>
-                <JetSecondaryButton class="ml-2" @click="close()">close</JetSecondaryButton>
+                    {{__("Save")}}</JetButton>
+                <JetButton class="ml-2" v-else :disabled="true">{{__("Save")}}</JetButton>
+                <JetSecondaryButton class="ml-2" @click="close()">{{ __("Close") }}</JetSecondaryButton>
             </template>
         </jet-dialog-modal>
     </div>
@@ -140,11 +140,11 @@ export default {
             var exactTime = d.toLocaleTimeString();
             return exactTime;
         },
-        additionalPayments(patient_id) {
-            axios.get(route('prescription.serviceFees', patient_id))
+        additionalPayments(appointment_id) {
+            axios.get(route('prescription.serviceFees', appointment_id))
                 .then((response) => {
                     this.prescription = response.data;
-                    this.form.appointment_id = this.appointment_Details[0].id;
+                    this.form.appointment_id = appointment_id;
                     this.$nextTick(() => {
                         this.$refs.dlg1.ShowDialog();
                     });

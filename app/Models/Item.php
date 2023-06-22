@@ -28,6 +28,6 @@ class Item extends Model
 
     public function spendings(): HasMany
     {
-        return $this->hasMany('App\Models\Spendings', 'item_id', 'id');
+        return $this->hasMany('App\Models\Spending', 'item_id', 'id');
     }
 }

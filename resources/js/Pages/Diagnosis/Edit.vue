@@ -1,7 +1,7 @@
 <template>
   <jet-dialog-modal :show="showDialog" @close="showDialog = false">
     <template #title>
-      {{ __("diagnose Information") }}
+      {{ __("Diagnose Information") }}
     </template>
 
     <template #content>
@@ -12,17 +12,17 @@
           <div>
 
             <div class="mt-4">
-              <jet-label for="type" :value='__("Diagnose Name")' />
+              <jet-label for="type" :value='__("Name")' />
               <jet-input id="type" type="text" class="mt-1 block w-full" v-model="form.name" required />
             </div>
 
             <div class="mt-4">
-              <jet-label for="type" :value='__("Diagnose Description")' />
+              <jet-label for="type" :value='__("Description")' />
               <jet-input id="type" type="text" class="mt-1 block w-full" v-model="form.description" />
             </div>
 
             <div class="mt-4">
-              <jet-label for="branch" :value='__("Choose Specialty")' />
+              <jet-label for="branch" :value='__("Specialty")' />
               <select id="branch" required v-model="form.specialty_id"
                 class="mt-1 block w-full rounded border border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm">
                 <option v-for="cl in allSpecialties" :key="cl.id" :value="cl.id">

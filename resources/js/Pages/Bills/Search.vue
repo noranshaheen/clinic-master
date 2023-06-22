@@ -22,6 +22,9 @@
             <jet-button @click="onSearchIncomes()">
               {{ __("Incomes") }}
             </jet-button>
+            <jet-button @click="onCheckBalance()">
+              {{ __("Consumable Items Balance") }}
+            </jet-button>
           </div>
 
 
@@ -76,11 +79,11 @@
                 {{ __("Doctor") }}
               </th>
               <th class="bg-[#f8f9fa] p-3 border border-[#d4d4d4]">
-                {{ __("ُExpenses Amount") }}
+                {{ __("Expenses Amount") }}
               </th>
             </thead>
             <tbody class="text-center border border-[#d4d4d4]">
-              <tr class="border border-[#d4d4d4]" v-for="(row,idx) in expenses" :key="row.id">
+              <tr class="border border-[#d4d4d4]" v-for="(row, idx) in expenses" :key="row.id">
                 <td class="p-2 border border-[#d4d4d4]">
                   {{ row.id }}
                 </td>
@@ -98,10 +101,10 @@
                 </td>
               </tr>
               <tr class="border border-[#d4d4d4]">
-                <td class="p-2 border border-[#d4d4d4]" colspan="4">
-                  {{ "Total" }}
+                <td class="p-2 border font-bold border-[#d4d4d4]" colspan="4">
+                  {{ __("Total") }}
                 </td>
-                <td class="p-2 border border-[#d4d4d4]">
+                <td class="p-2 border font-bold border-[#d4d4d4]">
                   {{ totalExpenses() }}
                 </td>
               </tr>
@@ -152,8 +155,59 @@
                 </td>
               </tr>
               <tr>
-                <td class="p-2 border border-[#d4d4d4]" colspan="4">{{"Total"}}</td>
-                <td class="p-2 border border-[#d4d4d4]">{{totalIncomes()}}</td>
+                <td class="p-2 border font-bold border-[#d4d4d4]" colspan="4">{{ __("Total") }}</td>
+                <td class="p-2 border font-bold border-[#d4d4d4]">{{ totalIncomes() }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="result my-5 overflow-x-auto w-full" v-else-if="items.length > 0">
+          <table class="w-11/12 mx-auto max-w-4xl lg:max-w-full">
+            <thead class="text-center bg-gray-300">
+              <!-- <th class="bg-[#f8f9fa] p-3 border border-[#d4d4d4]">
+                {{ __("Clinic") }}
+              </th>
+              <th class="bg-[#f8f9fa] p-3 border border-[#d4d4d4]">
+                {{ __("Doctor") }}
+              </th> -->
+              <th class="bg-[#f8f9fa] p-3 border border-[#d4d4d4]">
+                {{ __("Item") }}
+              </th>
+              <th class="bg-[#f8f9fa] p-3 border border-[#d4d4d4]">
+                {{ __("Beginning Balance") }}
+              </th>
+              <th class="bg-[#f8f9fa] p-3 border border-[#d4d4d4]">
+                {{ __("Ending Balance") }}
+              </th>
+              <th class="bg-[#f8f9fa] p-3 border border-[#d4d4d4]">
+                {{ __("Consumed Quantity") }}
+              </th>
+              <!-- <th class="bg-[#f8f9fa] p-3 border border-[#d4d4d4]">
+                {{ __("Details") }}
+              </th> -->
+            </thead>
+            <tbody class="text-center border border-[#d4d4d4]">
+              <tr class="border border-[#d4d4d4]" v-for="row in items" :key="row.id">
+                <!-- <td class="border border-[#d4d4d4]">
+                  {{ row.bill_details.bill. }}
+                </td>
+                <td class="border border-[#d4d4d4]">
+                  {{ row.spendings.doctor_id }}
+                </td> -->
+                <td v-if="row.hidden == 0" class="border border-[#d4d4d4]">
+                  {{ row.name }}
+                </td>
+                <td v-if="row.hidden == 0" class="p-2 border border-[#d4d4d4]">
+                  {{ beginBalance(row) }}
+                </td>
+                <td v-if="row.hidden == 0" class="border border-[#d4d4d4]">
+                  {{ "-" }}
+                  <!-- endBalance(row.spendings) -->
+                </td>
+                <td v-if="row.hidden == 0" class="border border-[#d4d4d4]">
+                  {{ "-" }}
+                  <!-- consumedQuantity(row.spendings) -->
+                </td>
               </tr>
             </tbody>
           </table>
@@ -201,6 +255,8 @@ export default {
       // selected_status: null,
       expenses: [],
       incomes: [],
+      items: [],
+      // consumed_items:[],
       mateched_clinics: [],
       form: {
         clinic: "",
@@ -216,6 +272,7 @@ export default {
         .post(route("bills.expenses.searchData"), this.form)
         .then((response) => {
           this.incomes = []
+          this.items = []
           this.expenses = response.data;
           console.log(response.data);
         })
@@ -226,29 +283,42 @@ export default {
         .post(route("bills.income.searchData"), this.form)
         .then((response) => {
           this.expenses = []
+          this.items = []
           this.incomes = response.data;
           console.log(response.data);
         })
         .catch((error) => { });
     },
+    onCheckBalance: function () {
+      axios
+        .post(route('bills.items.balance'), this.form)
+        .then((response) => {
+          this.expenses = []
+          // this.purchased_items = response.data[0];
+          // this.consumed_items = response.data[1];
+          this.incomes = []
+          this.items = response.data;
+          console.log(response.data);
+        })
+    },
     getTotalLineIncome(line) {
       if (line.appointment.payment !== null) {
         var total = Number(line.appointment.payment.detection_fees);
-      line.prescription_items.forEach(element => {
-        if (element.service_fees !== null) {
-          total += Number(element.service_fees);
-          // console.log(el.service_fees);
-        }
-      });
-      return total;
-      }else{
+        line.prescription_items.forEach(element => {
+          if (element.service_fees !== null) {
+            total += Number(element.service_fees);
+            // console.log(el.service_fees);
+          }
+        });
+        return total;
+      } else {
         return "0"
       }
     },
     totalIncomes() {
       if (this.incomes.length > 0) {
         var total = 0;
-        this.incomes.forEach((line)=>{
+        this.incomes.forEach((line) => {
           total += Number(this.getTotalLineIncome(line));
         })
         return total;
@@ -262,7 +332,62 @@ export default {
         })
         return total;
       }
-    }
+    },
+    beginBalance(item) {
+      var purchased_quantity = 0;
+      var spended_quantity = 0
+
+      if (item.bill_details.length > 0) {
+        var temp1 = [];
+        item.bill_details.forEach((el) => {
+          var billDate = new Date(el.date).toLocaleDateString();
+          var startDate = new Date(this.form.startDate).toLocaleDateString();
+          if (billDate <= startDate) {
+            temp1.push(el);
+          }
+        })
+        console.log("temp1",temp1)
+      }
+      if (item.spendings.length > 0) {
+        var temp2 = [];
+        item.spendings.forEach((el) => {
+          var spendingDate = new Date(el.date_isseud).toLocaleDateString();
+          var startDate = new Date(this.form.startDate).toLocaleDateString();
+          if (spendingDate <= startDate) {
+            temp2.push(el);
+          }
+        })
+        console.log("temp2",temp2)
+      }
+
+
+      // if (billDetails.length > 0) {
+      //   // var temp = billDetails.filter((row) => {
+      //   //   var datebill = new Date(row.date).toLocaleDateString();
+      //   //   var startdate = new Date(this.form.startDate).toLocaleDateString();
+      //   //   return datebill <= startdate;
+      //   // });
+      //   var temp = [];
+      //   billDetails.forEach((el) => {
+      //     if (el.bill !== null) {
+      //       console.log(el.bill);
+      //       var billDate = new Date(el.date).toLocaleDateString();
+      //       var startdate = new Date(this.form.startDate).toLocaleDateString();
+      //       if (billDate <= startdate) {
+      //         temp.push(el);
+      //       }
+      //     }
+      //   })
+      //   var startQuantity = 0;
+      //   temp.forEach((el) => {
+      //     startQuantity += Number(el.quantity)
+      //   })
+      //   console.log("temp",temp);
+      //   console.log("start Quantity", startQuantity);
+      //   // console.log(new Date(this.form.startDate).toLocaleDateString(),new Date(billDetails[0].date).toLocaleDateString());
+      // }
+
+    },
     // checkAll() {
     //   this.$nextTick(() => {
     //     this.data.forEach((row) => {

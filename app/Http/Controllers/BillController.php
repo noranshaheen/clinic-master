@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Bill;
 use App\Models\BillDetails;
+use App\Models\Item;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Prescription;
-
+use App\Models\Spending;
+use ProtoneMedia\LaravelQueryBuilderInertiaJs\InertiaTable;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class BillController extends Controller
 {
@@ -51,12 +54,59 @@ class BillController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Bill $bill)
+    public function showAll()
     {
-        //
+        $bills = QueryBuilder::for(Bill::class)
+            ->with('doctor')
+            ->with('clinic')
+            ->defaultSort('id')
+            ->allowedSorts(['id', 'date', 'totalAmount'])
+            ->allowedFilters(['date', 'doctor', 'clinic', 'totalAmount'])
+            ->paginate(Request()->input('perPage', 20))
+            ->withQueryString();
+
+        return Inertia::render('Bills/Index', [
+            'bills' => $bills
+        ])->table(function (InertiaTable $table) {
+            $table->column(
+                key: "id",
+                label: __("ID"),
+                canBeHidden: true,
+                hidden: false,
+                sortable: true
+            )->column(
+                key: "date",
+                label: __("Date"),
+                canBeHidden: true,
+                hidden: false,
+                sortable: true,
+                searchable: true
+            )->column(
+                key: "doctor",
+                label: __("Doctor"),
+                canBeHidden: true,
+                hidden: false,
+                sortable: true,
+                searchable: true
+            )->column(
+                key: "clinic",
+                label: __("Clinic"),
+                canBeHidden: true,
+                hidden: false,
+                sortable: true,
+                searchable: true
+            )->column(
+                key: "totalAmount",
+                label: __("Total"),
+                canBeHidden: true,
+                hidden: false,
+                sortable: true,
+                searchable: true
+            )->column(
+                key: "actions",
+                label: __("Actions"),
+            );
+        });
     }
 
     /**
@@ -92,13 +142,12 @@ class BillController extends Controller
 
     public function searchIncomeData(Request $request)
     {
-        if ($request->clinic['id'] == -1) {
+        if ($request->clinic['id'] == -1 && $request->doctor['id'] == -1) {
             $doctor_prescriptions = Prescription::with('doctor')
                 ->with('prescriptionItems')
                 ->with('clinic')
                 ->with('appointment')
                 ->with('appointment.payment')
-                ->where('doctor_id', '=', $request->doctor['id'])
                 ->whereBetween('dateTimeIssued', [$request->startDate, $request->endDate])
                 ->get();
             return $doctor_prescriptions;
@@ -112,7 +161,18 @@ class BillController extends Controller
                 ->whereBetween('dateTimeIssued', [$request->startDate, $request->endDate])
                 ->get();
             return $doctor_prescriptions;
+        } elseif ($request->clinic['id'] == -1) {
+            $doctor_prescriptions = Prescription::with('doctor')
+                ->with('prescriptionItems')
+                ->with('clinic')
+                ->with('appointment')
+                ->with('appointment.payment')
+                ->where('doctor_id', '=', $request->doctor['id'])
+                ->whereBetween('dateTimeIssued', [$request->startDate, $request->endDate])
+                ->get();
+            return $doctor_prescriptions;
         } else {
+
             $doctor_prescriptions = Prescription::with('doctor')
                 ->with('prescriptionItems')
                 ->with('clinic')
@@ -124,16 +184,19 @@ class BillController extends Controller
                 ->get();
             return $doctor_prescriptions;
         }
-        // $doctor_incomes = array_filter((array)$doctor_prescriptions,function($var){
-        //     global $request;
-        //     $var['appointment']['clinic_id'] == $request->clinic['id'];
-        // });
     }
 
     public function searchExpensesData(Request $request)
     {
         // dd($request);
-        if ($request->doctor['id'] == -1) {
+
+        if ($request->doctor['id'] == -1 && $request->clinic['id'] == -1) {
+            $bills = Bill::with('billDetails')
+                ->with('doctor')
+                ->with('clinic')
+                ->whereBetween('date', [$request->startDate, $request->endDate])
+                ->get();
+        } elseif ($request->doctor['id'] == -1) {
             $bills = Bill::with('billDetails')
                 ->with('doctor')
                 ->with('clinic')
@@ -157,5 +220,93 @@ class BillController extends Controller
                 ->get();
         }
         return $bills;
+    }
+
+
+    public function getItemsBalance(Request $request)
+    {
+        // dd($request);
+
+        if ($request->clinic['id'] == -1 && $request->doctor['id'] == -1) {
+
+            $items = Item::with('billDetails')
+                ->with('spendings')
+                ->get();
+
+            // $bills = Item::with('billDetails')->with('spendings')->get();
+
+            // Bill::with('billDetails')
+            //     ->with('billDetails.item')
+            //     ->with('doctor')
+            //     ->with('clinic')
+            //     ->whereBetween('date', [$request->startDate, $request->endDate])
+            //     ->get();
+
+            // $spendings = Spending::with('item')
+            //     ->whereBetween('date_isseud', [$request->startDate, $request->endDate])
+            //     ->get();
+        } elseif ($request->doctor['id'] == -1) {
+
+            $items = Item::with(['billDetails.bill' => function ($query) use ($request) {
+                $query->where('clinic_id', '=', $request->clinic['id']);
+            }])->with('billDetails')
+                ->with('spendings')
+                ->get();
+
+            // $bills = Bill::with('billDetails')
+            //     ->with('billDetails.item')
+            //     ->with('doctor')
+            //     ->with('clinic')
+            //     ->where('clinic_id', '=', $request->clinic['id'])
+            //     ->whereBetween('date', [$request->startDate, $request->endDate])
+            //     ->get();
+            // $spendings = Spending::with('item')
+            //     ->where('clinic_id', '=', $request->clinic['id'])
+            //     ->whereBetween('date_isseud', [$request->startDate, $request->endDate])
+            //     ->get();
+        } elseif ($request->clinic['id'] == -1) {
+
+            $items = Item::with(['billDetails.bill' => function ($query) use ($request) {
+                $query->where('doctor_id', '=', $request->doctor['id']);
+            }])->with('billDetails')
+                ->with('spendings')
+                ->get();
+
+            // $bills = Bill::with('billDetails')
+            //     ->with('billDetails.item')
+            //     ->with('doctor')
+            //     ->with('clinic')
+            //     ->where('doctor_id', '=', $request->doctor['id'])
+            //     ->whereBetween('date', [$request->startDate, $request->endDate])
+            //     ->get();
+
+            // $spendings = Spending::with('item')
+            //     ->where('doctor_id', '=', $request->doctor['id'])
+            //     ->whereBetween('date_isseud', [$request->startDate, $request->endDate])
+            //     ->get();
+        } else {
+
+            $items = Item::with('billDetails')
+            ->with('spendings')
+            ->with(['billDetails.bill' => function ($query) use ($request) {
+                $query->where('doctor_id', '=', $request->doctor['id']);
+                $query->where('clinic_id', '=', $request->clinic['id']);
+            }])->get();
+
+            // $bills = Bill::with('billDetails')
+            //     ->with('billDetails.item')
+            //     ->with('doctor')
+            //     ->with('clinic')
+            //     ->where('doctor_id', '=', $request->doctor['id'])
+            //     ->where('clinic_id', '=', $request->clinic['id'])
+            //     ->whereBetween('date', [$request->startDate, $request->endDate])
+            //     ->get();
+            // $spendings = Spending::with('item')
+            //     ->where('doctor_id', '=', $request->doctor['id'])
+            //     ->where('clinic_id', '=', $request->clinic['id'])
+            //     ->whereBetween('date_isseud', [$request->startDate, $request->endDate])
+            //     ->get();
+        }
+        return $items;
     }
 }

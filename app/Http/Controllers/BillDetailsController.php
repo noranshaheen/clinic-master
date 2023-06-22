@@ -34,9 +34,11 @@ class BillDetailsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(BillDetails $billLine)
+    public function show($bill_Id)
     {
-        //
+        $billDetail = BillDetails::with('item')
+        ->where('bill_id','=',$bill_Id)->get();
+        return $billDetail;
     }
 
     /**

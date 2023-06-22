@@ -4,7 +4,7 @@
         <choose-patient ref="dlg2" :appointment_id="appointment_id" @Save="save"/> -->
         <jet-dialog-modal :show="showDialog" @close="showDialog = false" maxWidth="md">
             <template #title>
-                {{ __("Choose Cancellation Method") }}
+                {{ __("Cancellation Method") }}
             </template>
             <template #content>
                 <div class="grid grid-cols-2 gap-8">
@@ -56,7 +56,7 @@ export default {
         cancelAll() { 
             swal({
                 title: this.__("Are you sure?"),
-                text: this.__("Once approved it will cancel all appointments in date "+this.date),
+                text: this.__("Once approved it will cancel all appointments in date")+" "+this.date,
                 icon: "warning",
                 buttons: true,
                 dangerMode: true,
@@ -66,7 +66,7 @@ export default {
                         .post(route("appointment.cancel.all"),{ date: this.date, doctor_id: this.doctor_id })
                         .then((response) => {
                             swal({
-                                title: "all appointments have been cancelled",
+                                title: this.__("all appointments have been cancelled"),
                                 icon: "success",
                             }).then((approve) => {
                                 this.showDialog = false;
@@ -79,7 +79,7 @@ export default {
         cancelUnreserved() {
             swal({
                 title: this.__("Are you sure?"),
-                text: this.__("Once approved it will be cancel unreserved appointments in date "+this.date),
+                text: this.__("Once approved it will cancel unreserved appointments in date")+" "+this.date,
                 icon: "warning",
                 buttons: true,
                 dangerMode: true,

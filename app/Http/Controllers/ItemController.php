@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Item;
+use Spatie\QueryBuilder\QueryBuilder;
+use ProtoneMedia\LaravelQueryBuilderInertiaJs\InertiaTable;
 
 
 class ItemController extends Controller
@@ -42,25 +44,69 @@ class ItemController extends Controller
         'weight'=>['nullable', 'numeric'],
         'measurement_unit.desc_en'=>['required'],
         'selling_price'=>['required','numeric'],
+        'hiddenItem'=>['nullable']
        ]);
        $item = new Item();
        $item->name= $request->name;
        $item->weight= $request->weight == null? null: $request->weight;
        $item->measurement_unit= $request->measurement_unit['desc_en'];
        $item->selling_price= $request->selling_price;
+       $item->hidden = $request->hiddenItem;
        $item->save();
        return "item has been stored successfully";
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+   
+    public function showAll()
     {
-        //
+        $items = QueryBuilder::for(Item::class)
+            ->defaultSort('id')
+            ->allowedSorts(['id', 'name','measurement_unit','selling_price'])
+            ->allowedFilters([ 'name','measurement_unit','selling_price'])
+            ->paginate(Request()->input('perPage', 20))
+            ->withQueryString();
+
+        return Inertia::render('Items/Index', [
+            'items' => $items
+        ])->table(function (InertiaTable $table) {
+            $table->column(
+                key: "id",
+                label: __("ID"),
+                canBeHidden: true,
+                hidden: false,
+                sortable: true
+            )->column(
+                key: "name",
+                label: __("Name"),
+                canBeHidden: true,
+                hidden: false,
+                sortable: true,
+                searchable: true
+            )->column(
+                key: "measurement_unit",
+                label: __("Measurement Unit"),
+                canBeHidden: true,
+                hidden: false,
+                sortable: true,
+                searchable: true
+            )->column(
+                key: "selling_price",
+                label: __("Selling Price"),
+                canBeHidden: true,
+                hidden: false,
+                sortable: true,
+                searchable: true
+            )->column(
+                key: "hidden",
+                label: __("Hidden"),
+                canBeHidden: true,
+                hidden: false,
+                searchable: true
+            )->column(
+                key: "actions",
+                label: __("Actions"),
+            );
+        });
     }
 
     /**
@@ -81,9 +127,17 @@ class ItemController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request,  Item $item)
     {
-        //
+        $data=$request->validate([
+            'name'=>['required', 'string', 'max:255', 'regex:/^[\p{Arabic}A-Za-z0-9\s]+$/u'],
+            'weight'=>['nullable', 'numeric'],
+            'measurement_unit.desc_en'=>['required'],
+            'selling_price'=>['required','numeric'],
+            'hiddenItem'=>['nullable']
+           ]);
+
+        $item->update($data);
     }
 
     /**
@@ -92,8 +146,8 @@ class ItemController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Item $item)
     {
-        //
+        $item->delete();
     }
 }

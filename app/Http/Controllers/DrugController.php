@@ -135,8 +135,7 @@ class DrugController extends Controller
         $extension = $request->file->extension();
         if ($extension == 'xlsx' || $extension == 'xls')
             $temp = $this->xlsxToArray($request->file, $extension);
-        // dd($temp);
-        else if ($extension == 'csv')
+        elseif($extension == 'csv')
             $temp = $this->csvToArray($request->file);
         else
             return json_encode(["Error" => true, "Message" => __("Unsupported File Type!")]);
@@ -171,11 +170,14 @@ class DrugController extends Controller
                             $dgsn->name = $val;
                             $dgsn->description = null;
                             $sp->diagnosis()->save($dgsn);
+                            $drug->diagnosis()->attach($dgsn->id);
                         } else {
                             $dgsn = new Diagnosis();
                             $dgsn->name = $val;
                             $dgsn->description = null;
                             $dgsn->specialty_id = $spc->id;
+                            $dgsn->save();
+                            $drug->diagnosis()->attach($dgsn->id);
                         }
                     } else {
                         $drug->diagnosis()->attach($diagnose->id);
@@ -189,6 +191,7 @@ class DrugController extends Controller
                 foreach ($diagnosis as $val) {
                     $diagnose = Diagnosis::where('name','=', $val)->first();
                     if (!$diagnose) {
+
                         $spc = Specialty::where('name','=', $speciality)->first();
                         if (!$spc) {
                             $sp = new Specialty();
@@ -198,12 +201,16 @@ class DrugController extends Controller
                             $dgsn->name = $val;
                             $dgsn->description = null;
                             $sp->diagnosis()->save($dgsn);
+                            $drug->diagnosis()->attach($dgsn->id);
                         } else {
                             $dgsn = new Diagnosis();
                             $dgsn->name = $val;
                             $dgsn->description = null;
                             $dgsn->specialty_id = $spc->id;
+                            $dgsn->save();
+                            $drug->diagnosis()->attach($dgsn->id);
                         }
+
                     } else {
                         $drug->diagnosis()->attach($diagnose->id);
                     }

@@ -36,15 +36,15 @@
               <div class="mt-2">
                 <div class="mb-2">
                   <input id="1" type="radio" name="type" value="Normal" v-model="form.appointment_type" />
-                  <label for="1" class="ml-2">Normal</label>
+                  <label for="1" class="ml-2">{{__("Normal")}}</label>
                 </div>
                 <div class="mb-2">
                   <input id="2" type="radio" name="type" value="Emergency" v-model="form.appointment_type" />
-                  <label for="2" class="ml-2">Emergency</label>
+                  <label for="2" class="ml-2">{{ __("Emergency") }}</label>
                 </div>
                 <div class="mb-2">
                   <input id="3" type="radio" name="type" value="Consultation" v-model="form.appointment_type" />
-                  <label for="3" class="ml-2">Consultation</label>
+                  <label for="3" class="ml-2">{{ __("Consultation") }}</label>
                 </div>
               </div>
             </div>

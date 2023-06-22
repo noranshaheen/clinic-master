@@ -2,7 +2,7 @@
     <!-- New Customer Modal -->
     <jet-dialog-modal :show="uploadingCustomers" @close="uploadingCustomers = false">
             <template #title>
-                {{__('Upload Customers')}}
+                {{__('Upload Drugs')}}
             </template>
 
             <template #content>

@@ -99,7 +99,7 @@
                                         {'m-1 text-neutral-200 bg-red-100 border-neutral-200 hover:bg-[#b7d5ed] hover:text-white' : apnt.cancelled== 1 }" -->
                             <td class="border dark:border-gray-700 px-2 py-2">
                                 <JetButton @click="openCancellationDialog(appointment[0].doctor_id, this.form.date)">
-                                    {{ __("cancel") }}
+                                    {{ __("Cancel") }}
                                 </JetButton>
                                 <!-- <JetButton>
                                     {{ __("postpone") }}

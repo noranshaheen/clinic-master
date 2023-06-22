@@ -23,7 +23,7 @@
                             <jet-label :value="__('Related Diagnosis')" />
                             <multiselect v-model="form.diagnose" label="name" :hide-selected="true" 
                             :options="allDiagnosis" :searchable="true" :multiple="true" track-by="id" 
-                            placeholder="Select Diagnose"/>
+                            :placeholder='__("Select Diagnose")'/>
                         
                             <!-- <select v-model="form.diagnose" multiple
                             class="mt-1 block w-full border-slate-300 rounded-md">

@@ -12,9 +12,11 @@ use ProtoneMedia\LaravelQueryBuilderInertiaJs\InertiaTable;
 use Spatie\QueryBuilder\QueryBuilder;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
+use App\Http\Traits\ExcelWrapper;
 
 class PatientController extends Controller
 {
+    use ExcelWrapper;
 
     public function index()
     {
@@ -178,5 +180,46 @@ class PatientController extends Controller
             'prescriptions'=>$patient_history,
             'payments' => $payments
         ]);
+    }
+
+    public function UploadPatients(Request $request)
+    {
+        $temp = [];
+        $extension = $request->file->extension();
+        if ($extension == 'xlsx' || $extension == 'xls')
+            $temp = $this->xlsxToArray($request->file, $extension);
+        elseif($extension == 'csv')
+            $temp = $this->csvToArray($request->file);
+        else
+            return json_encode(["Error" => true, "Message" => __("Unsupported File Type!")]);
+
+        foreach($temp as $key=>$value){
+            $patient = Patient::where("name","=",$temp[$key]["name"])->first();
+            if(!$patient){
+                $new_patient = new Patient();
+                $new_patient->name = $temp[$key]['name'];
+                $new_patient->gender = $temp[$key]['gender (M|F)'];
+                $new_patient->phone = $temp[$key]['phone'];
+                $new_patient->type = $temp[$key]['type (P|I)'];
+                $new_patient->date_of_birth = $this->excelDateToDatetime($temp[$key]['date_of_birth']);
+                $new_patient->insurance_number = $temp[$key]['insurance_number']?$temp[$key]['insurance_number']:null;
+                $new_patient->insurance_company = $temp[$key]['insurance_company']?$temp[$key]['insurance_company']:null;
+                $new_patient->additionalInformation = $temp[$key]['additionalInformation']?$temp[$key]['additionalInformation']:null;
+                $new_patient->save();
+            }else{
+                $data = [
+                    "name" => $temp[$key]['name'],
+                    "gender" => $temp[$key]['gender (M|F)'],
+                    "phone" => $temp[$key]['phone'],
+                    "type" => $temp[$key]['type (P|I)'],
+                    "date_of_birth" => $this->excelDateToDatetime($temp[$key]['date_of_birth']),
+                    "insurance_number" => $temp[$key]['insurance_number']?$temp[$key]['insurance_number']:null,
+                    "insurance_company" =>$temp[$key]['insurance_company']?$temp[$key]['insurance_company']:null,
+                    "additionalInformation" => $temp[$key]['additionalInformation']?$temp[$key]['additionalInformation']:null,
+                ];
+                $patient->update($data);
+            }
+        }
+
     }
 }

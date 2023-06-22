@@ -72,6 +72,9 @@
                   <i class="fas fa-eye"></i>
                   {{ __("Show Patients") }}
                 </dropdown-link>
+                <dropdown-link as="a" @click.prevent="openDlg('dlg14')" href="#">
+                  {{ __("Upload Patients") }}
+                </dropdown-link>
               </template>
             </dropdown>
 
@@ -243,17 +246,29 @@
               </template>
               <template #content>
                 <dropdown-link as="a" :href="route('bills.index')">
-                  <i class="fas fa-plus"></i>
+                  <!-- <i class="fas fa-plus"></i> -->
                   {{ __("Add Bill") }}
                 </dropdown-link>
-                <dropdown-link as="a" :href="route('bills.search')">
-                  <i class="fa-solid fa-magnifying-glass mx-1"></i>
-                  {{ __("Search Expensess & Incomes") }}
+                <dropdown-link as="a" :href="route('bills.showAll')">
+                  <!-- <i class="fas fa-plus"></i> -->
+                  {{ __("Show Bills") }}
                 </dropdown-link>
-                <dropdown-link as="a" href="#">
+                <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg13')">
+                  <!-- <i class="fas fa-plus"></i> -->
+                  {{ __("Add Item") }}
+                </dropdown-link>
+                <dropdown-link as="a" :href="route('items.showAll')">
+                  <!-- <i class="fas fa-plus"></i> -->
+                  {{ __("Show Items") }}
+                </dropdown-link>
+                <dropdown-link as="a" :href="route('bills.search')">
+                  <!-- <i class="fa-solid fa-magnifying-glass mx-1"></i> -->
+                  {{ __("Expensess & Incomes") }}
+                </dropdown-link>
+                <!-- <dropdown-link as="a" :href="route('bills.')">
                   <i class="fa-solid fa-magnifying-glass mx-1"></i>
                   {{ __("Check Balance") }}
-                </dropdown-link>
+                </dropdown-link> -->
               </template>
             </dropdown>
 

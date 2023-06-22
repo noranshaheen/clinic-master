@@ -32,6 +32,7 @@ use App\Http\Controllers\ReseptionistController;
 use App\Http\Controllers\DiagnosisController;
 use App\Http\Controllers\AnalysisController;
 use App\Http\Controllers\BillController;
+use App\Http\Controllers\BillDetailsController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\PrescriptionItemsController;
@@ -39,6 +40,8 @@ use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SpecialtyController;
 use App\Http\Controllers\XRayController;
 use App\Models\Appointment;
+use App\Models\Item;
+use App\Models\Patient;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -110,6 +113,7 @@ Route::middleware(['auth:sanctum', 'verified', 'ETASettings'])->group(function (
         'analysis'=>AnalysisController::class,
         'xray' => XRayController::class,
         'bills' => BillController::class,
+        'billDetails' => BillDetailsController::class,
     ]);
 
     Route::get('/clinic/all', [ClinicController::class, 'all'])->name("clinic.all");
@@ -133,9 +137,13 @@ Route::middleware(['auth:sanctum', 'verified', 'ETASettings'])->group(function (
     Route::post('/appointment/cancelAll', [AppointmentController::class, 'cancelAll'])->name("appointment.cancel.all");
     Route::get('/appointment/showHistory/{patient_id}', [AppointmentController::class, 'showHistory'])->name("appointment.showHistory");
     
+    Route::get('/item/show', [ItemController::class, 'showAll'])->name("items.showAll");
+
+    Route::get('/bill/show', [BillController::class, 'showAll'])->name("bills.showAll");  
     Route::get('/bill/search', [BillController::class, 'search'])->name("bills.search");
     Route::post('/bill/searchExpensesData', [BillController::class, 'searchExpensesData'])->name("bills.expenses.searchData");
     Route::post('/bill/searchIncomeData', [BillController::class, 'searchIncomeData'])->name("bills.income.searchData");
+    Route::post('/bill/items/balance', [BillController::class, 'getItemsBalance'])->name("bills.items.balance");
 
     Route::get('/invoice/search', [InvoiceController::class, 'search'])->name("invoices.search");
     Route::post('/invoice/searchData', [InvoiceController::class, 'searchData'])->name("invoices.searchData");
@@ -148,7 +156,7 @@ Route::middleware(['auth:sanctum', 'verified', 'ETASettings'])->group(function (
     Route::get('/doses', [PrescriptionController::class, 'index_doses'])->name("doses");
     Route::get('/durations', [PrescriptionController::class, 'index_duration'])->name("durations");
     Route::get('/history/{patient_id}', [PrescriptionController::class, 'getHistory'])->name("patient.history");
-    Route::get('/prescription/itemsFees/{patient_id}',[PrescriptionController::class,'getItemsFees'])->name("prescription.serviceFees");
+    Route::get('/prescription/itemsFees/{appointment_id}',[PrescriptionController::class,'getItemsFees'])->name("prescription.serviceFees");
 
     Route::get('/appointment/today/{clinic_id}',[PrescriptionController::class, 'getTodaysPatients'])->name("appointment.today");
 
@@ -163,6 +171,7 @@ Route::middleware(['auth:sanctum', 'verified', 'ETASettings'])->group(function (
 
     Route::post('/ETA/customers/Upload', [ETAController::class, 'UploadCustomer'])->name("eta.customer.upload");
     Route::post('/drugs/Upload', [DrugController::class, 'UploadDrugs'])->name("eta.drug.upload");
+    Route::post('/patients/Upload', [PatientController::class, 'UploadPatients'])->name("eta.patient.upload");
 
     Route::post('/invoice/copy', [ETAController::class, 'saveCopy'])->name('invoices.copy');
     Route::post('/ETA/Items/Upload', [ETAController::class, 'UploadItem'])->name("eta.items.upload");

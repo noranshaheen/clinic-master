@@ -6,15 +6,15 @@
                 <div class="mb-2 border-b">
                     <div class="mb-2">
                         <input id="1" type="radio" name="type" value="Normal" v-model="form.type"/>
-                        <label for="1" class="ml-2">Normal</label>
+                        <label for="1" class="ml-2">{{__("Normal")}}</label>
                     </div>
                     <div class="mb-2">
                         <input id="2" type="radio" name="type" value="Emergency" v-model="form.type"/>
-                        <label for="2" class="ml-2">Emergency</label>
+                        <label for="2" class="ml-2">{{ __("Emergency") }}</label>
                     </div>
                     <div class="mb-2">
                         <input id="3" type="radio" name="type" value="Consultation" v-model="form.type"/>
-                        <label for="3" class="ml-2">Consultation</label>
+                        <label for="3" class="ml-2">{{ __("Consultation") }}</label>
                     </div>
                 </div>
                 <multiselect v-model="form.patient" label="name" :options="allPatients" :custom-label="nameWithCode"

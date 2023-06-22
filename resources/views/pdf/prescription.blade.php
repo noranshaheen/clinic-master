@@ -22,6 +22,52 @@
 <body>
     <div class="wrapper flex justify-between">
         <div class="invoice w-full lg:w-5/6 my-5 shadow-lg rounded-xl rtl:mr-2 ltr:ml-2">
+            <div class="invoice-header flex justify-between">
+                <div class="invoice-details self-center p-5">
+                    <div class="mb-2">
+                        <h2 class="text-3xl uppercase">@lang('Prescription')</h2>
+                    </div>
+                    <div>
+                        <ul>
+                            <li class="pb-2 text-gray-600">{{ __('Prescription Number') }}: {{ $data->id}}</li>
+                            <li class="pb-2 text-gray-600">{{ __('Doctor Name') }}: {{ $data->doctor->name}}</li>
+                            <li class="text-gray-600 pb-2">{{ __('Date Of Issue') }}: {{
+                                \Carbon\Carbon::parse($data->dateTimeIssued)->toDateString() }}</li>
+                            <li class="text-gray-600 pb-2">{{ __('Time Of Issue') }}: {{
+                                \Carbon\Carbon::parse($data->dateTimeIssued)->toTimeString() }}</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="invoice-details self-center p-5">
+                    <div class="mb-2">
+                        <h2 class="text-3xl uppercase">@lang('Patient')</h2>
+                    </div>
+                    <div>
+                    <ul>
+                        <li class="text-gray-600">
+                        {{ __('Patient Name') }}:  {{ $data->patient->name }}
+                        </li>
+                        <li class="text-gray-600">
+                        {{ __('Phone Number') }}:  {{ $data->patient->phone }}
+                        </li>
+                        <li class="text-gray-600 pb-2">
+                            {{ __('Gender') }}: {{ $data->patient->gender == 'F'? __('Female'):__('Male') }}
+                        </li>
+                        <li class="text-gray-600 pb-2">
+                            {{ __('Diagnosis') }}:
+                            @foreach(json_decode($data->diagnosis) as $diagnose)
+                            <li>
+                                @php
+                                echo $diagnose;
+                                @endphp
+                            </li>
+                            @endforeach
+                        </li>
+                    </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- .........
             <div class="invoice-header grid grid-cols-3 gap-2">
                 <div class="invoice-details self-center">
                     <div class="mb-2">
@@ -39,7 +85,6 @@
                     </div>
                 </div>
             </div>
-            <hr>
             <div class="invoice-company-address flex justify-between p-5">
                 <div class="billed-to">
                     <h4 class="mb-2 text-2xl">{{ __('Patient Details') }}:</h4>
@@ -63,7 +108,7 @@
                         </li>
                     </ul>
                 </div>
-            </div>
+            </div> -->
             <hr>
             <div class="items p-5">
                 <table class="w-full">

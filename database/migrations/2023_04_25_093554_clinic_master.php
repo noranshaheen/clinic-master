@@ -176,6 +176,7 @@ return new class extends Migration
             $table->float('weight');
             $table->string('measurement_unit');
             $table->float('selling_price');
+            $table->tinyInteger('hidden');
             $table->timestamps();
         });
         Schema::create('bills', function (Blueprint $table) {

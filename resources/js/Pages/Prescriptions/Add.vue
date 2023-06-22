@@ -13,8 +13,8 @@
                     <div class="grid grid-cols-12 gap-4">
                         <div class="mx-2 col-span-3">
                             <jet-label class="py-4" :value='__("Select Clinic")' />
-                            <multiselect v-model="selected_clinic" label="name" :options="allClinics"
-                                placeholder="Branch" :searchable="true" class="text-sm" />
+                            <multiselect v-model="selected_clinic" label="name" :options="allClinics" placeholder="Branch"
+                                :searchable="true" class="text-sm" />
                             <jet-button @click="getAppointments" class="my-2">
                                 {{ "Search" }}
                             </jet-button>
@@ -87,7 +87,7 @@
                                                     <div class="flex justify-between items-center">
                                                         <span class="font-bold">{{ line.name }}</span>
                                                         <i class="fa fa-delete-left cursor-pointer text-red-500"
-                                                            @click="deleteItem(idx,form.prescriptionLines)"></i>
+                                                            @click="deleteItem(idx, form.prescriptionLines)"></i>
                                                     </div>
                                                     <!-- <multiselect v-model="line.dose" label="name" :options="doses"
                                                         placeholder="Dose" :searchable="true" class="text-sm" /> -->
@@ -137,18 +137,18 @@
                                             <ul v-for="(item, idx) in form.checkedItems">
                                                 <li class="mb-2">
                                                     <div class="flex justify-between items-center">
-                                                        <span class="font-bold">{{ item.name + " (" + item.measurement_unit+")" }}</span>
+                                                        <span class="font-bold">{{ item.name + " (" +
+                                                            item.measurement_unit + ")" }}</span>
                                                         <!-- <i class="fa fa-delete-left cursor-pointer text-red-500"
                                                             @click="deleteItem(idx,checkedItems)"></i> -->
                                                     </div>
                                                     <!-- <multiselect v-model="line.dose" label="name" :options="doses"
                                                         placeholder="Dose" :searchable="true" class="text-sm" /> -->
                                                     <div class="flex justify-between">
-                                                        <input type="number" step="0.1" v-model="item.quantity" placeholder="quantity"
-                                                            class="w-2/5" @change=""/>
-                                                        <input type="text" v-model="item.selling_price" :vlaue="item.selling_price" 
-                                                        placeholder="cost"
-                                                        class="w-3/5" />
+                                                        <input type="number" step="0.1" v-model="item.quantity"
+                                                            placeholder="quantity" class="w-2/5" />
+                                                        <input type="text" v-model="item.selling_price"
+                                                        placeholder="cost" class="w-3/5" />
                                                     </div>
                                                 </li>
                                             </ul>
@@ -323,12 +323,14 @@
                                 <span class="m-2 text-gray-400 text-sm">{{ __("(you can choose multiple options)") }}</span>
                                 <div class="flex justify-start flex-wrap my-4">
                                     <button v-for="item in allItems" :key="item.id" class="my-4 mx-2">
-                                        <input type="checkbox" class="peer sr-only" :id="item.name" name="item"
-                                        :value="item" v-model="form.checkedItems"/>
-                                        <label :for="item.name"
-                                            class=" cursor-pointer p-2 rounded-md text-center text-sm border shadow peer-checked:bg-green-500">
-                                            {{ item.name }}
-                                        </label>
+                                        <div v-if="item.hidden !== 1">
+                                            <input type="checkbox" class="peer sr-only" :id="item.name" name="item"
+                                                :value="item" v-model="form.checkedItems" />
+                                            <label :for="item.name"
+                                                class=" cursor-pointer p-2 rounded-md text-center text-sm border shadow peer-checked:bg-green-500">
+                                                {{ item.name }}
+                                            </label>
+                                        </div>
                                     </button>
                                 </div>
                             </div>
@@ -394,7 +396,7 @@ export default {
             //   doctors: [],
             tab_idx: 1,
             allClinics: [],
-            selected_clinic:"",
+            selected_clinic: "",
             allItems: [],
             prescription_details: "",
             appointments: [],
@@ -423,7 +425,7 @@ export default {
                 rays: [],
                 notes: "",
                 selected_clinic: "",
-                checkedItems:[]
+                checkedItems: []
             }),
         };
     },
@@ -547,7 +549,7 @@ export default {
         //         dose: "",
         //     });
         // },
-        deleteItem: function (idx ,arr) {
+        deleteItem: function (idx, arr) {
             arr.splice(idx, 1);
         },
         AddAnalysis: function () {
@@ -558,6 +560,13 @@ export default {
         },
         nameWithId: function ({ id, name }) {
             return id + " - " + name;
+        },
+        // changePrice(item){
+        //     item
+        // },
+        getPrice(item) {
+            var price = Number.parseFloat(item.selling_price) * Number.parseFloat(item.quantity);
+            return price;
         },
         openDlg(patient) {
             // console.log(patient);

@@ -13,10 +13,11 @@ class Spending extends Model
     protected $table = 'spendings';
 
     public $primaryKey = 'id';
-    protected $fillable = ['doctor_id', 'clinic_id','item_id','quantity','patient_id'];
+    protected $fillable = ['doctor_id', 'clinic_id','item_id','quantity','date_isseud','patient_id'];
 
     protected $casts=[
         'quantity'=>'float',
+        'date_isseud'=>'date'
     ];
 
     public function doctor(): BelongsTo

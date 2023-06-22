@@ -16,7 +16,7 @@
                                 placeholder="Select doctor" />
                         </div>
                         <div class="">
-                            <TextField v-model="form.date" itemType="date" :itemLabel="__('Bill Date')" />
+                            <TextField v-model="form.date" itemType="date" :itemLabel="__('Date')" />
                         </div>
                     </div>
                     <div>
@@ -82,13 +82,13 @@
                             <div class="result my-5 w-full">
                                 <table class="w-full mx-auto max-w-4xl lg:max-w-full">
                                     <thead class="text-center bg-gray-300">
-                                            <th class="bg-[#f8f9fa] p-1 border border-[#eceeef] w-5/12">
+                                            <th class="bg-[#f8f9fa] p-1 border border-[#eceeef] w-3/12">
                                                 {{ __('Item') }}
                                                 <button @click="addNewItemDialog()" class="cursor-pointer ml-4">
                                                     <i class="fa-solid fa-plus"></i>
                                                 </button>
-                                                
                                             </th>
+                                            <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">{{ __('Unit') }}</th>
                                             <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">{{ __('Purches Price Per Unit') }}</th>
                                             <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">{{ __('Quantity') }}</th>
                                             <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">{{ __('Total') }}</th>
@@ -100,6 +100,11 @@
                                                 <!-- <TextField v-model="billLine.item" itemType="text" /> -->
                                                 <multiselect v-model="billLine.item" label="name" :options="items"
                                                     placeholder="Select Item" :searchable="true"/>
+                                            </td>
+                                            <td class="p-1 border border-[#eceeef]">
+                                                <!-- <TextField v-model="billLine.item" itemType="text" /> -->
+                                                <multiselect v-model="billLine.unit"  :options="units"
+                                                label="desc_en" placeholder="unit" :searchable="true"/>
                                             </td>
                                             <td class="p-1 border border-[#eceeef]"> 
                                             <TextField v-model="billLine.unitPrice" itemType="number"/> 
@@ -126,8 +131,8 @@
                                     {{ __("Add New Item") }}
                                 </jet-button>
                             </div>
-                            <h3 class="">
-                                {{ __('Total Amount :') }}
+                            <h3 class="capitalize py-2 text-gray-600 text-lg font-bold">
+                                {{ __('Invoice Total') +" :" }}
                                 <span>
                                     {{ totalAmount() }}
                                 </span>
@@ -184,6 +189,7 @@ export default {
             doctors: [],
             clinics: [],
             items: [],
+            units:[],
             errors: [],
             form: this.$inertia.form({
                 billLines: [],
@@ -199,6 +205,7 @@ export default {
             // console.log("add new item")
             this.form.billLines.push({
                 item: "",
+                unit:"",
                 quantity: 0,
                 total: 0
             });
@@ -270,6 +277,12 @@ export default {
                 this.items = response.data;
                 console.log(this.items);
             })
+        axios
+			.get("/json/UnitTypes.json")
+			.then((response) => {
+				this.units = response.data;
+			})
+			.catch((error) => { });
 
     },
 };

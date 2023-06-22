@@ -139,7 +139,7 @@ class PrescriptionController extends Controller
 
         foreach ($request->checkedItems as $item) {
             $spendings = new Spending();
-            $spendings->doctor_id = Auth::user()->id;
+            $spendings->doctor_id = Auth::user()->doc_res_id;
             $spendings->clinic_id = $request->selected_clinic['id'];
             $spendings->item_id   = $item['id'];
             $spendings->quantity  = $item['quantity'];
@@ -172,16 +172,16 @@ class PrescriptionController extends Controller
         return $appointmentsToday;
     }
 
-    public function getItemsFees($patient_id)
+    public function getItemsFees($appointment_id)
     {
 
-        $today = Carbon::parse('today')->format('Y-m-d');
+        // dd($appointment_id);
+        // $today = Carbon::parse('today')->format('Y-m-d');
         // dd($today);
-        $prescriptionItems = Prescription::where('patient_id', '=', $patient_id)
-            ->whereDate('dateTimeIssued', '=', $today)
+        $prescriptionItems = Prescription::where('appointment_id', '=', $appointment_id)
             ->with('prescriptionItems')
             ->with('prescriptionItems.drugs')
-            ->get()->last();
+            ->get();
         return $prescriptionItems;
         // dd($prescriptionItems);
     }

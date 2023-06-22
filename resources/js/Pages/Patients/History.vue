@@ -20,25 +20,25 @@
                     <div v-show="tab_idx == 1" class="overflow">
                         <table class="w-full">
                             <tr>
-                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">Date</th>
-                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">Detection Type</th>
-                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">Payment Status</th>
-                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">detection fees</th>
-                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">Total service fees</th>
-                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">paid service fees</th>
-                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">remains</th>
-                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">Actions</th>
+                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{__("Date")}}</th>
+                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{__("Detection Type")}}</th>
+                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{ __("Payment Status") }}</th>
+                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{ __("Detection Fees") }}</th>
+                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{ __("Total Service Fees") }}</th>
+                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{ __("Paid Service Fees") }}</th>
+                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{__("Remains")}}</th>
+                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{__("Actions")}}</th>
                             </tr>
                             <tr v-for="prescription in prescriptions" :key="prescription.id">
                                 <td class="text-center  border py-2">{{ new
                                     Date(prescription.appointment.date).toLocaleDateString() }}
                                 </td>
-                                <td class="text-center  border py-2">{{ prescription.appointment.type }}</td>
-                                <td class="text-center  border py-2">{{ prescription.appointment.status }}</td>
+                                <td class="text-center  border py-2">{{ __(prescription.appointment.type) }}</td>
+                                <td class="text-center  border py-2">{{ __(prescription.appointment.status) }}</td>
                                 <td class="text-center  border py-2">{{ prescription.appointment.amount }}</td>
                                 <td class="text-center  border py-2">{{
                                     prescription.appointment.payment !== null ? getTotalServiceFees(prescription) :
-                                    "Not Found"
+                                    __("Not Found")
                                 }}</td>
                                 <td class="text-center  border py-2">
                                     <!-- <span v-for="payment in prescription.appointment.payment">
@@ -48,7 +48,7 @@
                                     </span> -->
                                     <span>
                                         {{ prescription.appointment.payment !== null ?
-                                            getPaidServiceFees(prescription) : "Not Paid" }}
+                                            __(getPaidServiceFees(prescription)) : __("Not Paid") }}
                                     </span>
                                 </td>
                                 <td class="text-center  border py-2">
@@ -67,10 +67,10 @@
                     <div v-show="tab_idx == 2" class="overflow">
                         <table class="w-full" v-if="this.prescriptions.length !== 0">
                             <tr>
-                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">Date</th>
-                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">Doctor</th>
-                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">Diagnose</th>
-                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">Actions</th>
+                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{ __("Date") }}</th>
+                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{__("Doctor")}}</th>
+                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{__("Diagnose")}}</th>
+                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{ __("Actions") }}</th>
                             </tr>
                             <tr v-for="prescription in prescriptions" :key="prescription.id">
                                 <td class="text-center border py-2">{{ new
@@ -84,8 +84,8 @@
                                     </ul>
                                 </td>
                                 <td class="text-center border py-2">
-                                    <JetButton @click="downloadPrescriptionPDF(prescription)">Print</JetButton>
-                                    <JetButton @click="openDlg(prescription)">Show</JetButton>
+                                    <JetButton @click="downloadPrescriptionPDF(prescription)">{{__("Print")}}</JetButton>
+                                    <JetButton @click="openDlg(prescription)">{{__("Show")}}</JetButton>
                                 </td>
                             </tr>
                         </table>
