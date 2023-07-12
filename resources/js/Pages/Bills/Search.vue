@@ -15,7 +15,7 @@
             <TextField v-model="form.startDate" itemType="date" :itemLabel="__('Start Date')" />
             <TextField v-model="form.endDate" itemType="date" :itemLabel="__('End Date')" />
           </div>
-          <div class="flex items-center justify-start mt-4">
+          <div class="flex items-center justify-start mt-4 flex-wrap">
             <jet-button @click="onSearchExpenses()">
               {{ __("Expenses") }}
             </jet-button>
@@ -310,10 +310,18 @@ export default {
             // console.log(el.service_fees);
           }
         });
-        return total;
+        
       } else {
-        return "0"
+        // return "0"
+        var total = 0;
+        line.prescription_items.forEach(element => {
+          if (element.service_fees !== null) {
+            total += Number(element.service_fees);
+            // console.log(el.service_fees);
+          }
+        });
       }
+      return total;
     },
     totalIncomes() {
       if (this.incomes.length > 0) {

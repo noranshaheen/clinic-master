@@ -1,17 +1,17 @@
 <template>
     <!-- New Customer Modal -->
-    <jet-dialog-modal :show="uploadingCustomers" @close="uploadingCustomers = false">
-            <template #title>
+    <jet-dialog-modal :show="uploadingCustomers" @close="uploadingCustomers = false" class="text-sm md:text-lg">
+            <template #title class="text-sm md:text-lg">
                 {{__('Upload Drugs')}}
             </template>
 
             <template #content>
-                <div class="grid grid-cols-3 md:grid-cols-3 gap-4">
-					<label>{{__('Choose File')}}
+                <div class="text-md md:text-lg">
+					<!-- <label>{{__('Choose File')}} -->
 						<input type="file" @change="handleFileUpload($event)" ref="inputFile"/>
-					</label>
+					<!-- </label> -->
                 </div>
-                <div class="flex justify-end">
+                <div class="flex justify-start mt-4 underline decoration-1 text-md md:text-lg ">
                     <a href="/ExcelTemplates/DrugUpload.xlsx">{{__('Download excel template')}}</a>
                 </div>
             </template>

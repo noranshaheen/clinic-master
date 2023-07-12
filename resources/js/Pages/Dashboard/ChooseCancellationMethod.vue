@@ -7,9 +7,9 @@
                 {{ __("Cancellation Method") }}
             </template>
             <template #content>
-                <div class="grid grid-cols-2 gap-8">
-                    <jet-button @click="cancelAll()" >{{ __("cancel all appointments") }}</jet-button>
-                    <jet-button @click="cancelUnreserved()" >{{ __("cancel unreserved appointments") }}</jet-button>
+                <div class="flex flex-col justify-between items-center md:grid md:grid-cols-2 md:gap-8">
+                    <jet-button class="w-full mb-2 md:h-full" @click="cancelAll()" >{{ __("cancel all appointments") }}</jet-button>
+                    <jet-button class="w-full mb-2 md:h-full" @click="cancelUnreserved()" >{{ __("cancel unreserved appointments") }}</jet-button>
                 </div>
 
             </template>

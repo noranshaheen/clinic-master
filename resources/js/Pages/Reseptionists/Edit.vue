@@ -8,11 +8,11 @@
       <jet-validation-errors class="mb-4" />
 
       <form @submit.prevent="submit">
-        <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col sm:grid sm:grid-cols-2 sm:gap-4">
 
           <div>
             <div class="mt-4">
-              <jet-label :value='__("Reseptionist Name")' />
+              <jet-label :value='__("Name")' />
               <jet-input type="text" class="mt-1 block w-full" v-model="form.name" required />
             </div>
 

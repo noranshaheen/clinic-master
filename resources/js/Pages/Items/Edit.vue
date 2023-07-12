@@ -8,7 +8,7 @@
 			<jet-validation-errors class="mb-4" />
 
 			<form @submit.prevent="submit">
-				<div class="grid grid-cols-2 gap-4">
+				<div class="sm:grid sm:grid-cols-2 sm:gap-4">
 					<div>
 						<jet-label for="itemName" :value="__('Name')" />
 						<jet-input id="itemName" type="text" class="mt-1 block w-full" v-model="form.name" required
@@ -16,7 +16,7 @@
 						<jet-label for="measurement_unit" :value="__('Measurement Unit')" />
 						<multiselect v-model="form.measurement_unit" :options="units" label="desc_en" :searchable="true"
 							:placeholder="__('Select Unit')" class="mt-1 block w-full" />
-						<div class="mt-1">
+						<div class="hidden sm:block mt-1">
 							<jet-input class="m-1" type="checkbox" name="hidden" value="1" v-model="form.hiddenItem" />
 							<jet-label :value="__('Hidden Item')" />
 						</div>
@@ -31,6 +31,10 @@
 						<jet-label for="selling_price" :value="__('Selling Price per unit')" />
 						<jet-input id="selling_price" type="number" class="mt-1 block w-full" v-model="form.selling_price"
 							required autofocus />
+						<div class="sm:hidden mt-1">
+							<jet-input class="m-1" type="checkbox" name="hidden" value="1" v-model="form.hiddenItem" />
+							<jet-label :value="__('Hidden Item')" />
+						</div>
 					</div>
 				</div>
 			</form>
@@ -159,7 +163,6 @@ export default {
 			} else {
 				this.SaveNew();
 			}
-
 		}
 	},
 	created: function () {

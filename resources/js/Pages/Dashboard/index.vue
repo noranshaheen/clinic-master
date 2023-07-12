@@ -1,46 +1,50 @@
 <template>
     <app-layout>
-        <div class="relative bg-white shadow-md dark:bg-gray-800 sm:rounded-lg mx-4 px-4">
+        <type-of-patient ref="dlg1" :appointment_id="selectedAppointemt_id" @Save="searchData()" />
+        <choose-cancellation-method ref="dlg2" :doctor_id="cancelledAppointments.doctor_id"
+            :date="cancelledAppointments.date" @Save="searchData()" />
+        <appointment-details ref="dlg3" :appointment_Details="appointment_Details" />
+        <div class="relative bg-white shadow-md dark:bg-gray-800 sm:rounded-lg m-1 p-1 md:mx-4 md:px-4">
             <div class="p-1">
-                <type-of-patient ref="dlg1" :appointment_id="selectedAppointemt_id" @Save="searchData()" />
-                <choose-cancellation-method ref="dlg2" :doctor_id="cancelledAppointments.doctor_id"
-                    :date="cancelledAppointments.date" @Save="searchData()" />
-                <appointment-details ref="dlg3" :appointment_Details="appointment_Details"/>                
-
-                <div class="my-2 flex justify-between">
-                    <div class="w-3/5">
-                        <div class="grid grid-cols-2 gap-8">
+                <div class="sm:flex justify-between">
+                    <div class="sm:w-3/5">
+                        <div class="sm:grid sm:grid-cols-2 sm:gap-8">
                             <!-- all doctors -->
-                            <div class="text-lg">
-                                <jet-label for="doctor-name" :value="__('Doctor')" />
-                                <select id="doctor-name" v-model="form.doctor_id" class="mt-1 block w-full border-slate-300 rounded-md">
+                            <div class="mb-3 sm:mb-0 text-sm md:text-md">
+                                <jet-label for="doctor-name" :value="__('Doctor')" class="md:inline-block lg:mt-4 font-bold" />
+                                <select id="doctor-name" v-model="form.doctor_id"
+                                    class="mt-1 block w-full border-slate-300 rounded-md">
                                     <option v-for="doctor in allDoctors" :value="doctor.id" :key="doctor.id">
                                         {{ doctor.name }}
                                     </option>
                                 </select>
                             </div>
                             <!-- select date -->
-                            <div class="text-lg">
-                                <jet-label for="date" :value="__('Date')" class="mt-4" />
-                                <jet-input id="date" type="date" v-model="form.date" class="mt-1 block w-full text-sm" required />
+                            <div class="mb-3 sm:mb-0 text-sm md:text-md">
+                                <jet-label for="date" :value="__('Date')" class="md:inline-block lg:mt-4 font-bold" />
+                                <jet-input id="date" type="date" v-model="form.date" class="mt-1 block w-full text-sm"
+                                    required />
                             </div>
                         </div>
                     </div>
                     <!-- search botton -->
-                    <div class="w-1/5 flex flex-col justify-end items-end">
-                        <jet-button id="search" @click="searchData()" class="text-lg w-1/2 h-1/2 md:flex justify-around">
+                    <div class="sm:w-1/5 flex flex-col justify-start items-center mt-2 
+                    sm:justify-end sm:items-end sm:mt-0 mx-auto sm:mx-0">
+                        <jet-button id="search" @click="searchData()"
+                            class="text-sm text-center sm:w-1/2 sm:h-1/2 sm:flex justify-around sm:p-2">
                             <i class="fa-solid fa-magnifying-glass mx-1"></i>
-                            <span>{{ __("Search") }}</span>
+                            <span class="hidden lg:inline">{{ __("Search") }}</span>
                         </jet-button>
                     </div>
+
                 </div>
             </div>
         </div>
 
-        <div class="mx-2 my-4">
+        <div class="mt-5 md:mx-4">
             <div class="relative overflow-x-auto shadow-lg sm:rounded-lg" v-if="Object.keys(appointments).length > 0">
                 <table class="w-full text-sm text-center text-gray-500 dark:text-gray-400">
-                    <thead class="text-sm text-gray-700 bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
+                    <thead class="text-sm text-gray-700 bg-gray-300 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
                             <th scope="col" class="px-6 py-3">
                                 {{ __("Doctor") }}
@@ -56,48 +60,52 @@
                     <tbody>
                         <tr class="bg-white dark:bg-gray-800 dark:border-gray-700" v-for="appointment in appointments"
                             :key="appointment.id">
-                            <td class="px-6 py-4 border dark:border-gray-700">
+                            <td class="px-2 md:px-6 md:py-4 border dark:border-gray-700 font-bold">
                                 {{ appointment[0].doctor.name }}
                             </td>
-                            <td class="p-4 text-center border dark:border-gray-700">
-                                <div class="flex justify-start flex-wrap">
-                                    <div v-for="apnt in appointment" :key="apnt.id" class="m-1">
+                            <td class="text-sm text-center md:p-4 md:text-md border dark:border-gray-700">
+                                <div class="flex justify-center sm:justify-start flex-wrap md:grid md:grid-cols-2 
+                                            lg:grid-cols-4">
+                                    <div v-for="apnt in appointment" :key="apnt.id" class="md:m-1">
                                         <jet-secondary-button v-if="apnt.patient_id == null"
                                             @click.prevent="openDlg('dlg1', apnt.id)"
-                                            class="m-1 text-blue-500 border-blue-500 hover:bg-[#4099de] hover:text-white">
-                                            {{ subtractHours(apnt.from,3) }}
+                                            class="m-1 text-blue-500 border-blue-500 
+                                            hover:bg-[#4099de] hover:text-white md:w-full">
+                                            {{ subtractHours(apnt.from, 3) }}
                                         </jet-secondary-button>
-                                        <jet-secondary-button v-else-if="apnt.cancelled == null && apnt.done == null" 
-                                        @click.prevent="showDetails(apnt.id)"
-                                        class="m-1 text-neutral-300 border-neutral-300 hover:bg-[#b7d5ed] hover:text-white">
-                                                <span>
-                                                    {{ apnt.patient.name }}
-                                                </span>
-                                                <p>
-                                                    {{ subtractHours(apnt.from,3) }}
-                                                </p> 
+                                        <jet-secondary-button v-else-if="apnt.cancelled == null && apnt.done == null"
+                                            @click.prevent="showDetails(apnt.id)"
+                                            class="m-1 text-neutral-400 border-neutral-300 
+                                            hover:bg-[#b7d5ed] hover:text-white md:w-full">
+                                            <span class="hidden md:inline">
+                                                {{ apnt.patient.name }}
+                                            </span>
+                                            <p>
+                                                {{ subtractHours(apnt.from, 3) }}
+                                            </p>
                                         </jet-secondary-button>
-                                        <jet-secondary-button v-else-if="apnt.cancelled == null && apnt.done == 1" 
-                                        @click.prevent="showDetails(apnt.id)"
-                                        class="m-1 text-green-500 border-green-500 hover:bg-green-500 hover:text-white">
-                                                <span>
-                                                    {{ apnt.patient.name }}
-                                                </span>
-                                                <p>
-                                                    {{ subtractHours(apnt.from,3) }}
-                                                </p> 
+                                        <jet-secondary-button v-else-if="apnt.cancelled == null && apnt.done == 1"
+                                            @click.prevent="showDetails(apnt.id)"
+                                            class="m-1 text-green-500 border-green-500 
+                                            hover:bg-green-500 hover:text-white md:w-full">
+                                            <span class="hidden md:inline">
+                                                {{ apnt.patient.name }}
+                                            </span>
+                                            <p>
+                                                {{ subtractHours(apnt.from, 3) }}
+                                            </p>
                                         </jet-secondary-button>
-                                        <jet-secondary-button v-else-if="apnt.cancelled == 1" 
-                                        @click.prevent="showDetails(apnt.id)"
-                                        class="m-1 text-red-200 border border-red-200 text-bold hover:bg-red-200 hover:text-white">
-                                                {{ subtractHours(apnt.from,3) }} 
+                                        <jet-secondary-button v-else-if="apnt.cancelled == 1"
+                                            @click.prevent="showDetails(apnt.id)"
+                                            class="m-1 text-red-200 border border-red-200 text-bold hover:bg-red-200 hover:text-white">
+                                            {{ subtractHours(apnt.from, 3) }}
                                         </jet-secondary-button>
                                     </div>
                                 </div>
                             </td>
                             <!-- :class="{'m-1 text-neutral-200 border-neutral-200 hover:bg-[#b7d5ed] hover:text-white' : apnt.cancelled==null },
                                         {'m-1 text-neutral-200 bg-red-100 border-neutral-200 hover:bg-[#b7d5ed] hover:text-white' : apnt.cancelled== 1 }" -->
-                            <td class="border dark:border-gray-700 px-2 py-2">
+                            <td class="border dark:border-gray-700 md:px-2 md:py-2">
                                 <JetButton @click="openCancellationDialog(appointment[0].doctor_id, this.form.date)">
                                     {{ __("Cancel") }}
                                 </JetButton>
@@ -109,12 +117,13 @@
                     </tbody>
                 </table>
             </div>
-            <div class="relative overflow-x-auto shadow-lg sm:rounded-lg px-4 my-4 w-full bg-white" v-else>
+            <div v-else class="relative overflow-x-auto shadow-lg 
+            bg-white sm:rounded-lg w-full text-sm text-center">
                 <p class="text-center text-red-600 my-5">
                     <i class="fa fa-exclamation-circle mr-1"></i>
                     {{ __("No Records Were Found") }}
                 </p>
-            </div> 
+            </div>
         </div>
     </app-layout>
 </template>
@@ -173,7 +182,7 @@ export default {
                 doctor_id: "",
                 date: ""
             }),
-            appointment_Details:"",
+            appointment_Details: "",
             appointments: {},
             selectedAppointemt_id: "",
             cancelledAppointments: {

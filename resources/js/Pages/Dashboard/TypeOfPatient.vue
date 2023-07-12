@@ -7,9 +7,9 @@
                 {{ __("which type of patients you are?") }}
             </template>
             <template #content>
-                <div class="grid grid-cols-2 gap-8 mt-2">
-                    <jet-button @click="openDlg('dlg1')">{{ __("Add New Patient") }}</jet-button>
-                    <jet-button @click="openDlg('dlg2')">{{ __("Choose An Old Patient") }}</jet-button>
+                <div class="flex flex-col justify-between items-center md:grid md:grid-cols-2 md:gap-8">
+                    <jet-button class="w-full mb-2 md:h-full" @click="openDlg('dlg1')">{{ __("Add New Patient") }}</jet-button>
+                    <jet-button class="w-full mb-2 md:h-full" @click="openDlg('dlg2')">{{ __("Choose An Old Patient") }}</jet-button>
                 </div>
 
             </template>
