@@ -98,12 +98,13 @@
 						'Content-Type': 'multipart/form-data'
 					}
 				  }
-				).then(function(){
+				).then(()=>{
 					temp.processing = false;
 					temp.$refs.inputFile.value = null;
-					temp.closeModal()
+                    temp.uploadingCustomers = false
+                    window.location.reload();                    
 				})
-				.catch(function(){
+				.catch(()=>{
 					temp.processing = false;
 					temp.$refs.inputFile.value = null;
 				    console.log('FAILURE!!');

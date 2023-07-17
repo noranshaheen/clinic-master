@@ -19,8 +19,8 @@ class DoctorController extends Controller
         $doctors = QueryBuilder::for (Doctor::class)
             ->with('specialties')
             ->defaultSort('id')
-            ->allowedSorts(['name','phone','date_of_birth','tilte'])
-            ->allowedFilters(['name','phone','anther_phone','date_of_birth','tilte'])
+            ->allowedSorts(['id','name','phone','date_of_birth','title','specialty_id'])
+            ->allowedFilters(['id','name','phone','date_of_birth','title','specialty_id','another_phone'])
             ->paginate(Request()->input('perPage', 20))
             ->withQueryString();
 

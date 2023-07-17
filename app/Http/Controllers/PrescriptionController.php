@@ -29,8 +29,8 @@ class PrescriptionController extends Controller
             ->with('doctor')
             ->with('patient')
             ->with('prescriptionItems')
-            ->allowedSorts(['id', 'dateTimeIssued'])
-            ->allowedFilters(['dateTimeIssued'])
+            ->allowedSorts(['id','doctor_id','patient_id', 'dateTimeIssued'])
+            ->allowedFilters(['id','doctor_id','patient_id', 'dateTimeIssued'])
             ->paginate(Request()->input('perPage', 20))
             ->withQueryString();
 
@@ -45,14 +45,14 @@ class PrescriptionController extends Controller
                 hidden: false,
                 sortable: true
             )->column(
-                key: "doctor",
+                key: "doctor_id",
                 label: __("Doctor"),
                 canBeHidden: true,
                 hidden: false,
                 sortable: true,
                 searchable: true
             )->column(
-                key: "patient",
+                key: "patient_id",
                 label: __("Patient"),
                 canBeHidden: true,
                 hidden: false,

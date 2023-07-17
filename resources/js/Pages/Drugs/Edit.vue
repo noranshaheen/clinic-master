@@ -21,6 +21,9 @@
                         </div>
                         <div class="mt-4">
                             <jet-label :value="__('Related Diagnosis')" />
+                            <span class="m-2 text-gray-400 text-sm">
+                                {{__("(you can choose multiple options)")}}
+                            </span>
                             <multiselect v-model="form.diagnose" label="name" :hide-selected="true" 
                             :options="allDiagnosis" :searchable="true" :multiple="true" track-by="id" 
                             :placeholder='__("Select Diagnose")'/>

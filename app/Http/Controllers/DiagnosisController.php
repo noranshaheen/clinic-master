@@ -21,8 +21,8 @@ class DiagnosisController extends Controller
         $diagnosis = QueryBuilder::for (Diagnosis::class)
             ->with('specialty')
             ->defaultSort('id')
-            ->allowedSorts(['id', 'name','description'])
-            ->allowedFilters(['name'])
+            ->allowedSorts(['id', 'name','description','specialty_id'])
+            ->allowedFilters(['id', 'name','description'])
             ->paginate(Request()->input('perPage', 20))
             ->withQueryString();
         return Inertia::render('Diagnosis/Index',[
@@ -49,7 +49,7 @@ class DiagnosisController extends Controller
                 sortable:true,
                 searchable:true
             )->column(
-                key:"specialty",
+                key:"specialty_id",
                 label:__("Specialty"),
                 canBeHidden:true,
                 hidden:false,

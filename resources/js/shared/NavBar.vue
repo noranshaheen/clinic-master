@@ -46,9 +46,10 @@
                 <div class="pt-0 divide-y divide-gray-200">
                   <!-- doctor -->
                   <div>
-                    <div class="p-1 bg-gray-100 flex justify-between">
+                    <div class="p-1 border-b flex justify-between">
                       <p>{{ __("Doctors") }}</p>
-                      <i class="fa-solid fa-caret-down cursor-pointer" @click="doctor = !doctor"></i>
+                      <i class="fa-solid fa-caret-down cursor-pointer" @click="doctor = false" v-show="doctor"></i>
+                      <i class="fa-solid fa-caret-left cursor-pointer" @click="doctor = true" v-show="!doctor"></i>
                     </div>
                     <div v-show="doctor">
                       <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg1')">
@@ -63,9 +64,10 @@
                   </div>
                   <!-- patient -->
                   <div>
-                    <div class="p-1 bg-gray-100 flex justify-between">
+                    <div class="p-1 border-b flex justify-between">
                       <p>{{ __("Patients") }}</p>
-                      <i class="fa-solid fa-caret-down cursor-pointer" @click="patient = !patient"></i>
+                      <i class="fa-solid fa-caret-down cursor-pointer" @click="patient = false" v-show="patient"></i>
+                      <i class="fa-solid fa-caret-left cursor-pointer" @click="patient = true" v-show="!patient"></i>
                     </div>
                     <div v-show="patient">
                       <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg2')">
@@ -84,9 +86,12 @@
                   </div>
                   <!-- reseptionist -->
                   <div>
-                    <div class="p-1 bg-gray-100 flex justify-between">
+                    <div class="p-1 border-b flex justify-between">
                       <p>{{ __("Reseptionists") }}</p>
-                      <i class="fa-solid fa-caret-down cursor-pointer" @click="reseptionist = !reseptionist"></i>
+                      <i class="fa-solid fa-caret-down cursor-pointer" @click="reseptionist = false"
+                        v-show="reseptionist"></i>
+                      <i class="fa-solid fa-caret-left cursor-pointer" @click="reseptionist = true"
+                        v-show="!reseptionist"></i>
                     </div>
                     <div v-show="reseptionist">
                       <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg11')">
@@ -101,9 +106,10 @@
                   </div>
                   <!-- clinic -->
                   <div>
-                    <div class="p-1 bg-gray-100 flex justify-between">
+                    <div class="p-1 border-b flex justify-between">
                       <p>{{ __("Clinics") }}</p>
-                      <i class="fa-solid fa-caret-down cursor-pointer" @click="clinic = !clinic"></i>
+                      <i class="fa-solid fa-caret-down cursor-pointer" @click="clinic = false" v-show="clinic"></i>
+                      <i class="fa-solid fa-caret-left cursor-pointer" @click="clinic = true" v-show="!clinic"></i>
                     </div>
                     <div v-show="clinic">
                       <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg3')">
@@ -118,9 +124,10 @@
                   </div>
                   <!-- room -->
                   <div>
-                    <div class="p-1 bg-gray-100 flex justify-between">
+                    <div class="p-1 border-b flex justify-between">
                       <p>{{ __("Rooms") }}</p>
-                      <i class="fa-solid fa-caret-down cursor-pointer" @click="room = !room"></i>
+                      <i class="fa-solid fa-caret-down cursor-pointer" @click="room = false" v-show="room"></i>
+                      <i class="fa-solid fa-caret-left cursor-pointer" @click="room = true" v-show="!room"></i>
                     </div>
                     <div v-show="room">
                       <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg4')">
@@ -135,9 +142,10 @@
                   </div>
                   <!-- drug -->
                   <div>
-                    <div class="p-1 bg-gray-100 flex justify-between">
+                    <div class="p-1 border-b flex justify-between">
                       <p>{{ __("Drugs") }}</p>
-                      <i class="fa-solid fa-caret-down cursor-pointer" @click="drug = !drug"></i>
+                      <i class="fa-solid fa-caret-down cursor-pointer" @click="drug = false" v-show="drug"></i>
+                      <i class="fa-solid fa-caret-left cursor-pointer" @click="drug = true" v-show="!drug"></i>
                     </div>
                     <div v-show="drug">
                       <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg5')">
@@ -156,9 +164,10 @@
                   </div>
                   <!-- diagnose -->
                   <div>
-                    <div class="p-1 bg-gray-100 flex justify-between">
+                    <div class="p-1 border-b flex justify-between">
                       <p>{{ __("Diagnosis") }}</p>
-                      <i class="fa-solid fa-caret-down cursor-pointer" @click="diagnose = !diagnose"></i>
+                      <i class="fa-solid fa-caret-down cursor-pointer" @click="diagnose = false" v-show="diagnose"></i>
+                      <i class="fa-solid fa-caret-left cursor-pointer" @click="diagnose = true" v-show="!diagnose"></i>
                     </div>
                     <div v-show="diagnose">
                       <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg6')">
@@ -174,9 +183,12 @@
 
                   <!-- prescription -->
                   <div>
-                    <div class="p-1 bg-gray-100 flex justify-between">
+                    <div class="p-1 border-b flex justify-between">
                       <p>{{ __("Prescriptions") }}</p>
-                      <i class="fa-solid fa-caret-down cursor-pointer" @click="prescription = !prescription"></i>
+                      <i class="fa-solid fa-caret-down cursor-pointer" @click="prescription = false"
+                        v-show="prescription"></i>
+                      <i class="fa-solid fa-caret-left cursor-pointer" @click="prescription = true"
+                        v-show="!prescription"></i>
                     </div>
                     <div v-show="prescription">
                       <dropdown-link v-if="$page.props.auth.user.current_team_id == 2" as="a"

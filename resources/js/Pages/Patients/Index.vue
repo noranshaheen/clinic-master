@@ -6,7 +6,7 @@
     </confirm>
     <div class="py-4">
       <div class="mx-auto sm:px-6 lg:px-8">
-        <div class="wrapper Gbg-white shadow-xl sm:rounded-lg p-4">
+        <div class="wrapper Gbg-white shadow-xl overflow-auto sm:rounded-lg p-4">
           <Table :resource="patients">
             <template #cell(type)="{ item: patient }">
               {{
@@ -30,15 +30,26 @@
               {{ new Date().getFullYear() - new Date(patient.date_of_birth).getFullYear() }}
             </template>
             <template #cell(actions)="{ item: patient }">
-              <secondary-button v-if="patient.prescriptions.length > 0" @click="showHistory(patient)">
-                <i class="fa fa-history"></i> {{ __("History") }}
+              <div class="flex md:flex-wrap justify-start w-3/4">
+                <secondary-button class="w-full" @click="editCustomer(patient)">
+                <i class="fa fa-edit mx-1"></i>
+                <span class="hidden md:inline">
+                  {{ __("Edit") }}
+                </span>
               </secondary-button>
-              <secondary-button class="ms-2" @click="editCustomer(patient)">
-                <i class="fa fa-edit"></i> {{ __("Edit") }}
-              </secondary-button>
-              <jet-button class="ms-2" @click="removeCustomer(patient)">
-                <i class="fa fa-trash"></i> {{ __("Delete") }}
+                <jet-button class="w-full" v-if="patient.prescriptions.length > 0" @click="showHistory(patient)">
+                <i class="fa fa-history mx-1"></i>
+                <span class="hidden md:inline">
+                  {{ __("History") }}
+                </span>
               </jet-button>
+              <jet-danger-button class="w-full" @click="removeCustomer(patient)">
+                <i class="fa fa-trash mx-1"></i>
+                <span class="hidden md:inline">
+                  {{ __("Delete") }}
+                </span>
+              </jet-danger-button>
+              </div>
             </template>
           </Table>
         </div>
@@ -54,6 +65,7 @@ import EditPatient from "@/Pages/Patients/Edit.vue";
 import { Table } from "@protonemedia/inertiajs-tables-laravel-query-builder";
 import SecondaryButton from "@/Jetstream/SecondaryButton.vue";
 import JetButton from "@/Jetstream/Button.vue";
+import JetDangerButton from "@/Jetstream/DangerButton.vue";
 import axios from "axios";
 
 export default {
@@ -64,6 +76,7 @@ export default {
     Table,
     SecondaryButton,
     JetButton,
+    JetDangerButton,
     axios
   },
   props: {

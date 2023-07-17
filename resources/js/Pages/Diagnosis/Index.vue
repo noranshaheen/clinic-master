@@ -10,16 +10,16 @@
           class="wrapper Gbg-white shadow-xl sm:rounded-lg p-4"
         >
           <Table :resource="diagnosis">
-            <template #cell(specialty)="{ item: diagnose }">
+            <template #cell(specialty_id)="{ item: diagnose }">
               {{ diagnose.specialty.name }}
             </template>
             <template #cell(actions)="{ item: diagnose }">
               <secondary-button @click="editCustomer(diagnose)">
                 <i class="fa fa-edit"></i> {{ __("Edit") }}
               </secondary-button>
-              <jet-button class="ms-2" @click="removeCustomer(diagnose)">
+              <JetDangerButton class="ms-2" @click="removeCustomer(diagnose)">
                 <i class="fa fa-trash"></i> {{ __("Delete") }}
-              </jet-button>
+              </JetDangerButton>
             </template>
           </Table>
         </div>
@@ -35,6 +35,7 @@ import EditDiagnose from "@/Pages/Diagnosis/Edit.vue";
 import { Table } from "@protonemedia/inertiajs-tables-laravel-query-builder";
 import SecondaryButton from "@/Jetstream/SecondaryButton.vue";
 import JetButton from "@/Jetstream/Button.vue";
+import JetDangerButton from "@/Jetstream/DangerButton.vue";
 import axios from "axios";
 
 export default {
@@ -45,6 +46,7 @@ export default {
     Table,
     SecondaryButton,
     JetButton,
+    JetDangerButton
   },
   props: {
     diagnosis: Object,
@@ -86,9 +88,9 @@ export default {
       return column ? !column.hidden : false;
     },
   },
-//   created: function created() {
-//     console.log(this.rooms);
-//   },
+  created: function created() {
+    // console.log(this.diagnosis);
+  },
 };
 </script>
 <style scoped>
