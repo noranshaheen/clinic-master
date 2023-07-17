@@ -5,6 +5,7 @@
         <EditLineDialog :item=item :idx=idx ref="dlg3" @save="onEditLine" />
 
         <div class="lg:py-4">
+            <p class="px-2 my-2 w-fit sm:px-6 lg:px-8">{{ __("Add Bill") }}</p>
             <div class="mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white shadow-xl sm:rounded-lg px-4 pb-4 pt-0">
                     <div class="grid lg:grid-cols-3 gap-4 sm:grid-cols-1 h-1/2">
@@ -24,7 +25,7 @@
                     </div>
                     <div>
                         <div>
-                            <div class="result my-5 w-full overflow-auto">
+                            <div class="result my-5 w-full">
                                 <!-- mobile screen -->
                                 <table class="w-full mx-auto md:hidden max-w-4xl lg:max-w-full">
                                     <thead class="text-center bg-gray-300">
@@ -66,8 +67,8 @@
                                 </table>
 
                                 <!-- medium screen -->
-                                <table class="w-full mx-auto hidden md:block max-w-4xl lg:max-w-full">
-                                    <thead class="text-center bg-gray-300">
+                                <table class="mx-auto hidden md:block w-full">
+                                    <thead class="w-full text-center bg-gray-300">
                                         <th class="bg-[#f8f9fa] p-1 border border-[#eceeef] w-3/12">
                                             {{ __('Item') }}
                                             <button @click="addNewItemDialog()" class="cursor-pointer ml-4">
@@ -81,7 +82,7 @@
                                         <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">{{ __('Total') }}</th>
                                         <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">{{ __('Action') }}</th>
                                     </thead>
-                                    <tbody class="text-center border border-[#eceeef] w-5/12">
+                                    <tbody class="w-full text-center border border-[#eceeef]">
                                         <tr v-for="(billLine, idx) in form.billLines" class="border border-[#eceeef]">
                                             <td class="p-1 border border-[#eceeef]">
                                                 <!-- <TextField v-model="billLine.item" itemType="text" /> -->

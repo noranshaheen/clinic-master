@@ -105,7 +105,7 @@ class PrescriptionController extends Controller
         $prescription->appointment_id = $request->appointment_id;
         $prescription->clinic_id = $request->selected_clinic['id'];
         $prescription->doctor_id = Auth::user()->doc_res_id;
-        $prescription->dateTimeIssued = $request->dateTimeIssued;
+        $prescription->dateTimeIssued = Carbon::parse($request->dateTimeIssued)->addHours(3)->addMinutes(5);
 
         $prescription->diagnosis = is_array($request->diagnosis) ?
             json_encode($request['diagnosis']) : $request['diagnosis'];

@@ -626,7 +626,7 @@ export default {
             form: this.$inertia.form({
                 appointment_id: "",
                 patient_id: "",
-                dateTimeIssued: new Date().toISOString().slice(0, 16),
+                dateTimeIssued: new Date().toISOString().slice(0,16),
                 prescriptionLines: [],
                 diagnosis: [],
                 analysis: [],

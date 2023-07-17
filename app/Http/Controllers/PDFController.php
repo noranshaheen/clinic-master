@@ -37,6 +37,7 @@ class PDFController extends Controller
     public function previewPrescription($id)
     {
         $data = Prescription::with('doctor')
+            ->with('doctor.specialties')
             ->with('prescriptionItems')
             ->with('prescriptionItems.drugs')
             ->with('appointment')

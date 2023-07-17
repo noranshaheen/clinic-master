@@ -22,96 +22,91 @@
 <body>
     <div class="wrapper flex justify-between">
         <div class="invoice w-full lg:w-5/6 my-5 shadow-lg rounded-xl rtl:mr-2 ltr:ml-2">
-            <div class="invoice-header flex justify-between">
-                <div class="invoice-details self-center p-5">
-                    <div class="mb-2">
-                        <h2 class="text-3xl uppercase">@lang('Prescription')</h2>
+            <div class="invoice-header flex justify-between px-5">
+            <div class="invoice-details self-center p-5">
+                    <div class="mb-5">
+                        <h2 class="text-3xl uppercase font-bold text-center">@lang('Doctor')</h2>
                     </div>
                     <div>
                         <ul>
-                            <li class="pb-2 text-gray-600">{{ __('Prescription Number') }}: {{ $data->id}}</li>
-                            <li class="pb-2 text-gray-600">{{ __('Doctor Name') }}: {{ $data->doctor->name}}</li>
-                            <li class="text-gray-600 pb-2">{{ __('Date Of Issue') }}: {{
-                                \Carbon\Carbon::parse($data->dateTimeIssued)->toDateString() }}</li>
-                            <li class="text-gray-600 pb-2">{{ __('Time Of Issue') }}: {{
-                                \Carbon\Carbon::parse($data->dateTimeIssued)->toTimeString() }}</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="invoice-details self-center p-5">
-                    <div class="mb-2">
-                        <h2 class="text-3xl uppercase">@lang('Patient')</h2>
-                    </div>
-                    <div>
-                    <ul>
-                        <li class="text-gray-600">
-                        {{ __('Patient Name') }}:  {{ $data->patient->name }}
-                        </li>
-                        <li class="text-gray-600">
-                        {{ __('Phone Number') }}:  {{ $data->patient->phone }}
-                        </li>
-                        <li class="text-gray-600 pb-2">
-                            {{ __('Gender') }}: {{ $data->patient->gender == 'F'? __('Female'):__('Male') }}
-                        </li>
-                        <li class="text-gray-600 pb-2">
-                            {{ __('Diagnosis') }}:
-                            @foreach(json_decode($data->diagnosis) as $diagnose)
-                            <li>
-                                @php
-                                echo $diagnose;
-                                @endphp
+                            <li class="pb-2 text-gray-600">
+                                <span class="font-semibold">{{ __('Doctor Name') }}</span>:
+                                <span class="">{{ $data->doctor->name }}</span>
                             </li>
-                            @endforeach
-                        </li>
-                    </ul>
+                            <li class="pb-2 text-gray-600">
+                                <span class="font-semibold">{{ __('Title') }}</span>:
+                                <span class="">{{ $data->doctor->title }}</span>
+                            </li>
+                            <li class="pb-2 text-gray-600">
+                                <span class="font-semibold">{{ __('Specialty') }}</span>:
+                                <span class="">{{ $data->doctor->specialties->name }}</span>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-            </div>
-            <!-- .........
-            <div class="invoice-header grid grid-cols-3 gap-2">
-                <div class="invoice-details self-center">
-                    <div class="mb-2">
-                        <h2 class="text-3xl uppercase">@lang('Prescription')</h2>
+                <div class="invoice-details self-center p-5">
+                    <div class="mb-5">
+                        <h2 class="text-3xl uppercase font-bold text-center">@lang('Prescription')</h2>
                     </div>
                     <div>
                         <ul>
-                            <li class="pb-2 text-gray-600">{{ __('Prescription Number') }}: {{ $data->id}}</li>
-                            <li class="pb-2 text-gray-600">{{ __('Doctor Name') }}: {{ $data->doctor->name}}</li>
-                            <li class="text-gray-600 pb-2">{{ __('Date Of Issue') }}: {{
-                                \Carbon\Carbon::parse($data->dateTimeIssued)->toDateString() }}</li>
-                            <li class="text-gray-600 pb-2">{{ __('Time Of Issue') }}: {{
-                                \Carbon\Carbon::parse($data->dateTimeIssued)->toTimeString() }}</li>
+                            <li class="pb-2 text-gray-600">
+                                <span class="font-semibold">{{ __('Prescription Number') }}</span> :
+                                <span>{{ $data->id}}</span>
+                            </li>
+                            <!-- <li class="pb-2 text-gray-600">
+                                <span class="font-semibold">{{ __('Doctor Name') }}</span> :
+                                <span>{{ $data->doctor->name}}</span>
+                            </li> -->
+                            <li class="pb-2 text-gray-600">
+                                <span class="font-semibold">{{ __('Date Of Issue') }}</span> :
+                                <span>
+                                    {{\Carbon\Carbon::parse($data->dateTimeIssued)->toDateString() }}
+                                </span>
+                            </li>
+                            <li class="pb-2 text-gray-600">
+                                <span class="font-semibold">{{ __('Time Of Issue') }}</span> :
+                                <span>
+                                    {{\Carbon\Carbon::parse($data->dateTimeIssued)->toTimeString() }}
+                                </span>
+                            </li>
                         </ul>
                     </div>
                 </div>
             </div>
-            <div class="invoice-company-address flex justify-between p-5">
-                <div class="billed-to">
-                    <h4 class="mb-2 text-2xl">{{ __('Patient Details') }}:</h4>
-                    <ul>
-                        <li class="text-gray-600">
-                            {{ $data->patient->name }}
-                        </li>
-                        <li class="text-gray-600">
-                            {{ $data->patient->phone }}
-                        </li>
-                        <li class="text-gray-600 pb-2">
-                            {{ __('Gender') }}: {{ $data->patient->gender == 'F'? 'Female':'Male' }}
-                        </li>
-                        <li class="text-gray-600 pb-2">
-                            {{ __('Diagnosis') }}:
-                            @foreach(json_decode($data->diagnosis) as $diagnose)
-                            @php
-                            echo "<br />"."- ".$diagnose;
-                            @endphp
-                            @endforeach
-                        </li>
-                    </ul>
-                </div>
-            </div> -->
             <hr>
             <div class="items p-5">
-                <table class="w-full">
+                <div class="p-5">
+                    <p class="text-gray-600 pb-2 font-semibold underline decoration-2 inline">
+                        {{ __('Patient') }}
+                    </p> :
+                    <span class="text-gray-600 p-2">{{ $data->patient->name }}</span> -
+                    <span class="text-gray-600 p-2">{{ $data->patient->phone }}</span> -
+                    <span class="text-gray-600 p-2">{{ $data->patient->gender == 'F'? __('Female'):__('Male') }}</span>
+                </div>
+                <div class="mb-5 p-5">
+                    <p class="text-gray-600 pb-2 font-semibold underline decoration-2 inline">
+                        {{ __('Diagnosis') }}
+                    </p> :
+                    @php
+                    $diagnosis = json_decode($data->diagnosis);
+                    $x=count($diagnosis);
+                    @endphp
+                    @for($i=0 ; $i<$x ; $i++) 
+                    <span class="text-gray-600 p-2">
+                        @if($i == ($x-1))
+                        @php
+                        echo $diagnosis[$i]." . ";
+                        @endphp
+                        @else
+                        @php
+                        echo $diagnosis[$i].",";
+                        @endphp
+                        @endif
+                        </span>
+                        @endfor
+                </div>
+                <table class="w-full p-5">
                     <thead class="text-center bg-gray-300">
                         <tr>
                             <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{ __('Drug Name') }}</th>
@@ -127,22 +122,32 @@
                         @endforeach
                     </tbody>
                 </table>
-                <div class="invoice-total py-5 text-left">
-                    <p class="capitalize py-2 text-gray-600">{{ __('Analysis') }}:
+                <div class="invoice-total p-5">
+                    <div class="mb-2">
+                        <p class="text-gray-600 pb-2 font-semibold underline decoration-2 inline">{{ __('Analysis') }} :</p>
+                        <ul class="list-disc list-inside px-4">
                         @foreach(json_decode($data->analysis) as $analysis)
+                        <li class="text-gray-600">
                         @php
-                        echo "<br />"."- ".$analysis;
+                        echo $analysis;
                         @endphp
+                        </li>
                         @endforeach
-                    </p>
-                    <p class="capitalize py-2 text-gray-600">{{ __('X-Rays') }}:
+                        </ul>
+                    </div>
+                    <div class="mb-2">
+                    <p class="text-gray-600 pb-2 font-semibold underline decoration-2 inline">{{ __('X-Rays') }} :</p>
+                        <ul class="list-disc list-inside px-4">
                         @foreach(json_decode($data->rays) as $ray)
+                        <li class="text-gray-600">
                         @php
-                        echo "<br />"."- ".$ray;
+                        echo $ray;
                         @endphp
+                        </li>
                         @endforeach
-                    </p>
-                    <p class="capitalize py-2 text-gray-600">{{ __('Notes') }}:
+                        </ul>
+                    </div>
+                    <p class="capitalize text-gray-600 pb-2 font-semibold underline decoration-2">{{ __('Notes') }}:
                         {{ $data->notes}}
                     </p>
                 </div>
@@ -175,6 +180,7 @@
 </body>
 <script>
     document.querySelector('#print').addEventListener('click', (e) => print());
+    // console.log(data);
 </script>
 
 </html>
