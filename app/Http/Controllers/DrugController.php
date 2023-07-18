@@ -108,12 +108,20 @@ class DrugController extends Controller
      */
     public function update(Request $request, Drug $drug)
     {
+        // dd($request);
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255', 'regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
             'description' => ['nullable', 'string', 'max:255']
         ]);
 
         $drug->update($data);
+
+        // if (!empty($request->diagnose)) {
+            $drug->diagnosis()->detach();
+            foreach ($request->diagnose as $diagnose) {
+                $drug->diagnosis()->attach($diagnose['id']);
+            }
+        // }
     }
 
     /**
@@ -135,7 +143,7 @@ class DrugController extends Controller
         $extension = $request->file->extension();
         if ($extension == 'xlsx' || $extension == 'xls')
             $temp = $this->xlsxToArray($request->file, $extension);
-        elseif($extension == 'csv')
+        elseif ($extension == 'csv')
             $temp = $this->csvToArray($request->file);
         else
             return json_encode(["Error" => true, "Message" => __("Unsupported File Type!")]);
@@ -159,9 +167,9 @@ class DrugController extends Controller
                 $drug->save();
 
                 foreach ($diagnosis as $val) {
-                    $diagnose = Diagnosis::where('name','=', $val)->first();
+                    $diagnose = Diagnosis::where('name', '=', $val)->first();
                     if (!$diagnose) {
-                        $spc = Specialty::where('name','=', $speciality)->first();
+                        $spc = Specialty::where('name', '=', $speciality)->first();
                         if (!$spc) {
                             $sp = new Specialty();
                             $sp->name = $speciality;
@@ -183,16 +191,14 @@ class DrugController extends Controller
                         $drug->diagnosis()->attach($diagnose->id);
                     }
                 }
-            }else{
-                $deleted = DB::table('diagnosis_drug')
-                ->where('drug_id',$drug->id)                
-                ->delete();
+            } else {
+                $drug->diagnosis()->detach();
 
                 foreach ($diagnosis as $val) {
-                    $diagnose = Diagnosis::where('name','=', $val)->first();
+                    $diagnose = Diagnosis::where('name', '=', $val)->first();
                     if (!$diagnose) {
 
-                        $spc = Specialty::where('name','=', $speciality)->first();
+                        $spc = Specialty::where('name', '=', $speciality)->first();
                         if (!$spc) {
                             $sp = new Specialty();
                             $sp->name = $speciality;
@@ -210,7 +216,6 @@ class DrugController extends Controller
                             $dgsn->save();
                             $drug->diagnosis()->attach($dgsn->id);
                         }
-
                     } else {
                         $drug->diagnosis()->attach($diagnose->id);
                     }

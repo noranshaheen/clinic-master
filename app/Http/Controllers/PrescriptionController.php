@@ -137,7 +137,7 @@ class PrescriptionController extends Controller
             $prescription->prescriptionItems()->save($prescriptionItem);
         }
 
-        foreach ($request->checkedItems as $item) {
+        foreach ($request->consumedItems as $item) {
             $spendings = new Spending();
             $spendings->doctor_id = Auth::user()->doc_res_id;
             $spendings->clinic_id = $request->selected_clinic['id'];

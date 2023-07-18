@@ -704,9 +704,9 @@
                   {{ __("Profile") }}
                 </dropdown-link>
 
-                <dropdown-link :href="route('api-tokens.index')" v-if="$page.props.auth.user.id == 1">
+                <!-- <dropdown-link :href="route('api-tokens.index')" v-if="$page.props.auth.user.id == 1">
                   {{ __("API Tokens") }}
-                </dropdown-link>
+                </dropdown-link> -->
 
                 <dropdown-link :href="route('users.index')">
                   {{ __("Users") }}

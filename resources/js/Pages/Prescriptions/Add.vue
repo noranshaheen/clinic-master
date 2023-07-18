@@ -144,14 +144,12 @@
                                     <tr class="border">
                                         <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Consumables") }}</td>
                                         <td class="p-2">
-                                            <!-- {{checkedItems}} -->
-                                            <ul v-for="(item, idx) in form.checkedItems">
+                                            <!-- {{consumedItems}} -->
+                                            <ul v-for="(item, idx) in form.consumedItems">
                                                 <li class="mb-2">
                                                     <div class="flex justify-between items-center">
                                                         <span class="font-bold">{{ item.name + " (" +
                                                             item.measurement_unit + ")" }}</span>
-                                                        <!-- <i class="fa fa-delete-left cursor-pointer text-red-500"
-                                                            @click="deleteItem(idx,checkedItems)"></i> -->
                                                     </div>
                                                     <!-- <multiselect v-model="line.dose" label="name" :options="doses"
                                                         placeholder="Dose" :searchable="true" class="text-sm" /> -->
@@ -344,7 +342,7 @@
                                     <button v-for="item in allItems" :key="item.id" class="my-2 first:mx-0 mx-1">
                                         <div v-if="item.hidden !== 1">
                                             <input type="checkbox" class="peer sr-only" :id="item.name" name="item"
-                                                :value="item" v-model="form.checkedItems" />
+                                                :value="item" v-model="form.consumedItems" />
                                             <label :for="item.name"
                                                 class=" cursor-pointer p-2 rounded-md text-center text-sm border shadow peer-checked:bg-green-500">
                                                 {{ item.name }}
@@ -458,14 +456,14 @@
                                     <tr class="border">
                                         <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Consumables") }}</td>
                                         <td class="p-2">
-                                            <!-- {{checkedItems}} -->
-                                            <ul v-for="(item, idx) in form.checkedItems">
+                                            <!-- {{consumedItems}} -->
+                                            <ul v-for="(item, idx) in form.consumedItems">
                                                 <li class="mb-2">
                                                     <div class="flex justify-between items-center">
                                                         <span class="font-bold">{{ item.name + " (" +
                                                             item.measurement_unit + ")" }}</span>
                                                         <!-- <i class="fa fa-delete-left cursor-pointer text-red-500"
-                                                            @click="deleteItem(idx,checkedItems)"></i> -->
+                                                            @click="deleteItem(idx,consumedItems)"></i> -->
                                                     </div>
                                                     <!-- <multiselect v-model="line.dose" label="name" :options="doses"
                                                         placeholder="Dose" :searchable="true" class="text-sm" /> -->
@@ -633,7 +631,7 @@ export default {
                 rays: [],
                 notes: "",
                 selected_clinic: "",
-                checkedItems: []
+                consumedItems: []
             }),
         };
     },

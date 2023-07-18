@@ -24,16 +24,9 @@
                             <span class="m-2 text-gray-400 text-sm">
                                 {{__("(you can choose multiple options)")}}
                             </span>
-                            <multiselect v-model="form.diagnose" label="name" :hide-selected="true" 
+                            <multiselect v-model="form.diagnose" label="name"  
                             :options="allDiagnosis" :searchable="true" :multiple="true" track-by="id" 
                             :placeholder='__("Select Diagnose")'/>
-                        
-                            <!-- <select v-model="form.diagnose" multiple
-                            class="mt-1 block w-full border-slate-300 rounded-md">
-                                <option v-for="diagnose in allDiagnosis" :value="diagnose.id" :key="diagnose.id">
-                                    {{ diagnose.name }}
-                                </option>
-                            </select> -->
                         </div>
 
                     </div>
@@ -117,8 +110,10 @@ export default {
             if (this.drug !== null) {
                 this.form.name = this.drug.name;
                 this.form.description = this.drug.description;
+                this.form.diagnose = this.drug.diagnosis;
             }
             this.showDialog = true;
+            console.log(this.drug);
         },
         CancelAddcustomer() {
             this.showDialog = false;

@@ -91,7 +91,7 @@
 				this.processing = true;
 				let temp = this;
 
-				axios.post(route('eta.patient.upload'),
+				axios.post(route('patient.upload'),
 				  formData,
 				  {
 					headers: {
