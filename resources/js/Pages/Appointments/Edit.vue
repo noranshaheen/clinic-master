@@ -30,7 +30,7 @@
 
           <div v-for="(record, idx1) in form.records" :key="idx1"
             class="bg-gray-200 sm:grid sm:grid-cols-2 sm:gap-2 sm:col-span-2 
-            lg:grid lg:grid-cols-6 lg:gap-3 p-2 mb-2">
+            lg:grid lg:grid-cols-7 lg:gap-3 p-2 mb-2">
             <div class="col-span-1">
               <jet-label :value="__('Date')" class="mt-4" />
               <jet-input type="date" class="mt-1 block w-full text-sm" v-model="record.date" required />
@@ -64,12 +64,21 @@
               </select>
             </div>
 
+            <div class="col-span-1" >
+              <jet-label :value="__('repeat')" class="mt-4"/>
+              <input v-model="record.repeat" type="checkbox" name="repeat" class="mt-1 block text-sm" />
+            </div>
+
             <!-- delete button -->
             <div class="col-span-1 flex justify-center sm:justify-end">
                 <jet-danger-button @click="deleteEntry(idx1)" class="mt-8 block min-w-fit">
                   {{ __("Delete") }}
                 </jet-danger-button>
             </div>
+
+            <span v-show="record.repeat" class=" col-span-7 text-xs text-red-400 block">
+              {{ __('will repeat this appointment after 1 week') }}
+            </span>
           </div>
         </div>
 
@@ -77,7 +86,6 @@
           <jet-button class="ps-2 w-full mt-1" @click="addBalance" :disabled="form.processing">
             <span class="">{{ __("Add") }}</span>
             <span class="hidden lg:inline">{{ __(" An Appointment") }}</span>
-
           </jet-button>
         </div>
       </div>
@@ -236,7 +244,8 @@ export default {
         from: "",
         to: "",
         room_id: "",
-        num_of_cases: 0
+        num_of_cases: 0,
+        repeat:false
       });
     },
     deleteEntry(idx1) {

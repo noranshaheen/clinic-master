@@ -32,20 +32,20 @@
             <template #cell(actions)="{ item: patient }">
               <div class="flex md:flex-wrap justify-start w-3/4">
                 <secondary-button class="w-full" @click="editCustomer(patient)">
-                <i class="fa fa-edit mx-1"></i>
-                <span class="hidden md:inline">
+                <i class="fa fa-edit lg:mx-1"></i>
+                <span class="hidden lg:inline">
                   {{ __("Edit") }}
                 </span>
               </secondary-button>
                 <jet-button class="w-full" v-if="patient.prescriptions.length > 0" @click="showHistory(patient)">
-                <i class="fa fa-history mx-1"></i>
-                <span class="hidden md:inline">
+                <i class="fa fa-history lg:mx-1"></i>
+                <span class="hidden lg:inline">
                   {{ __("History") }}
                 </span>
               </jet-button>
               <jet-danger-button class="w-full" @click="removeCustomer(patient)">
-                <i class="fa fa-trash mx-1"></i>
-                <span class="hidden md:inline">
+                <i class="fa fa-trash lg:mx-1"></i>
+                <span class="hidden lg:inline">
                   {{ __("Delete") }}
                 </span>
               </jet-danger-button>

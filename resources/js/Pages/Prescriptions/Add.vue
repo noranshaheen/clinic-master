@@ -14,33 +14,34 @@
                         <div class="md:mx-2 md:col-span-1 md:gap-4">
                             <div class="hidden lg:block lg:py-2">
                                 <!-- <jet-label class="" :value='__("Select Clinic")' /> -->
-                                <lable class="text-slate-700 font-bold">{{__('Select Clinic')}}</lable>
+                                <lable class="text-slate-700 font-bold">{{ __('Select Clinic') }}</lable>
                             </div>
                             <div class="flex justify-between text-sm">
                                 <multiselect v-model="selected_clinic" label="name" :options="allClinics"
                                     :placeholder='__("Branch")' :searchable="true" class="my-2 sm:w-7/12 sm:m-2" />
-                                <jet-button @click="getAppointments" class="my-2 sm:w-1/12 sm:m-2 lg:flex lg:justify-center lg:items-center">
+                                <jet-button @click="getAppointments"
+                                    class="my-2 sm:w-1/12 sm:m-2 lg:flex lg:justify-center lg:items-center">
                                     <i class="fa-solid fa-magnifying-glass mx-1 lg:mx-0"></i>
                                 </jet-button>
                             </div>
                         </div>
-                        <hr class="block lg:hidden"/>
+                        <hr class="block lg:hidden" />
                         <div class="lg:col-span-3 lg:ms-2 lg:border-s-2 px-2 ">
                             <div class="flex justify-start sm:grid-cols-1 mt-2 lg:mt-0">
                                 <!-- patients -->
                                 <div class="">
                                     <div class=" lg:py-2 m-2 lg:m-0">
                                         <!-- <jet-label class="" :value='__("Patients")' /> -->
-                                        <lable class="text-slate-700 font-bold">{{__('Patients')}}</lable>
+                                        <lable class="text-slate-700 font-bold">{{ __('Patients') }}</lable>
 
                                     </div>
-                                    <div class="grid grid-cols-4 gap-2 lg:flex lg:justify-start lg:flex-wrap lg:m-2" v-if="appointments.length > 0">
+                                    <div class="grid grid-cols-4 gap-2 lg:flex lg:justify-start lg:flex-wrap lg:m-2"
+                                        v-if="appointments.length > 0">
                                         <div v-for="appointment in appointments" :key="appointment.patient_id"
                                             class="w-full lg:w-fit">
                                             <jet-button
                                                 v-if="appointment.patient_id !== null && appointment.cancelled == null"
-                                                :class="{ 'bg-green-400': appointment.done, }"
-                                                class="w-full"
+                                                :class="{ 'bg-green-400': appointment.done, }" class="w-full"
                                                 @click.prevent="getHistory(appointment.patient_id, appointment.patient.name, appointment.id)">
                                                 {{ appointment.patient.name }}
                                             </jet-button>
@@ -54,7 +55,8 @@
 
                 <div class="lg:grid lg:grid-cols-3 lg:gap-4 my-4">
                     <!-- medium screen -->
-                    <div class="hidden lg:block mb-4 pb-4 lg:pb-1 lg:mb-0 md:col-span-1 border-r-2 relative shadow-lg sm:rounded-lg bg-white">
+                    <div
+                        class="hidden lg:block mb-4 pb-4 lg:pb-1 lg:mb-0 md:col-span-1 border-r-2 relative shadow-lg sm:rounded-lg bg-white">
                         <!-- <div>{{ __("History") }}</div> -->
                         <div class="h-full">
                             <div class="w-full flex items-center border-b border-gray-200">
@@ -104,12 +106,12 @@
                                                         placeholder="Dose" :searchable="true" class="text-sm" /> -->
                                                     <div class="flex justify-between">
                                                         <input list="doses" id="dose" v-model="line.dose" placeholder="dose"
-                                                            class="border w-3/5 pl-2">
+                                                            class="border w-3/5 pl-2 mx-1 border-slate-300 rounded-md">
                                                         <datalist id="doses">
                                                             <option v-for="dose in doses" :value="dose.name"></option>
                                                         </datalist>
                                                         <input type="text" v-model="line.cost" placeholder="cost"
-                                                            class="w-2/5" />
+                                                            class="w-2/5 border-slate-300 rounded-md" />
                                                     </div>
                                                 </li>
                                             </ul>
@@ -144,20 +146,19 @@
                                     <tr class="border">
                                         <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Consumables") }}</td>
                                         <td class="p-2">
-                                            <!-- {{consumedItems}} -->
+                                            <!-- {{form.consumedItems}} -->
                                             <ul v-for="(item, idx) in form.consumedItems">
                                                 <li class="mb-2">
                                                     <div class="flex justify-between items-center">
                                                         <span class="font-bold">{{ item.name + " (" +
                                                             item.measurement_unit + ")" }}</span>
                                                     </div>
-                                                    <!-- <multiselect v-model="line.dose" label="name" :options="doses"
-                                                        placeholder="Dose" :searchable="true" class="text-sm" /> -->
                                                     <div class="flex justify-between">
                                                         <input type="number" step="0.1" v-model="item.quantity"
-                                                            placeholder="quantity" class="w-2/5" />
-                                                        <input type="text" v-model="item.selling_price" placeholder="cost"
-                                                            class="w-3/5" />
+                                                            placeholder="quantity"
+                                                            class="w-1/2 mx-1 border-slate-300 rounded-md" />
+                                                        <input type="text" placeholder="cost" v-model="item.selling_price"
+                                                            class="w-1/2 border-slate-300 rounded-md" />
                                                     </div>
                                                 </li>
                                             </ul>
@@ -191,12 +192,12 @@
                             <div v-show="tab_idx == 2" class="px-2 flex flex-col justify-between">
                                 <div>
                                     <div v-if="current_patient_name" class="mx-auto w-full mt-4 border border-[#eceeef]">
-                                    <div class="text-center p-2 font-bold bg-[#f8f9fa] w-full">
-                                        <i @click="getPatientInfo(patient_history)"
-                                            class="fa fa-exclamation-circle mr-2 cursor-pointer border rounded-full"></i>
-                                        <span>{{ current_patient_name }}</span>
+                                        <div class="text-center p-2 font-bold bg-[#f8f9fa] w-full">
+                                            <i @click="getPatientInfo(patient_history)"
+                                                class="fa fa-exclamation-circle mr-2 cursor-pointer border rounded-full"></i>
+                                            <span>{{ current_patient_name }}</span>
+                                        </div>
                                     </div>
-                                </div>
                                     <div v-if="patient_history.length > 0" class="overflow-x-auto w-full">
                                         <table class="w-full mx-auto lg:max-w-full table-fixed">
                                             <thead class="text-center bg-gray-300">
@@ -244,7 +245,7 @@
 
                         <div class="mb-4 pb-2 border-b-2 ">
                             <!-- <jet-label :value="__('Diagnosis')" class="font-bold" /> -->
-                            <lable class="my-1 text-slate-700 font-bold">{{__('Diagnosis')}}</lable>
+                            <lable class="my-1 text-slate-700 font-bold">{{ __('Diagnosis') }}</lable>
                             <span class="m-2 text-gray-400 text-sm">{{ __("(you can choose multiple options)") }}</span>
                             <div class="flex justify-start flex-wrap my-4">
                                 <button v-for="diagnosis in all_diagnosis" :key="diagnosis.id" class="my-2 mx-1">
@@ -261,7 +262,7 @@
 
                         <div>
                             <!-- <jet-label :value="__('Drug')" class="font-bold"/> -->
-                            <lable class="my-1 text-slate-700 font-bold">{{__('Drug')}}</lable>
+                            <lable class="my-1 text-slate-700 font-bold">{{ __('Drug') }}</lable>
                             <span class="m-2 text-gray-400 text-sm">{{ __("(you can choose multiple options)") }}</span>
                             <!-- start adding drugs -->
                             <div class="my-4 pb-2 border-b-2 ">
@@ -282,7 +283,7 @@
                             <!-- start adding analysis -->
                             <div class="my-2 pb-2 border-b-2 ">
                                 <!-- <jet-label :value="__('Analysis')" class="font-bold" /> -->
-                                <lable class="my-1 text-slate-700 font-bold">{{__('Analysis')}}</lable>
+                                <lable class="my-1 text-slate-700 font-bold">{{ __('Analysis') }}</lable>
                                 <span class="m-2 text-gray-400 text-sm">{{ __("(you can choose multiple options)") }}</span>
                                 <div v-if="analysis" class="flex justify-start flex-wrap">
                                     <button v-for="analysis in all_analysis" :key="analysis.id" class="my-2 mx-1">
@@ -308,7 +309,7 @@
                             <!-- start adding rays -->
                             <div class="my-2 pb-2 border-b-2">
                                 <!-- <jet-label :value="__('X-ray')" class="font-bold"/> -->
-                                <lable class="my-1 text-slate-700 font-bold">{{__('X-ray')}}</lable>
+                                <lable class="my-1 text-slate-700 font-bold">{{ __('X-ray') }}</lable>
                                 <span class="m-2 text-gray-400 text-sm">{{ __("(you can choose multiple options)") }}</span>
                                 <div v-if="rays" class="flex justify-start flex-wrap">
                                     <!-- <multiselect v-model="form.rays" label="name" :options="all_rays"
@@ -336,7 +337,7 @@
                             <!-- start consumables -->
                             <div class="mb-4 pb-2 border-b-2">
                                 <!-- <jet-label :value="__('Consumables')" class="font-bold"/> -->
-                                <lable class="my-1 text-slate-700 font-bold">{{__('Consumables')}}</lable>
+                                <lable class="my-1 text-slate-700 font-bold">{{ __('Consumables') }}</lable>
                                 <span class="m-2 text-gray-400 text-sm">{{ __("(you can choose multiple options)") }}</span>
                                 <div class="flex justify-start flex-wrap my-4">
                                     <button v-for="item in allItems" :key="item.id" class="my-2 first:mx-0 mx-1">
@@ -355,7 +356,7 @@
 
                             <!-- start notes -->
                             <div class="my-1">
-                                <lable class="my-1 text-slate-700 font-bold">{{__('Notes')}}</lable>
+                                <lable class="my-1 text-slate-700 font-bold">{{ __('Notes') }}</lable>
                                 <!-- <jet-label :value="__('Notes')" class="my-1 font-bold" /> -->
                                 <div class="my-1">
                                     <input v-model="form.notes" type="text" class="w-full border border-gray-300 rounded" />
@@ -366,7 +367,8 @@
                     </div>
 
                     <!-- mobile screen -->
-                    <div class="lg:hidden mb-4 pb-4 lg:pb-1 lg:mb-0 mt-4 md:col-span-1 border-r-2 relative shadow-lg sm:rounded-lg bg-white">
+                    <div
+                        class="lg:hidden mb-4 pb-4 lg:pb-1 lg:mb-0 mt-4 md:col-span-1 border-r-2 relative shadow-lg sm:rounded-lg bg-white">
                         <!-- <div>{{ __("History") }}</div> -->
                         <div class="h-full">
                             <div class="w-full flex items-center border-b border-gray-200">
@@ -416,12 +418,12 @@
                                                         placeholder="Dose" :searchable="true" class="text-sm" /> -->
                                                     <div class="flex justify-between">
                                                         <input list="doses" id="dose" v-model="line.dose" placeholder="dose"
-                                                            class="border w-3/5 pl-2">
+                                                            class="border w-3/5 pl-2 mx-1 border-slate-300 rounded-md">
                                                         <datalist id="doses">
                                                             <option v-for="dose in doses" :value="dose.name"></option>
                                                         </datalist>
                                                         <input type="text" v-model="line.cost" placeholder="cost"
-                                                            class="w-2/5" />
+                                                            class="w-2/5 border-slate-300 rounded-md" />
                                                     </div>
                                                 </li>
                                             </ul>
@@ -469,9 +471,10 @@
                                                         placeholder="Dose" :searchable="true" class="text-sm" /> -->
                                                     <div class="flex justify-between">
                                                         <input type="number" step="0.1" v-model="item.quantity"
-                                                            placeholder="quantity" class="w-2/5" />
+                                                            placeholder="quantity"
+                                                            class="w-1/2 mx-1 border-slate-300 rounded-md" />
                                                         <input type="text" v-model="item.selling_price" placeholder="cost"
-                                                            class="w-3/5" />
+                                                            class="w-1/2 mx-1 border-slate-300 rounded-md" />
                                                     </div>
                                                 </li>
                                             </ul>
@@ -505,12 +508,12 @@
                             <div v-show="tab_idx == 2" class="px-2 flex flex-col justify-between">
                                 <div>
                                     <div v-if="current_patient_name" class="mx-auto w-full mt-4 border border-[#eceeef]">
-                                    <div class="text-center p-2 font-bold bg-[#f8f9fa] w-full">
-                                        <i @click="getPatientInfo(patient_history)"
-                                            class="fa fa-exclamation-circle mr-2 cursor-pointer border rounded-full"></i>
-                                        <span>{{ current_patient_name }}</span>
+                                        <div class="text-center p-2 font-bold bg-[#f8f9fa] w-full">
+                                            <i @click="getPatientInfo(patient_history)"
+                                                class="fa fa-exclamation-circle mr-2 cursor-pointer border rounded-full"></i>
+                                            <span>{{ current_patient_name }}</span>
+                                        </div>
                                     </div>
-                                </div>
                                     <div v-if="patient_history.length > 0" class="overflow-x-auto w-full">
                                         <table class="w-full mx-auto lg:max-w-full table-fixed">
                                             <thead class="text-center bg-gray-300">
@@ -624,7 +627,7 @@ export default {
             form: this.$inertia.form({
                 appointment_id: "",
                 patient_id: "",
-                dateTimeIssued: new Date().toISOString().slice(0,16),
+                dateTimeIssued: new Date().toISOString().slice(0, 16),
                 prescriptionLines: [],
                 diagnosis: [],
                 analysis: [],
@@ -766,13 +769,6 @@ export default {
         },
         nameWithId: function ({ id, name }) {
             return id + " - " + name;
-        },
-        // changePrice(item){
-        //     item
-        // },
-        getPrice(item) {
-            var price = Number.parseFloat(item.selling_price) * Number.parseFloat(item.quantity);
-            return price;
         },
         openDlg(patient) {
             // console.log(patient);
