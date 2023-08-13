@@ -1,6 +1,7 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+@import '@dafcoe/vue-collapsible-panel/dist/vue-collapsible-panel.css';
 
 /* add spacing to inertia table in rtl direction */
 

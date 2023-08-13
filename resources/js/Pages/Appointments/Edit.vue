@@ -1,15 +1,15 @@
 <template>
   <jet-dialog-modal :show="showDialog" maxWidth="5xl" @close="showDialog = false">
     <template #title>
-      {{ __("Add An Appointment Dialog") }}
+      {{ __("Add An Appointment") }}
     </template>
 
     <template #content>
       <jet-validation-errors class="mb-4" />
 
       <div class="grid grid-cols-1">
-        <div class="grid grid-cols-2 gap-3">
-          <div class="col-span-1">
+        <div class="sm:grid sm:grid-cols-2 sm:gap-1 md:gap-3">
+          <div class="sm:col-span-1">
             <jet-label :value="__('Doctor')" />
             <select v-model="form.doctor_id" class="mt-1 block w-full border-slate-300 rounded-md">
               <option v-for="doctor in doctors" :value="doctor.id" :key="doctor.id">
@@ -18,7 +18,7 @@
             </select>
           </div>
 
-          <div class="col-span-1">
+          <div class="mb-4 sm:col-span-1">
             <jet-label :value="__('Clinic')" />
             <select v-model="form.clinic_id" class="mt-1 block w-full border-slate-300 rounded-md"
               @change="updateAvailableRooms(form.clinic_id)">
@@ -29,27 +29,32 @@
           </div>
 
           <div v-for="(record, idx1) in form.records" :key="idx1"
-            class="bg-gray-200 grid grid-cols-6 gap-3 col-span-2 p-2">
+            class="bg-gray-200 sm:grid sm:grid-cols-2 sm:gap-2 sm:col-span-2 
+            lg:grid lg:grid-cols-7 lg:gap-3 p-2 mb-2">
             <div class="col-span-1">
               <jet-label :value="__('Date')" class="mt-4" />
               <jet-input type="date" class="mt-1 block w-full text-sm" v-model="record.date" required />
             </div>
 
+            <!-- start time -->
             <div class="col-span-1">
               <jet-label :value="__('From')" class="mt-4" />
               <jet-input type="time" class="mt-1 block w-full text-sm" v-model="record.from" required />
             </div>
 
+            <!-- end time -->
             <div class="col-span-1">
               <jet-label :value="__('To')" class="mt-4" />
               <jet-input type="time" class="mt-1 block w-full text-sm" v-model="record.to" required />
             </div>
 
+            <!-- number of cases -->
             <div class="col-span-1">
-              <jet-label :value="__('Number Of Cases')" class="mt-4" />
+              <jet-label :value="__('Cases')" class="mt-4" />
               <jet-input type="number" min=1 class="mt-1 block w-full text-sm" v-model="record.num_of_cases" required />
             </div>
 
+            <!-- choose room -->
             <div class="col-span-1">
               <jet-label :value="__('Room')" class="mt-4" />
               <select required v-model="record.room_id" class="mt-1 block w-full border-slate-300 rounded-md text-sm">
@@ -59,17 +64,28 @@
               </select>
             </div>
 
-            <div class="col-span-1 flex justify-end">
+            <div class="col-span-1" >
+              <jet-label :value="__('repeat')" class="mt-4"/>
+              <input v-model="record.repeat" type="checkbox" name="repeat" class="mt-1 block text-sm" />
+            </div>
+
+            <!-- delete button -->
+            <div class="col-span-1 flex justify-center sm:justify-end">
                 <jet-danger-button @click="deleteEntry(idx1)" class="mt-8 block min-w-fit">
                   {{ __("Delete") }}
                 </jet-danger-button>
             </div>
+
+            <span v-show="record.repeat" class=" col-span-7 text-xs text-red-400 block">
+              {{ __('will repeat this appointment after 1 week') }}
+            </span>
           </div>
         </div>
 
         <div class="col-span-1 w-1/5 my-2 mx-auto">
           <jet-button class="ps-2 w-full mt-1" @click="addBalance" :disabled="form.processing">
-            {{ __("Add An Appointment") }}
+            <span class="">{{ __("Add") }}</span>
+            <span class="hidden lg:inline">{{ __(" An Appointment") }}</span>
           </jet-button>
         </div>
       </div>
@@ -228,7 +244,8 @@ export default {
         from: "",
         to: "",
         room_id: "",
-        num_of_cases: 0
+        num_of_cases: 0,
+        repeat:false
       });
     },
     deleteEntry(idx1) {

@@ -23,8 +23,8 @@ class PatientController extends Controller
         $patients = QueryBuilder::for (Patient::class)
         ->with('prescriptions')
         ->defaultSort('id')
-        ->allowedSorts(['id','name','date_of_birth'])
-        ->allowedFilters(['name','phone','type','date_of_birth','insurance_number','insurance_company','gender'])
+        ->allowedSorts(['id','name','phone','type','date_of_birth','insurance_number','insurance_company','gender'])
+        ->allowedFilters(['id','name','phone','type','date_of_birth','insurance_number','insurance_company','gender'])
         ->paginate(Request()->input('perPage',20))
         ->withQueryString();
 
@@ -199,7 +199,7 @@ class PatientController extends Controller
                 $new_patient = new Patient();
                 $new_patient->name = $temp[$key]['name'];
                 $new_patient->gender = $temp[$key]['gender (M|F)'];
-                $new_patient->phone = $temp[$key]['phone'];
+                $new_patient->phone = "0".$temp[$key]['phone'];
                 $new_patient->type = $temp[$key]['type (P|I)'];
                 $new_patient->date_of_birth = $this->excelDateToDatetime($temp[$key]['date_of_birth']);
                 $new_patient->insurance_number = $temp[$key]['insurance_number']?$temp[$key]['insurance_number']:null;

@@ -17,9 +17,9 @@
               <secondary-button @click="editCustomer(room)">
                 <i class="fa fa-edit"></i> {{ __("Edit") }}
               </secondary-button>
-              <jet-button class="ms-2" @click="removeCustomer(room)">
+              <JetDangerButton class="ms-2" @click="removeCustomer(room)">
                 <i class="fa fa-trash"></i> {{ __("Delete") }}
-              </jet-button>
+              </JetDangerButton>
             </template>
           </Table>
         </div>
@@ -35,6 +35,7 @@ import EditRoom from "@/Pages/Rooms/Edit.vue";
 import { Table } from "@protonemedia/inertiajs-tables-laravel-query-builder";
 import SecondaryButton from "@/Jetstream/SecondaryButton.vue";
 import JetButton from "@/Jetstream/Button.vue";
+import JetDangerButton from "@/Jetstream/DangerButton.vue";
 import axios from "axios";
 
 export default {
@@ -45,6 +46,7 @@ export default {
     Table,
     SecondaryButton,
     JetButton,
+    JetDangerButton
   },
   props: {
     rooms: Object,

@@ -97,6 +97,7 @@ class AppointmentController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request);
         $today = Carbon::parse('today');
         $timesArr = array();
 
@@ -109,41 +110,79 @@ class AppointmentController extends Controller
             'records.*.room_id' => ['numeric', 'required'],
             'records.*.num_of_cases' => ['numeric', 'min:1', 'required'],
             'records.*.from' => ['required'],
-            'records.*.to' => ['required']
+            'records.*.to' => ['required'],
+            'records.*.repeat' => ['nullable']
         ]);
+
 
         //transaction begin
         // DB::beginTransaction();
         foreach ($data['records'] as $item) {
-            $from = $item['date'] . " " . $item['from'];
-            $to = $item['date'] . " " . $item['to'];
+            if ($item['repeat']) {
+                for ($i = 0; $i < 2; $i++) {
+                    if ($i == 0) {
+                        $from = $item['date'] . " " . $item['from'];
+                        $to = $item['date'] . " " . $item['to'];
+                        $interval = $this->timeInterval($from, $to, $item['num_of_cases']);
+                        $timesObjs = CarbonInterval::minutes($interval)->toPeriod($from, $to)->toArray();
+                        $timesArr = array_map(fn ($time) => $time->format('H:i'), $timesObjs);
+                        $j = 0;
+                        while ($j < count($timesArr) - 1) {
+                            $apt = new Appointment();
+                            $apt->doctor_id = $data['doctor_id'];
+                            $apt->clinic_id = $data['clinic_id'];
+                            $apt->room_id = $item['room_id'];
+                            $apt->date = $item['date'];
+                            $apt->from = $item['date'] . " " . $timesArr[$j++];
+                            $apt->to = $item['date'] . " " . $timesArr[$j];
+                            $apt->save();
+                        }
+                    } elseif ($i == 1) {
+                        $nextdate = Carbon::parse($item['date'])->addWeeks(1)->toDateString();
+                        $from = $nextdate . " " . $item['from'];
+                        $to = $nextdate . " " . $item['to'];
+                        $interval = $this->timeInterval($from, $to, $item['num_of_cases']);
+                        $timesObjs = CarbonInterval::minutes($interval)->toPeriod($from, $to)->toArray();
+                        $timesArr = array_map(fn ($time) => $time->format('H:i'), $timesObjs);
+                        $j = 0;
+                        while ($j < count($timesArr) - 1) {
+                            $apt = new Appointment();
+                            $apt->doctor_id = $data['doctor_id'];
+                            $apt->clinic_id = $data['clinic_id'];
+                            $apt->room_id = $item['room_id'];
+                            $apt->date = $nextdate;
+                            $apt->from = $nextdate . " " . $timesArr[$j++];
+                            $apt->to = $nextdate . " " . $timesArr[$j];
+                            $apt->save();
+                        }
+                    }
+                }
+            } else {
+                //validate that the range of dates in this room is free
+                // $conflicFrom = DB::table('appointments')
+                //     ->where('date', $item['date'])
+                //     ->where('room_id', $item['room_id'])
+                //     ->get();
+                // $r = $conflicFrom->groupBy('doctor_id');
+                // dd($conflicFrom);
 
-            //validate that the range of dates in this room is free
-            // $conflicFrom = DB::table('appointments')
-            // ->where('date',$item['date'])
-            // ->where('room_id',$item['room_id'])
-            // ->get();
-            // $r = $conflicFrom->groupBy('doctor_id');
-            // dd($r);
-
-
-            // if ($confilctCount == 0) {
-            $interval = $this->timeInterval($from, $to, $item['num_of_cases']);
-            $timesObjs = CarbonInterval::minutes($interval)->toPeriod($from, $to)->toArray();
-            $timesArr = array_map(fn ($time) => $time->format('H:i'), $timesObjs);
-
-            $j = 0;
-            while ($j < count($timesArr) - 1) {
-                $apt = new Appointment();
-                $apt->doctor_id = $data['doctor_id'];
-                $apt->clinic_id = $data['clinic_id'];
-                $apt->room_id = $item['room_id'];
-                $apt->date = $item['date'];
-                $apt->from = $item['date'] . " " . $timesArr[$j++];
-                $apt->to = $item['date'] . " " . $timesArr[$j];
-                $apt->save();
+                $from = $item['date'] . " " . $item['from'];
+                $to = $item['date'] . " " . $item['to'];
+                $interval = $this->timeInterval($from, $to, $item['num_of_cases']);
+                $timesObjs = CarbonInterval::minutes($interval)->toPeriod($from, $to)->toArray();
+                $timesArr = array_map(fn ($time) => $time->format('H:i'), $timesObjs);
+                $j = 0;
+                while ($j < count($timesArr) - 1) {
+                    $apt = new Appointment();
+                    $apt->doctor_id = $data['doctor_id'];
+                    $apt->clinic_id = $data['clinic_id'];
+                    $apt->room_id = $item['room_id'];
+                    $apt->date = $item['date'];
+                    $apt->from = $item['date'] . " " . $timesArr[$j++];
+                    $apt->to = $item['date'] . " " . $timesArr[$j];
+                    $apt->save();
+                }
             }
-            // }
         }
         // DB::commit();
     }
@@ -271,12 +310,12 @@ class AppointmentController extends Controller
         $appointment = Appointment::find($request->appointment_id);
         $appointment->amount = $request->amount;
         $appointment->status = "paid";
-        if($request->notes){
+        if ($request->notes) {
             $appointment->notes = $request->notes;
         }
         $appointment->save();
-        
-        $payments= new Payment;
+
+        $payments = new Payment;
         $payments->patient_id = $appointment->patient_id;
         $payments->appointment_id = $appointment->id;
         $payments->doctor_id = $appointment->doctor_id;
@@ -284,8 +323,9 @@ class AppointmentController extends Controller
         $payments->save();
     }
 
-    public function showHistory($patient_id){
-        $patient_appointments = Appointment::where('patient_id','=',$patient_id)->get();
+    public function showHistory($patient_id)
+    {
+        $patient_appointments = Appointment::where('patient_id', '=', $patient_id)->get();
         return $patient_appointments;
     }
 }

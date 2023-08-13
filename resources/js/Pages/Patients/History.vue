@@ -17,7 +17,7 @@
                         </jet-button>
                     </div>
                     <!--first tab-->
-                    <div v-show="tab_idx == 1" class="overflow">
+                    <div v-show="tab_idx == 1" class="overflow-auto">
                         <table class="w-full">
                             <tr>
                                 <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{__("Date")}}</th>
@@ -30,17 +30,17 @@
                                 <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{__("Actions")}}</th>
                             </tr>
                             <tr v-for="prescription in prescriptions" :key="prescription.id">
-                                <td class="text-center  border py-2">{{ new
+                                <td class="text-center  border p-2">{{ new
                                     Date(prescription.appointment.date).toLocaleDateString() }}
                                 </td>
-                                <td class="text-center  border py-2">{{ __(prescription.appointment.type) }}</td>
-                                <td class="text-center  border py-2">{{ __(prescription.appointment.status) }}</td>
-                                <td class="text-center  border py-2">{{ prescription.appointment.amount }}</td>
-                                <td class="text-center  border py-2">{{
+                                <td class="text-center  border p-2">{{ __(prescription.appointment.type) }}</td>
+                                <td class="text-center  border p-2">{{ __(prescription.appointment.status) }}</td>
+                                <td class="text-center  border p-2">{{ prescription.appointment.amount }}</td>
+                                <td class="text-center  border p-2">{{
                                     prescription.appointment.payment !== null ? getTotalServiceFees(prescription) :
                                     __("Not Found")
                                 }}</td>
-                                <td class="text-center  border py-2">
+                                <td class="text-center  border p-2">
                                     <!-- <span v-for="payment in prescription.appointment.payment">
                                         <span v-if="payment.appointment_id == prescription.appointment_id">
                                             {{ payment.service_fees? payment.service_fees:"Not Paid" }}
@@ -51,20 +51,20 @@
                                             __(getPaidServiceFees(prescription)) : __("Not Paid") }}
                                     </span>
                                 </td>
-                                <td class="text-center  border py-2">
+                                <td class="text-center  border p-2">
                                     {{ prescription.appointment.payment !== null ?
                                         getRemainingOfServiceFees(prescription) : "0" }}
                                 </td>
-                                <td class="text-center  border py-2">
+                                <td class="text-center  border p-2">
                                     <JetButton @click="downloadPDF(prescription)">
-                                        PDF
+                                        {{__("Print")}}
                                     </JetButton>
                                 </td>
                             </tr>
                         </table>
                     </div>
                     <!--second tab-->
-                    <div v-show="tab_idx == 2" class="overflow">
+                    <div v-show="tab_idx == 2" class="overflow-auto">
                         <table class="w-full" v-if="this.prescriptions.length !== 0">
                             <tr>
                                 <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{ __("Date") }}</th>
@@ -84,8 +84,11 @@
                                     </ul>
                                 </td>
                                 <td class="text-center border py-2">
-                                    <JetButton @click="downloadPrescriptionPDF(prescription)">{{__("Print")}}</JetButton>
-                                    <JetButton @click="openDlg(prescription)">{{__("Show")}}</JetButton>
+                                    <div class="flex flex-col sm:flex-row justify-center items-center">
+                                        <JetButton class="w-full sm:w-min" @click="downloadPrescriptionPDF(prescription)">{{__("Print")}}</JetButton>
+                                    <JetButton class="w-full sm:w-min" @click="openDlg(prescription)">{{__("Show")}}</JetButton>
+                                    </div>
+                                    
                                 </td>
                             </tr>
                         </table>

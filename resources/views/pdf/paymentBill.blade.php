@@ -62,8 +62,10 @@
                     </thead>
                     <tbody class="text-center border border-[#eceeef]">
                         <tr>
-                            <td class="p-2 border border-[#eceeef] font-bold">{{ "Detection Fees" }}</td>
-                            <td class="p-2 border border-[#eceeef] font-bold">{{ $data->appointment->payment->detection_fees }}</td>
+                            <td class="p-2 border border-[#eceeef] font-bold">{{ __('Detection Fees') }}</td>
+                            <td class="p-2 border border-[#eceeef] font-bold">
+                                {{ $data->appointment->payment ? $data->appointment->payment->detection_fees : __('Not Paid') }}
+                            </td>
                         </tr>
                         @php
                         $total = 0;
@@ -78,7 +80,7 @@
                         @endforeach
 
                         <tr>
-                            <td class="p-2 border border-[#eceeef] font-bold">{{ "Service Fees" }}</td>
+                            <td class="p-2 border border-[#eceeef] font-bold">{{ __('Service Fees') }}</td>
                             <td class="p-2 border border-[#eceeef] font-bold">{{ $total }}</td>
                         </tr>
 
@@ -95,11 +97,12 @@
                 </table>
                 <div class="invoice-total py-5 text-right">
                     <h4 class="capitalize py-2 text-gray-600 text-xl font-bold">{{ __('Invoice Total') }}:
-                        {{sprintf("%0.2f", ($total+ $data->appointment->payment->detection_fees))}} {{ __(' EGP')}}
+                        {{sprintf("%0.2f", ($total+ $data->appointment->payment ? $data->appointment->payment->detection_fees : 0))}} 
+                        {{ __(' EGP')}}
                     </h4>
                     <h4 class="capitalize py-2 text-gray-600 text-xl font-bold">{{ __('Paid') }}:
                         {{sprintf("%0.2f",
-                            ($data->appointment->payment->service_fees + $data->appointment->payment->detection_fees))}}
+                            ($data->appointment->payment ? ($data->appointment->payment->service_fees + $data->appointment->payment->detection_fees): 0))}}
                         {{ __(' EGP')}}
                     </h4>
                 </div>
