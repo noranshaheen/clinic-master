@@ -29,6 +29,7 @@
               :class="{ 'text-[#4099de]': $page.url === '/' }" class="grid justify-items-center ms-3 mb-3 lg:mb-0"><i
               class="fas fa-chart-pie"></i>{{ __("Dashboard") }}</Link>
 
+
             <!-- start dropdown menus -->
             <!-- doctor menu -->
             <dropdown :align="alignDropDown()" width="48" class="ms-3 mb-3 lg:mb-0">
@@ -38,181 +39,171 @@
                 }">
                   <!-- <i class="fa fa-user-doctor"></i> -->
                   <i class="fa fa-stethoscope"></i>
-                  {{ __("Doctors") }}
+                  {{ __("Clinic") }}
                 </span>
               </template>
               <template #content>
-                <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg1')">
-                  <i class="fas fa-plus"></i>
-                  {{ __("Add Doctor") }}
-                </dropdown-link>
-                <dropdown-link :href="route('doctors.index')">
-                  <i class="fas fa-eye"></i>
-                  {{ __("Show Doctors") }}
-                </dropdown-link>
-              </template>
-            </dropdown>
+                <div class="pt-0 divide-y divide-gray-200">
+                  <!-- doctor -->
+                  <div>
+                    <div class="p-1 border-b flex justify-between">
+                      <p>{{ __("Doctors") }}</p>
+                      <i class="fa-solid fa-caret-down cursor-pointer" @click="doctor = false" v-show="doctor"></i>
+                      <i class="fa-solid fa-caret-left cursor-pointer" @click="doctor = true" v-show="!doctor"></i>
+                    </div>
+                    <div v-show="doctor">
+                      <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg1')">
+                        <i class="fas fa-plus"></i>
+                        {{ __("Add Doctor") }}
+                      </dropdown-link>
+                      <dropdown-link :href="route('doctors.index')">
+                        <i class="fas fa-eye"></i>
+                        {{ __("Show Doctors") }}
+                      </dropdown-link>
+                    </div>
+                  </div>
+                  <!-- patient -->
+                  <div>
+                    <div class="p-1 border-b flex justify-between">
+                      <p>{{ __("Patients") }}</p>
+                      <i class="fa-solid fa-caret-down cursor-pointer" @click="patient = false" v-show="patient"></i>
+                      <i class="fa-solid fa-caret-left cursor-pointer" @click="patient = true" v-show="!patient"></i>
+                    </div>
+                    <div v-show="patient">
+                      <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg2')">
+                        <i class="fas fa-plus"></i>
+                        {{ __("Add Patient") }}
+                      </dropdown-link>
+                      <dropdown-link :href="route('patients.index')">
+                        <i class="fas fa-eye"></i>
+                        {{ __("Show Patients") }}
+                      </dropdown-link>
+                      <dropdown-link as="a" @click.prevent="openDlg('dlg14')" href="#">
+                        <i class="fa fa-cloud-arrow-up"></i>
+                        {{ __("Upload Patients") }}
+                      </dropdown-link>
+                    </div>
+                  </div>
+                  <!-- reseptionist -->
+                  <div>
+                    <div class="p-1 border-b flex justify-between">
+                      <p>{{ __("Reseptionists") }}</p>
+                      <i class="fa-solid fa-caret-down cursor-pointer" @click="reseptionist = false"
+                        v-show="reseptionist"></i>
+                      <i class="fa-solid fa-caret-left cursor-pointer" @click="reseptionist = true"
+                        v-show="!reseptionist"></i>
+                    </div>
+                    <div v-show="reseptionist">
+                      <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg11')">
+                        <i class="fas fa-plus"></i>
+                        {{ __("Add Reseptionist") }}
+                      </dropdown-link>
+                      <dropdown-link :href="route('reseptionists.index')">
+                        <i class="fas fa-eye"></i>
+                        {{ __("Show Reseptionists") }}
+                      </dropdown-link>
+                    </div>
+                  </div>
+                  <!-- clinic -->
+                  <div>
+                    <div class="p-1 border-b flex justify-between">
+                      <p>{{ __("Clinics") }}</p>
+                      <i class="fa-solid fa-caret-down cursor-pointer" @click="clinic = false" v-show="clinic"></i>
+                      <i class="fa-solid fa-caret-left cursor-pointer" @click="clinic = true" v-show="!clinic"></i>
+                    </div>
+                    <div v-show="clinic">
+                      <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg3')">
+                        <i class="fas fa-plus"></i> <!-- Updated Font Awesome icon class -->
+                        {{ __("Add Clinic") }}
+                      </dropdown-link>
+                      <dropdown-link :href="route('clinics.index')">
+                        <i class="fas fa-eye"></i> <!-- Updated Font Awesome icon class -->
+                        {{ __("Show Clinics") }}
+                      </dropdown-link>
+                    </div>
+                  </div>
+                  <!-- room -->
+                  <div>
+                    <div class="p-1 border-b flex justify-between">
+                      <p>{{ __("Rooms") }}</p>
+                      <i class="fa-solid fa-caret-down cursor-pointer" @click="room = false" v-show="room"></i>
+                      <i class="fa-solid fa-caret-left cursor-pointer" @click="room = true" v-show="!room"></i>
+                    </div>
+                    <div v-show="room">
+                      <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg4')">
+                        <i class="fas fa-plus"></i>
+                        {{ __("Add Room") }}
+                      </dropdown-link>
+                      <dropdown-link :href="route('rooms.index')">
+                        <i class="fas fa-eye"></i>
+                        {{ __("Show Rooms") }}
+                      </dropdown-link>
+                    </div>
+                  </div>
+                  <!-- diagnose -->
+                  <div>
+                    <div class="p-1 border-b flex justify-between">
+                      <p>{{ __("Diagnosis") }}</p>
+                      <i class="fa-solid fa-caret-down cursor-pointer" @click="diagnose = false" v-show="diagnose"></i>
+                      <i class="fa-solid fa-caret-left cursor-pointer" @click="diagnose = true" v-show="!diagnose"></i>
+                    </div>
+                    <div v-show="diagnose">
+                      <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg6')">
+                        <i class="fas fa-plus"></i>
+                        {{ __("Add Diagnosis") }}
+                      </dropdown-link>
+                      <dropdown-link :href="route('diagnosis.index')">
+                        <i class="fas fa-eye"></i>
+                        {{ __("Show Diagnosis") }}
+                      </dropdown-link>
+                    </div>
+                  </div>
+                  <!-- drug -->
+                  <div>
+                    <div class="p-1 border-b flex justify-between">
+                      <p>{{ __("Drugs") }}</p>
+                      <i class="fa-solid fa-caret-down cursor-pointer" @click="drug = false" v-show="drug"></i>
+                      <i class="fa-solid fa-caret-left cursor-pointer" @click="drug = true" v-show="!drug"></i>
+                    </div>
+                    <div v-show="drug">
+                      <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg5')">
+                        <i class="fas fa-plus"></i>
+                        {{ __("Add Drug") }}
+                      </dropdown-link>
+                      <dropdown-link :href="route('drugs.index')">
+                        <i class="fas fa-eye"></i>
+                        {{ __("Show Drugs") }}
+                      </dropdown-link>
+                      <dropdown-link as="a" @click.prevent="openDlg('dlg12')" href="#">
+                        <i class="fa fa-cloud-arrow-up"></i>
+                        {{ __("Upload Drugs") }}
+                      </dropdown-link>
+                    </div>
+                  </div>
 
-            <!-- patient menu -->
-            <dropdown :align="alignDropDown()" width="48" class="ms-3 mb-3 lg:mb-0">
-              <template #trigger>
-                <span class="grid justify-items-center cursor-pointer hover:text-[#4099de]" :class="{
-                  'text-[#4099de]': $page.url.startsWith('/patients'),
-                }">
-                  <i class="fa-solid fa-bed-pulse"></i>
-                  {{ __("Patients") }}
-                </span>
-              </template>
-              <template #content>
-                <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg2')">
-                  <i class="fas fa-plus"></i>
-                  {{ __("Add Patient") }}
-                </dropdown-link>
-                <dropdown-link :href="route('patients.index')">
-                  <i class="fas fa-eye"></i>
-                  {{ __("Show Patients") }}
-                </dropdown-link>
-                <dropdown-link as="a" @click.prevent="openDlg('dlg14')" href="#">
-                  {{ __("Upload Patients") }}
-                </dropdown-link>
-              </template>
-            </dropdown>
+                  <!-- prescription -->
+                  <div>
+                    <div class="p-1 border-b flex justify-between">
+                      <p>{{ __("Prescriptions") }}</p>
+                      <i class="fa-solid fa-caret-down cursor-pointer" @click="prescription = false"
+                        v-show="prescription"></i>
+                      <i class="fa-solid fa-caret-left cursor-pointer" @click="prescription = true"
+                        v-show="!prescription"></i>
+                    </div>
+                    <div v-show="prescription">
+                      <dropdown-link v-if="$page.props.auth.user.current_team_id == 2" as="a"
+                        :href="route('prescriptions.create')">
+                        <i class="fas fa-plus"></i>
+                        {{ __("Add Prescription") }}
+                      </dropdown-link>
+                      <dropdown-link as="a" :href="route('prescriptions.index')">
+                        <i class="fas fa-eye"></i>
+                        {{ __("Show Prescriptions") }}
+                      </dropdown-link>
+                    </div>
+                  </div>
+                </div>
 
-            <!-- reseptionist menu -->
-            <dropdown :align="alignDropDown()" width="48" class="ms-3 mb-3 lg:mb-0">
-              <template #trigger>
-                <span class="grid justify-items-center cursor-pointer hover:text-[#4099de]" :class="{
-                  'text-[#4099de]': $page.url.startsWith('/reseptionist'),
-                }">
-                  <i class="fa fa-hospital-user"></i>
-                  {{ __("Reseptionists") }}
-                </span>
-              </template>
-              <template #content>
-                <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg11')">
-                  <i class="fas fa-plus"></i>
-                  {{ __("Add Reseptionist") }}
-                </dropdown-link>
-                <dropdown-link :href="route('reseptionists.index')">
-                  <i class="fas fa-eye"></i>
-                  {{ __("Show Reseptionists") }}
-                </dropdown-link>
-              </template>
-            </dropdown>
-
-            <!-- Clinic menu -->
-            <dropdown :align="alignDropDown()" width="48" class="ms-3 mb-3 lg:mb-0">
-              <template #trigger>
-                <span class="grid justify-items-center cursor-pointer hover:text-[#4099de]" :class="{
-                  'text-[#4099de]': $page.url.startsWith('/clinics'),
-                }">
-                  <i class="fa fa-hospital"></i> <!-- Updated Font Awesome icon class -->
-                  {{ __("Clinics") }}
-                </span>
-              </template>
-              <template #content>
-                <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg3')">
-                  <i class="fas fa-plus"></i> <!-- Updated Font Awesome icon class -->
-                  {{ __("Add Clinic") }}
-                </dropdown-link>
-                <dropdown-link :href="route('clinics.index')">
-                  <i class="fas fa-eye"></i> <!-- Updated Font Awesome icon class -->
-                  {{ __("Show Clinics") }}
-                </dropdown-link>
-              </template>
-            </dropdown>
-
-
-            <!-- Room menu -->
-            <dropdown :align="alignDropDown()" width="48" class="ms-3 mb-3 lg:mb-0">
-              <template #trigger>
-                <span class="grid justify-items-center cursor-pointer hover:text-[#4099de]" :class="{
-                  'text-[#4099de]': $page.url.startsWith('/rooms')
-                }">
-                  <i class="fa fa-file"></i>
-                  {{ __("Rooms") }}
-                </span>
-              </template>
-              <template #content>
-                <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg4')">
-                  <i class="fas fa-plus"></i>
-                  {{ __("Add Room") }}
-                </dropdown-link>
-                <dropdown-link :href="route('rooms.index')">
-                  <i class="fas fa-eye"></i>
-                  {{ __("Show Rooms") }}
-                </dropdown-link>
-              </template>
-            </dropdown>
-
-            <!-- Drug menu -->
-            <dropdown :align="alignDropDown()" width="48" class="ms-3 mb-3 lg:mb-0">
-              <template #trigger>
-                <span class="grid justify-items-center cursor-pointer hover:text-[#4099de]" :class="{
-                  'text-[#4099de]': $page.url.startsWith('/drugs'),
-                }">
-                  <i class="fa fa-capsules"></i>
-                  {{ __("Drugs") }}
-                </span>
-              </template>
-              <template #content>
-                <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg5')">
-                  <i class="fas fa-plus"></i>
-                  {{ __("Add Drug") }}
-                </dropdown-link>
-                <dropdown-link :href="route('drugs.index')">
-                  <i class="fas fa-eye"></i>
-                  {{ __("Show Drugs") }}
-                </dropdown-link>
-                <dropdown-link as="a" @click.prevent="openDlg('dlg12')" href="#">
-                  {{ __("Upload Drugs") }}
-                </dropdown-link>
-              </template>
-            </dropdown>
-
-            <!-- Diagnosis menu -->
-            <dropdown :align="alignDropDown()" width="48" class="ms-3 mb-3 lg:mb-0">
-              <template #trigger>
-                <span class="grid justify-items-center cursor-pointer hover:text-[#4099de]" :class="{
-                  'text-[#4099de]': $page.url.startsWith('/diagnosis'),
-                }">
-                  <i class="fa fa-file"></i>
-                  {{ __("Diagnosis") }}
-                </span>
-              </template>
-              <template #content>
-                <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg6')">
-                  <i class="fas fa-plus"></i>
-                  {{ __("Add Diagnosis") }}
-                </dropdown-link>
-                <dropdown-link :href="route('diagnosis.index')">
-                  <i class="fas fa-eye"></i>
-                  {{ __("Show Diagnosis") }}
-                </dropdown-link>
-              </template>
-            </dropdown>
-
-            <!-- Prescription menu -->
-            <dropdown :align="alignDropDown()" width="48" class="ms-3 mb-3 lg:mb-0">
-              <template #trigger>
-                <span class="grid justify-items-center cursor-pointer hover:text-[#4099de]" :class="{
-                  'text-[#4099de]': $page.url.startsWith('/prescriptions'),
-                }">
-                  <!-- <i class="fa-sharp fa-solid fa-notes-medical"></i> -->
-                  <i class="fa fa-file-prescription"></i>
-                  {{ __("Prescriptions") }}
-                </span>
-              </template>
-              <template #content>
-                <dropdown-link v-if="$page.props.auth.user.current_team_id == 2" as="a"
-                  :href="route('prescriptions.create')">
-                  <i class="fas fa-plus"></i>
-                  {{ __("Add Prescription") }}
-                </dropdown-link>
-                <dropdown-link as="a" :href="route('prescriptions.index')">
-                  <i class="fas fa-eye"></i>
-                  {{ __("Show Prescriptions") }}
-                </dropdown-link>
               </template>
             </dropdown>
 
@@ -265,10 +256,6 @@
                   <!-- <i class="fa-solid fa-magnifying-glass mx-1"></i> -->
                   {{ __("Expensess & Incomes") }}
                 </dropdown-link>
-                <!-- <dropdown-link as="a" :href="route('bills.')">
-                  <i class="fa-solid fa-magnifying-glass mx-1"></i>
-                  {{ __("Check Balance") }}
-                </dropdown-link> -->
               </template>
             </dropdown>
 
@@ -702,19 +689,24 @@
             <language-selector />
             <dropdown :align="$page.props.locale == 'en' ? 'right' : 'left'" class="ms-3">
               <template #trigger>
-                <span class="cursor-pointer hover:text-blue-600">
+                <span class="cursor-pointer hover:text-blue-600 mb-1">
                   <i class="fa fa-user"></i>
-                  {{ $page.props.auth.user.name }}
+                  <span class="hidden lg:inline p-2">
+                    {{ $page.props.auth.user.name }}
+                  </span>
                 </span>
               </template>
               <template #content>
+                <div class="p-2 bg-gray-100 lg:hidden font-bold border">
+                  {{ $page.props.auth.user.name }}
+                </div>
                 <dropdown-link :href="route('profile.show')">
                   {{ __("Profile") }}
                 </dropdown-link>
 
-                <dropdown-link :href="route('api-tokens.index')" v-if="$page.props.auth.user.id == 1">
+                <!-- <dropdown-link :href="route('api-tokens.index')" v-if="$page.props.auth.user.id == 1">
                   {{ __("API Tokens") }}
-                </dropdown-link>
+                </dropdown-link> -->
 
                 <dropdown-link :href="route('users.index')">
                   {{ __("Users") }}
@@ -748,6 +740,10 @@ import LanguageSelector from "@/Language/LanguageSelector.vue";
 import Dropdown from "@/Jetstream/Dropdown.vue";
 import DropdownLink from "@/Jetstream/DropdownLink.vue";
 import JetApplicationMark from "@/Jetstream/ApplicationMark.vue";
+import {
+  VueCollapsiblePanelGroup,
+  VueCollapsiblePanel,
+} from '@dafcoe/vue-collapsible-panel';
 
 export default {
   emits: ["open_dlg"],
@@ -757,10 +753,20 @@ export default {
     Dropdown,
     DropdownLink,
     JetApplicationMark,
+    VueCollapsiblePanelGroup,
+    VueCollapsiblePanel
   },
   data() {
     return {
       isOpen: false,
+      doctor: false,
+      patient: false,
+      reseptionist: false,
+      clinic: false,
+      room: false,
+      drug: false,
+      diagnose: false,
+      prescription: false
     };
   },
   methods: {

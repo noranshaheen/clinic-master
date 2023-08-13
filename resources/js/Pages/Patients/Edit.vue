@@ -8,9 +8,9 @@
       <jet-validation-errors class="mb-4" />
 
       <form @submit.prevent="submit">
-        <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col sm:grid sm:grid-cols-2 sm:gap-4">
 
-          <div>
+          <div  class="w-full">
             <div class="mt-4">
               <jet-label :value='__("Patient Name")' />
               <jet-input type="text" class="mt-1 block w-full" v-model="form.name" required id="name" />
@@ -27,8 +27,11 @@
             </div>
 
             <div class="mt-4">
-              <TextField v-model="form.additionalInformation" itemType="text"
-                :itemLabel="__('Additional Information (optional)')" />
+              <jet-label :value='__("Additional Information")' />
+              <jet-input type="text" class="mt-1 block w-full" v-model="form.additionalInformation"
+               placeholder="optional" autofocus id="info" />
+              <!-- <TextField v-model="form.additionalInformation" itemType="text"
+                :itemLabel="__('Additional Information')" placeholder="optional"/> -->
             </div>
 
             <div class="mt-4" v-if="appointment_id != null">
@@ -50,7 +53,7 @@
             </div>
           </div>
 
-          <div>
+          <div class="w-full">
             <div class="mt-4">
               <jet-label for="gender" :value='__("Gender")' />
               <select id="gender" v-model="form.gender" required

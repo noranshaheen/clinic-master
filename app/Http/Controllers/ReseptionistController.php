@@ -17,8 +17,8 @@ class ReseptionistController extends Controller
     {
         $reseptionists = QueryBuilder::for (Reseptionist::class)
         ->defaultSort('id')
-        ->allowedSorts(['id','name','date_of_birth'])
-        ->allowedFilters(['name','phone','date_of_birth','gender'])
+        ->allowedSorts(['id','name','date_of_birth','phone','gender'])
+        ->allowedFilters(['id','name','date_of_birth','phone','gender'])
         ->paginate(Request()->input('perPage',20))
         ->withQueryString();
 
@@ -31,6 +31,7 @@ class ReseptionistController extends Controller
                 canBeHidden:false,
                 hidden:false,
                 sortable:true,
+                searchable:true
             )->column(
                 key:"name",
                 label: __("Name"),
@@ -82,25 +83,25 @@ class ReseptionistController extends Controller
             'date_of_birth' => ['date','required','before_or_equal:'.$today],
         ]);
 
-        $patient = new Reseptionist();
-        $patient->name = $request->name;
-        $patient->phone = $request->phone;
-        $patient->gender = $request->gender;
-        $patient->date_of_birth = $request->date_of_birth;
-        $patient->save();
+        $reseptionist = new Reseptionist();
+        $reseptionist->name = $request->name;
+        $reseptionist->phone = $request->phone;
+        $reseptionist->gender = $request->gender;
+        $reseptionist->date_of_birth = $request->date_of_birth;
+        $reseptionist->save();
     }
 
-    public function show(Patient $patient)
+    public function show(Reseptionist $reseptionist)
     {
         //
     }
 
-    public function edit(Patient $patient)
+    public function edit(Reseptionist $reseptionist)
     {
         //
     }
 
-    public function update(Request $request, Patient $patient)
+    public function update(Request $request, Reseptionist $reseptionist)
     {
         $today = Carbon::parse('today');
 
@@ -111,12 +112,12 @@ class ReseptionistController extends Controller
             'date_of_birth' => ['date','required','before_or_equal:'.$today],
         ]);
 
-        $patient->update($date);
+        $reseptionist->update($date);
     }
 
-    public function destroy(Patient $patient)
+    public function destroy(Reseptionist $reseptionist)
     {
-        $patient->delete();
+        $reseptionist->delete();
     }
 
     public function all(){

@@ -1,17 +1,17 @@
 <template>
     <!-- New Customer Modal -->
-    <jet-dialog-modal :show="uploadingCustomers" @close="uploadingCustomers = false">
+    <jet-dialog-modal :show="uploadingCustomers" @close="uploadingCustomers = false" class="min-w-min">
             <template #title>
                 {{__('Upload Patients')}}
             </template>
 
             <template #content>
-                <div class="grid grid-cols-3 md:grid-cols-3 gap-4">
-					<label>{{__('Choose File')}}
+                <div class="text-md md:text-lg">
+					<!-- <label>{{__('Choose File')}} -->
 						<input type="file" @change="handleFileUpload($event)" ref="inputFile"/>
-					</label>
+					<!-- </label> -->
                 </div>
-                <div class="flex justify-end">
+                <div class="flex justify-start mt-4 underline decoration-1 text-md md:text-lg">
                     <a href="/ExcelTemplates/PatientUpload.xlsx">{{__('Download excel template')}}</a>
                 </div>
             </template>
@@ -91,19 +91,20 @@
 				this.processing = true;
 				let temp = this;
 
-				axios.post(route('eta.patient.upload'),
+				axios.post(route('patient.upload'),
 				  formData,
 				  {
 					headers: {
 						'Content-Type': 'multipart/form-data'
 					}
 				  }
-				).then(function(){
+				).then(()=>{
 					temp.processing = false;
 					temp.$refs.inputFile.value = null;
-					temp.closeModal()
+                    temp.uploadingCustomers = false
+                    window.location.reload();                    
 				})
-				.catch(function(){
+				.catch(()=>{
 					temp.processing = false;
 					temp.$refs.inputFile.value = null;
 				    console.log('FAILURE!!');

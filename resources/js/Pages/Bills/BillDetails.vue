@@ -5,36 +5,39 @@
                 {{ __("Bill Details") }}
             </template>
             <template #content>
-                <table class="w-full">
-                    <thead class="text-center bg-gray-300">
-                        <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">
-                            {{ __('Item') }}
-                        </th>
-                        <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">{{ __('Unit') }}</th>
-                        <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">{{ __('Price') }}</th>
-                        <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">{{ __('Quantity') }}</th>
-                        <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">{{ __('Total') }}</th>
-                    </thead>
-                    <tbody class="text-center border border-[#eceeef] w-5/12">
-                        <tr v-for="row in bill_details" class="border border-[#eceeef]">
-                            <td class="p-1 border border-[#eceeef]">
-                                {{ row.item.name }}
-                            </td>
-                            <td class="p-1 border border-[#eceeef]">
-                                {{ row.item.measurement_unit }}
-                            </td>
-                            <td class="p-1 border border-[#eceeef]">
-                                {{ row.purches_price }}
-                            </td>
-                            <td class="p-1 border border-[#eceeef]">
-                                {{ row.quantity }}
-                            </td>
-                            <td class="p-1 border border-[#eceeef]">
-                               {{ row.total }}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="overflow-auto">
+                    <table class="w-full">
+                        <thead class="text-center bg-gray-300">
+                            <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">
+                                {{ __('Item') }}
+                            </th>
+                            <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">{{ __('Unit') }}</th>
+                            <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">{{ __('Price') }}</th>
+                            <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">{{ __('Quantity') }}</th>
+                            <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">{{ __('Total') }}</th>
+                        </thead>
+                        <tbody class="text-center border border-[#eceeef] w-5/12">
+                            <tr v-for="row in bill_details" class="border border-[#eceeef]">
+                                <td class="p-1 border border-[#eceeef]">
+                                    {{ row.item.name }}
+                                </td>
+                                <td class="p-1 border border-[#eceeef]">
+                                    {{ row.item.measurement_unit }}
+                                </td>
+                                <td class="p-1 border border-[#eceeef]">
+                                    {{ row.purches_price }}
+                                </td>
+                                <td class="p-1 border border-[#eceeef]">
+                                    {{ row.quantity }}
+                                </td>
+                                <td class="p-1 border border-[#eceeef]">
+                                    {{ row.total }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
             </template>
             <template #footer>
                 <JetSecondaryButton class="ml-2" @click="close()">{{ __("Close") }}</JetSecondaryButton>

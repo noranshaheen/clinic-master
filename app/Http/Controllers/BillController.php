@@ -11,6 +11,7 @@ use App\Models\Prescription;
 use App\Models\Spending;
 use ProtoneMedia\LaravelQueryBuilderInertiaJs\InertiaTable;
 use Spatie\QueryBuilder\QueryBuilder;
+use Carbon\Carbon;
 
 class BillController extends Controller
 {
@@ -143,35 +144,46 @@ class BillController extends Controller
     public function searchIncomeData(Request $request)
     {
         if ($request->clinic['id'] == -1 && $request->doctor['id'] == -1) {
+
+            $endDate = Carbon::parse($request->endDate)->endOfDay();
+
             $doctor_prescriptions = Prescription::with('doctor')
                 ->with('prescriptionItems')
                 ->with('clinic')
                 ->with('appointment')
                 ->with('appointment.payment')
-                ->whereBetween('dateTimeIssued', [$request->startDate, $request->endDate])
+                ->whereBetween('dateTimeIssued', [$request->startDate, $endDate])
                 ->get();
             return $doctor_prescriptions;
         } elseif ($request->doctor['id'] == -1) {
+
+            $endDate = Carbon::parse($request->endDate)->endOfDay();
+
             $doctor_prescriptions = Prescription::with('doctor')
                 ->with('prescriptionItems')
                 ->with('clinic')
                 ->with('appointment')
                 ->with('appointment.payment')
                 ->where('clinic_id', '=', $request->clinic['id'])
-                ->whereBetween('dateTimeIssued', [$request->startDate, $request->endDate])
+                ->whereBetween('dateTimeIssued', [$request->startDate, $endDate])
                 ->get();
             return $doctor_prescriptions;
         } elseif ($request->clinic['id'] == -1) {
+
+            $endDate = Carbon::parse($request->endDate)->endOfDay();
+
             $doctor_prescriptions = Prescription::with('doctor')
                 ->with('prescriptionItems')
                 ->with('clinic')
                 ->with('appointment')
                 ->with('appointment.payment')
                 ->where('doctor_id', '=', $request->doctor['id'])
-                ->whereBetween('dateTimeIssued', [$request->startDate, $request->endDate])
+                ->whereBetween('dateTimeIssued', [$request->startDate, $endDate])
                 ->get();
             return $doctor_prescriptions;
         } else {
+
+            $endDate = Carbon::parse($request->endDate)->endOfDay();
 
             $doctor_prescriptions = Prescription::with('doctor')
                 ->with('prescriptionItems')
@@ -180,7 +192,7 @@ class BillController extends Controller
                 ->with('appointment.payment')
                 ->where('doctor_id', '=', $request->doctor['id'])
                 ->where('clinic_id', '=', $request->clinic['id'])
-                ->whereBetween('dateTimeIssued', [$request->startDate, $request->endDate])
+                ->whereBetween('dateTimeIssued', [$request->startDate, $endDate])
                 ->get();
             return $doctor_prescriptions;
         }

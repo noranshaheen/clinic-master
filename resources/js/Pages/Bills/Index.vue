@@ -35,6 +35,7 @@ import billDetails from "@/Pages/Bills/BillDetails.vue";
 import { Table } from "@protonemedia/inertiajs-tables-laravel-query-builder";
 import SecondaryButton from "@/Jetstream/SecondaryButton.vue";
 import JetButton from "@/Jetstream/Button.vue";
+import JetDangerButton from "@/Jetstream/DangerButton.vue";
 import axios from 'axios';
 
 export default {
@@ -45,6 +46,7 @@ export default {
         Table,
         SecondaryButton,
         JetButton,
+        JetDangerButton
     },
     props: {
         bills: Object,

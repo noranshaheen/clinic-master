@@ -29,8 +29,8 @@ class PrescriptionController extends Controller
             ->with('doctor')
             ->with('patient')
             ->with('prescriptionItems')
-            ->allowedSorts(['id', 'dateTimeIssued'])
-            ->allowedFilters(['dateTimeIssued'])
+            ->allowedSorts(['id','doctor_id','patient_id', 'dateTimeIssued'])
+            ->allowedFilters(['id','doctor_id','patient_id', 'dateTimeIssued'])
             ->paginate(Request()->input('perPage', 20))
             ->withQueryString();
 
@@ -45,14 +45,14 @@ class PrescriptionController extends Controller
                 hidden: false,
                 sortable: true
             )->column(
-                key: "doctor",
+                key: "doctor_id",
                 label: __("Doctor"),
                 canBeHidden: true,
                 hidden: false,
                 sortable: true,
                 searchable: true
             )->column(
-                key: "patient",
+                key: "patient_id",
                 label: __("Patient"),
                 canBeHidden: true,
                 hidden: false,
@@ -105,7 +105,7 @@ class PrescriptionController extends Controller
         $prescription->appointment_id = $request->appointment_id;
         $prescription->clinic_id = $request->selected_clinic['id'];
         $prescription->doctor_id = Auth::user()->doc_res_id;
-        $prescription->dateTimeIssued = $request->dateTimeIssued;
+        $prescription->dateTimeIssued = Carbon::parse($request->dateTimeIssued)->addHours(3)->addMinutes(5);
 
         $prescription->diagnosis = is_array($request->diagnosis) ?
             json_encode($request['diagnosis']) : $request['diagnosis'];
@@ -137,7 +137,7 @@ class PrescriptionController extends Controller
             $prescription->prescriptionItems()->save($prescriptionItem);
         }
 
-        foreach ($request->checkedItems as $item) {
+        foreach ($request->consumedItems as $item) {
             $spendings = new Spending();
             $spendings->doctor_id = Auth::user()->doc_res_id;
             $spendings->clinic_id = $request->selected_clinic['id'];

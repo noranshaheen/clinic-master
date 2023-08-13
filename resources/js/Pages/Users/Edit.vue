@@ -8,7 +8,7 @@
             <jet-validation-errors class="mb-4" />
 
             <form @submit.prevent="submit">
-                <div class="grid grid-cols-2 gap-4">
+                <div class="sm:grid sm:grid-cols-2 sm:gap-4">
                     <div>
                         <jet-label :value="__('Role')" />
                         <select id="type" v-model="form.current_team_id" class="mt-1 block w-full"
@@ -20,15 +20,17 @@
                     <div>
                         <jet-label for="name" :value="__('Name')" />
                         <select required v-model="form.doctor_id"
-                            class="mt-1 block w-full border-slate-300 rounded-md text-sm" v-if="all_doctors.length != 0">
+                            class="mt-1 block w-full border-slate-300 rounded-md text-sm"
+                            v-if="all_doctors.length != 0">
                             <option v-for="doctor in all_doctors" :value="doctor.id" :key="doctor.id">
                                 {{ doctor.name }}
                             </option>
                         </select>
                         <select required v-model="form.reseptionist_id"
-                            class="mt-1 block w-full border-slate-300 rounded-md text-sm" v-if="all_reseptionists.length != 0">
-                            <option v-for="reseptionist in all_reseptionists" 
-                            :value="reseptionist.id" :key="reseptionist.id">
+                            class="mt-1 block w-full border-slate-300 rounded-md text-sm"
+                            v-if="all_reseptionists.length != 0">
+                            <option v-for="reseptionist in all_reseptionists" :value="reseptionist.id"
+                                :key="reseptionist.id">
                                 {{ reseptionist.name }}
                             </option>
                         </select>
@@ -116,7 +118,7 @@ export default {
             errors: [],
             form: this.$inertia.form({
                 reseptionist_id: "",
-                doctor_id:"",
+                doctor_id: "",
                 email: "",
                 password: "",
                 current_team_id: ""
@@ -131,8 +133,14 @@ export default {
                 this.form.name = this.pUser.name;
                 this.form.email = this.pUser.email;
                 this.form.current_team_id = this.pUser.current_team_id;
+                if (this.pUser.current_team_id == 1) {
+                    this.getAll(1);
+                } else {
+                    this.getAll(2);
+                }
             }
             this.showDialog = true;
+            // console.log(this.pUser);
         },
         CancelAddUser() {
             this.showDialog = false;

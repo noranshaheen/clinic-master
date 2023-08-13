@@ -8,7 +8,7 @@
       <jet-validation-errors class="mb-4" />
 
       <form @submit.prevent="submit">
-        <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col sm:grid sm:grid-cols-2 sm:gap-4">
           <div>
             <div class="mt-4">
               <jet-label :value='__("Doctor Name")' />
@@ -31,12 +31,13 @@
               />
             </div>
             <div class="mt-4">
-              <jet-label :value='__("Another Phone (optional)")' />
+              <jet-label :value='__("Another Phone")' />
               <jet-input
                 type="text"
                 class="mt-1 block w-full"
                 v-model="form.another_phone"
                 autofocus
+                placeholder="optional"
               />
             </div>
           </div>
@@ -66,9 +67,13 @@
                 class="mt-1 block w-full rounded border border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm"
                 required
                 >
+                <option value="طبيب الامتياز">{{ __("طبيب الامتياز") }}</option>
+                <option value="طبيب مقيم">{{ __("طبيب مقيم") }}</option>
                 <option value="أخصائي">{{ __("أخصائي") }}</option>
-                <option value="استشاري">{{ __("استشاري") }}</option>
-                <option value="أستاذ">{{ __("أستاذ") }}</option>
+                <option value="أخصائي أول">{{ __("أخصائي أول") }}</option>
+                <option value="إستشاري">{{ __("إستشاري") }}</option>
+                <option value="استشاري أول">{{ __("استشاري أول") }}</option>
+                <option value="دكتوراه">{{ __("دكتوراه") }}</option>
               </select>
             </div>
             <div class="mt-4">
