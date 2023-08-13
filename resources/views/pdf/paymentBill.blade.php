@@ -97,7 +97,7 @@
                 </table>
                 <div class="invoice-total py-5 text-right">
                     <h4 class="capitalize py-2 text-gray-600 text-xl font-bold">{{ __('Invoice Total') }}:
-                        {{sprintf("%0.2f", ($total+ $data->appointment->payment ? $data->appointment->payment->detection_fees : 0))}} 
+                        {{sprintf("%0.2f", (($data->appointment->payment) ? $total+intval($data->appointment->payment->detection_fees) : $total))}} 
                         {{ __(' EGP')}}
                     </h4>
                     <h4 class="capitalize py-2 text-gray-600 text-xl font-bold">{{ __('Paid') }}:
