@@ -140,6 +140,24 @@
                       </dropdown-link>
                     </div>
                   </div>
+                  <!-- diagnose -->
+                  <div>
+                    <div class="p-1 border-b flex justify-between">
+                      <p>{{ __("Diagnosis") }}</p>
+                      <i class="fa-solid fa-caret-down cursor-pointer" @click="diagnose = false" v-show="diagnose"></i>
+                      <i class="fa-solid fa-caret-left cursor-pointer" @click="diagnose = true" v-show="!diagnose"></i>
+                    </div>
+                    <div v-show="diagnose">
+                      <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg6')">
+                        <i class="fas fa-plus"></i>
+                        {{ __("Add Diagnosis") }}
+                      </dropdown-link>
+                      <dropdown-link :href="route('diagnosis.index')">
+                        <i class="fas fa-eye"></i>
+                        {{ __("Show Diagnosis") }}
+                      </dropdown-link>
+                    </div>
+                  </div>
                   <!-- drug -->
                   <div>
                     <div class="p-1 border-b flex justify-between">
@@ -159,24 +177,6 @@
                       <dropdown-link as="a" @click.prevent="openDlg('dlg12')" href="#">
                         <i class="fa fa-cloud-arrow-up"></i>
                         {{ __("Upload Drugs") }}
-                      </dropdown-link>
-                    </div>
-                  </div>
-                  <!-- diagnose -->
-                  <div>
-                    <div class="p-1 border-b flex justify-between">
-                      <p>{{ __("Diagnosis") }}</p>
-                      <i class="fa-solid fa-caret-down cursor-pointer" @click="diagnose = false" v-show="diagnose"></i>
-                      <i class="fa-solid fa-caret-left cursor-pointer" @click="diagnose = true" v-show="!diagnose"></i>
-                    </div>
-                    <div v-show="diagnose">
-                      <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg6')">
-                        <i class="fas fa-plus"></i>
-                        {{ __("Add Diagnosis") }}
-                      </dropdown-link>
-                      <dropdown-link :href="route('diagnosis.index')">
-                        <i class="fas fa-eye"></i>
-                        {{ __("Show Diagnosis") }}
                       </dropdown-link>
                     </div>
                   </div>

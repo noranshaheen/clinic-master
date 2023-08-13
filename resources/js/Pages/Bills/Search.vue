@@ -22,9 +22,9 @@
             <jet-button @click="onSearchIncomes()">
               {{ __("Incomes") }}
             </jet-button>
-            <jet-button @click="onCheckBalance()">
+            <!-- <jet-button @click="onCheckBalance()">
               {{ __("Consumable Items Balance") }}
-            </jet-button>
+            </jet-button> -->
           </div>
 
 

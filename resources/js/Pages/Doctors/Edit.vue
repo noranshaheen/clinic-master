@@ -67,9 +67,13 @@
                 class="mt-1 block w-full rounded border border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm"
                 required
                 >
+                <option value="طبيب الامتياز">{{ __("طبيب الامتياز") }}</option>
+                <option value="طبيب مقيم">{{ __("طبيب مقيم") }}</option>
                 <option value="أخصائي">{{ __("أخصائي") }}</option>
-                <option value="استشاري">{{ __("استشاري") }}</option>
-                <option value="أستاذ">{{ __("أستاذ") }}</option>
+                <option value="أخصائي أول">{{ __("أخصائي أول") }}</option>
+                <option value="إستشاري">{{ __("إستشاري") }}</option>
+                <option value="استشاري أول">{{ __("استشاري أول") }}</option>
+                <option value="دكتوراه">{{ __("دكتوراه") }}</option>
               </select>
             </div>
             <div class="mt-4">

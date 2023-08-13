@@ -57,7 +57,7 @@
                                 </td>
                                 <td class="text-center  border p-2">
                                     <JetButton @click="downloadPDF(prescription)">
-                                        PDF
+                                        {{__("Print")}}
                                     </JetButton>
                                 </td>
                             </tr>
