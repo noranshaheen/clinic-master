@@ -16,71 +16,71 @@ class DoctorController extends Controller
      */
     public function index()
     {
-        $doctors = QueryBuilder::for (Doctor::class)
+        $doctors = QueryBuilder::for(Doctor::class)
             ->with('specialties')
             ->defaultSort('id')
-            ->allowedSorts(['id','name','phone','date_of_birth','title','specialty_id'])
-            ->allowedFilters(['id','name','phone','date_of_birth','title','specialty_id','another_phone'])
+            ->allowedSorts(['id', 'name', 'phone', 'date_of_birth', 'title', 'specialty_id'])
+            ->allowedFilters(['id', 'name', 'phone', 'date_of_birth', 'title', 'specialty_id', 'another_phone'])
             ->paginate(Request()->input('perPage', 20))
             ->withQueryString();
 
-            // dd($doctors);
+        // dd($doctors);
 
         return Inertia::render('Doctors/Index', [
             'doctors' => $doctors
         ])->table(function (InertiaTable $table) {
             $table->column(
-                key:'id',
-                label:__('ID'),
-                canBeHidden:true,
-                hidden:false,
-                sortable:true,
-                searchable:true
+                key: 'id',
+                label: __('ID'),
+                canBeHidden: true,
+                hidden: false,
+                sortable: true,
+                searchable: true
             )->column(
-                key:'name',
-                label:__('Name'),
-                canBeHidden:true,
-                hidden:false,
-                sortable:true,
-                searchable:true
+                key: 'name',
+                label: __('Name'),
+                canBeHidden: true,
+                hidden: false,
+                sortable: true,
+                searchable: true
             )->column(
-                key:'phone',
-                label:__('Phone Number'),
-                canBeHidden:true,
-                hidden:false,
-                sortable:true,
-                searchable:true
+                key: 'phone',
+                label: __('Phone Number'),
+                canBeHidden: true,
+                hidden: false,
+                sortable: true,
+                searchable: true
             )->column(
-                key:'anther_phone',
-                label:__('Anther Phone'),
-                canBeHidden:true,
-                hidden:false,
-                sortable:true,
-                searchable:true
+                key: 'anther_phone',
+                label: __('Anther Phone'),
+                canBeHidden: true,
+                hidden: false,
+                sortable: true,
+                searchable: true
             )->column(
-                key:'specialty_id',
-                label:__('Speciatly'),
-                canBeHidden:true,
-                hidden:false,
-                sortable:true,
-                searchable:true
+                key: 'specialty_id',
+                label: __('Speciatly'),
+                canBeHidden: true,
+                hidden: false,
+                sortable: true,
+                searchable: true
             )->column(
-                key:'title',
-                label:__('Title'),
-                canBeHidden:true,
-                hidden:false,
-                sortable:true,
-                searchable:true
+                key: 'title',
+                label: __('Title'),
+                canBeHidden: true,
+                hidden: false,
+                sortable: true,
+                searchable: true
             )->column(
-                key:'date_of_birth',
-                label:__('Age'),
-                canBeHidden:true,
-                hidden:false,
-                sortable:true,
-                searchable:true
+                key: 'date_of_birth',
+                label: __('Age'),
+                canBeHidden: true,
+                hidden: false,
+                sortable: true,
+                searchable: true
             )->column(
-                key:'actions',
-                label:__("Actions")
+                key: 'actions',
+                label: __("Actions")
             );
         });
     }
@@ -101,12 +101,12 @@ class DoctorController extends Controller
         $today = Carbon::parse('1-1-2023')->subYears(25);;
 
         $request->validate([
-            'name' => ['string','max:255','min:2','required','regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
-            'phone' => ['numeric','min:11','required','unique:doctors,phone'],
-            'another_phone' => ['nullable','numeric','min:11','unique:doctors,another_phone'],
-            'date_of_birth' => ['date','required','before_or_equal:'.$today],
-            'specialty_id' => ['string','max:255','required'],
-            'title' => ['string','max:255','required'],
+            'name' => ['string', 'max:255', 'min:2', 'required', 'regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
+            'phone' => ['numeric', 'min:11', 'required'],
+            'another_phone' => ['nullable', 'numeric', 'min:11', 'unique:doctors,another_phone'],
+            'date_of_birth' => ['date', 'required', 'before_or_equal:' . $today],
+            'specialty_id' => ['string', 'max:255', 'required'],
+            'title' => ['string', 'max:255', 'required'],
         ]);
         $doc = new Doctor();
         $doc->name = $request->name;
@@ -116,6 +116,8 @@ class DoctorController extends Controller
         $doc->specialty_id = $request->specialty_id;
         $doc->title = $request->title;
         $doc->save();
+
+        return $doc;
     }
 
     /**
@@ -143,12 +145,12 @@ class DoctorController extends Controller
         $today = Carbon::parse('today');
 
         $date = $request->validate([
-            'name' => ['string','max:255','min:2','required','regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
-            'phone' => ['numeric','min:11','required','unique:doctors,phone'],
-            'another_phone' => ['nullable','numeric','min:11','unique:doctors,another_phone'],
-            'date_of_birth' => ['date','required','before_or_equal:'.$today],
+            'name' => ['string', 'max:255', 'min:2', 'required', 'regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
+            'phone' => ['numeric', 'min:11', 'required'],
+            'another_phone' => ['nullable', 'numeric', 'min:11', 'unique:doctors,another_phone'],
+            'date_of_birth' => ['date', 'required', 'before_or_equal:' . $today],
             'specialty_id' => ['required'],
-            'title' => ['string','max:255','required'],
+            'title' => ['string', 'max:255', 'required'],
         ]);
         $doctor->update($date);
         return "Ok";
@@ -163,7 +165,8 @@ class DoctorController extends Controller
         $doctor->delete();
     }
 
-    public function all(){
+    public function all()
+    {
         return Doctor::all();
     }
 }

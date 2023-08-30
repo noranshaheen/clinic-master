@@ -124,6 +124,7 @@ return new class extends Migration
             $table->foreignId('doctor_id');
             $table->foreignId('patient_id');
             $table->foreignId('appointment_id');
+            $table->foreignId('clinic_id');
             $table->string('diagnosis', 4000)->nullable();
             $table->string('analysis', 4000)->nullable();
             $table->string('rays', 4000)->nullable();

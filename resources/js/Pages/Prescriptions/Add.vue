@@ -42,7 +42,7 @@
                                             <jet-button
                                                 v-if="appointment.patient_id !== null && appointment.cancelled == null"
                                                 :class="{ 'bg-green-400': appointment.done, }" class="w-full"
-                                                @click.prevent="getHistory(appointment.patient_id, appointment.patient.name, appointment.id)">
+                                                @click.prevent="getHistory(appointment.patient_id, appointment.patient, appointment.id)">
                                                 {{ appointment.patient.name }}
                                             </jet-button>
                                         </div>
@@ -72,7 +72,7 @@
                             <div v-show="tab_idx == 1" class="px-2">
                                 <div v-if="current_patient_name" class="mx-auto w-full mt-4 border border-[#eceeef]">
                                     <div class="text-center p-2 font-bold bg-[#f8f9fa] w-full">
-                                        <i @click="getPatientInfo(patient_history)"
+                                        <i @click="getPatientInfo()"
                                             class="fa fa-exclamation-circle mr-2 cursor-pointer border rounded-full"></i>
                                         <span>{{ current_patient_name }}</span>
                                     </div>
@@ -193,7 +193,7 @@
                                 <div>
                                     <div v-if="current_patient_name" class="mx-auto w-full mt-4 border border-[#eceeef]">
                                         <div class="text-center p-2 font-bold bg-[#f8f9fa] w-full">
-                                            <i @click="getPatientInfo(patient_history)"
+                                            <i @click="getPatientInfo()"
                                                 class="fa fa-exclamation-circle mr-2 cursor-pointer border rounded-full"></i>
                                             <span>{{ current_patient_name }}</span>
                                         </div>
@@ -384,7 +384,7 @@
                             <div v-show="tab_idx == 1" class="px-2">
                                 <div v-if="current_patient_name" class="mx-auto w-full mt-4 border border-[#eceeef]">
                                     <div class="text-center p-2 font-bold bg-[#f8f9fa] w-full">
-                                        <i @click="getPatientInfo(patient_history)"
+                                        <i @click="getPatientInfo()"
                                             class="fa fa-exclamation-circle mr-2 cursor-pointer border rounded-full"></i>
                                         <span>{{ current_patient_name }}</span>
                                     </div>
@@ -509,7 +509,7 @@
                                 <div>
                                     <div v-if="current_patient_name" class="mx-auto w-full mt-4 border border-[#eceeef]">
                                         <div class="text-center p-2 font-bold bg-[#f8f9fa] w-full">
-                                            <i @click="getPatientInfo(patient_history)"
+                                            <i @click="getPatientInfo()"
                                                 class="fa fa-exclamation-circle mr-2 cursor-pointer border rounded-full"></i>
                                             <span>{{ current_patient_name }}</span>
                                         </div>
@@ -633,7 +633,7 @@ export default {
                 analysis: [],
                 rays: [],
                 notes: "",
-                selected_clinic: "",
+                selected_clinic: null,
                 consumedItems: []
             }),
         };
@@ -775,23 +775,32 @@ export default {
             this.prescription_details = patient;
             this.$nextTick(() => this.$refs.dlg1.ShowDialog());
         },
-        getHistory(patient_id, patient_name, appointment_id) {
+        getHistory(patient_id, patient, appointment_id) {
             axios
                 .get(route("patient.history", patient_id))
                 .then((response) => {
                     console.log(response.data)
                     // this.current_patient_id = patient_id;
                     this.form.patient_id = patient_id;
-                    this.patient_history = response.data;
-                    this.current_patient_name = patient_name;
+                    if (response.data.length == 0) {
+                        this.current_patient_info = patient;
+                        this.patient_history = []
+                    } else {
+                        this.patient_history = response.data;
+                        this.current_patient_info = ""
+                    }
+                    this.current_patient_name = patient.name;
                     this.form.appointment_id = appointment_id;
                 })
         },
         // DeleteItem: function (idx) {
         //     this.form.prescriptionLines.splice(idx, 1);
         // },
-        getPatientInfo(currentPatient) {
-            this.current_patient_info = currentPatient[0].patient;
+        getPatientInfo() {
+            // console.log(currentPatient);
+            if (this.patient_history.length > 0) {
+                this.current_patient_info = this.patient_history[0].patient;
+            }
             this.$nextTick(() => this.$refs.dlg4.ShowDialog());
 
         },

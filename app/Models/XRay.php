@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class XRay extends Model
 {
     use HasFactory;
-    protected $table = 'xrays';
+    protected $table = 'rays';
     public $primaryKey = 'id';
     protected $fillable = ['name','description','specialty_id'];
 

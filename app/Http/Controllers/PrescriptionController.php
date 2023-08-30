@@ -29,8 +29,8 @@ class PrescriptionController extends Controller
             ->with('doctor')
             ->with('patient')
             ->with('prescriptionItems')
-            ->allowedSorts(['id','doctor_id','patient_id', 'dateTimeIssued'])
-            ->allowedFilters(['id','doctor_id','patient_id', 'dateTimeIssued'])
+            ->allowedSorts(['id', 'doctor_id', 'patient_id', 'dateTimeIssued'])
+            ->allowedFilters(['id', 'doctor_id', 'patient_id', 'dateTimeIssued'])
             ->paginate(Request()->input('perPage', 20))
             ->withQueryString();
 
@@ -98,7 +98,6 @@ class PrescriptionController extends Controller
         $today = Carbon::parse('today')->format('Y-m-d');
         $appointment = Appointment::where('patient_id', $request->patient_id)->where('date', $today)->first();
         $appointment->done = 1;
-        $appointment->update();
 
         $prescription = new Prescription();
         $prescription->patient_id = $request->patient_id;
@@ -119,6 +118,9 @@ class PrescriptionController extends Controller
         $prescription->notes = $request->notes;
 
         $prescription->save();
+        
+        $appointment->update();
+
 
         for ($i = 0; $i < count($request->prescriptionLines); $i++) {
             $prescriptionItem = new PrescriptionItems();

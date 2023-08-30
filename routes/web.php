@@ -33,6 +33,7 @@ use App\Http\Controllers\DiagnosisController;
 use App\Http\Controllers\AnalysisController;
 use App\Http\Controllers\BillController;
 use App\Http\Controllers\BillDetailsController;
+use App\Http\Controllers\SetupDataController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\PrescriptionItemsController;
@@ -69,6 +70,43 @@ use Inertia\Inertia;
 //});
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+
+    // first page to choose demo or actual
+    Route::get('/setup/1', function () {
+        return Inertia::render('Setup/Setup');
+    })->name('setup');
+
+    //demo
+    Route::get('/setup/demo/step1', function () {
+        return Inertia::render('Setup/Demo/Step1');
+    })->name('setup.demo.step1');
+
+    Route::get('/setup/demo/step2', function () {
+        return Inertia::render('Setup/Demo/Step2');
+    })->name('setup.demo.step2');
+
+    Route::post('/setup/demo/step1/store', [SetupDataController::class,'demo_step1_store'])->name('setup.demo.step1.store');
+    Route::post('/setup/demo/step2/store', [SetupDataController::class,'demo_step2_store'])->name('setup.demo.step2.store');
+
+    // actual 
+    Route::get('/setup/actual/step1', function () {
+        return Inertia::render('Setup/Actual/Step1');
+    })->name('setup.actual.step1');
+
+    Route::get('/setup/actual/step2', function () {
+        return Inertia::render('Setup/Actual/Step2');
+    })->name('setup.actual.step2');
+
+    Route::get('/setup/actual/step3', function () {
+        return Inertia::render('Setup/Actual/Step3');
+    })->name('setup.actual.step3');
+
+    Route::post('/setup/actual/step1/store', [SetupDataController::class,'actual_step1_store'])->name('setup.actual.step1.store');
+    Route::post('/setup/actual/step2/store', [SetupDataController::class,'actual_step2_store'])->name('setup.actual.step2.store');
+    Route::post('/setup/actual/step3/store', [SetupDataController::class,'actual_step3_store'])->name('setup.actual.step3.store');
+
+
+    //invoice-master setup
     Route::get('/setup/step1', function () {
         return Inertia::render('Setup/Step1');
     })->name('setup.step1');
@@ -90,9 +128,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/json/ActivityCodes.json', [SettingsController::class, 'indexActivityCodes_json'])->name("json.eta.activityCodes");
 });
 
-Route::middleware(['auth:sanctum', 'verified', 'ETASettings'])->group(function () {
+Route::middleware(['auth:sanctum', 'verified', 'ETASettings','complete.data'])->group(function () {
 
-    Route::get('/', [DashboardController::class, 'dashboard'])->middleware('guest')->name('dashboard');
+    Route::get('/', [DashboardController::class, 'dashboard'])->name('dashboard');
 
     Route::resources([
         'invoices' => InvoiceController::class,
@@ -100,17 +138,17 @@ Route::middleware(['auth:sanctum', 'verified', 'ETASettings'])->group(function (
         'items' => ItemController::class,
         'users' => UserController::class,
         'pos' => POSController::class,
-        'doctors' =>DoctorController::class,
-        'patients'=>PatientController::class,
-        'clinics' =>ClinicController::class,
-        'rooms'=>RoomController::class,
-        'drugs'=>DrugController::class,
-        'prescriptions'=>PrescriptionController::class,
-        'appointments' =>AppointmentController::class,
+        'doctors' => DoctorController::class,
+        'patients' => PatientController::class,
+        'clinics' => ClinicController::class,
+        'rooms' => RoomController::class,
+        'drugs' => DrugController::class,
+        'prescriptions' => PrescriptionController::class,
+        'appointments' => AppointmentController::class,
         'specialties' => SpecialtyController::class,
-        'reseptionists'=>ReseptionistController::class,
-        'diagnosis'=>DiagnosisController::class,
-        'analysis'=>AnalysisController::class,
+        'reseptionists' => ReseptionistController::class,
+        'diagnosis' => DiagnosisController::class,
+        'analysis' => AnalysisController::class,
         'xray' => XRayController::class,
         'bills' => BillController::class,
         'billDetails' => BillDetailsController::class,
@@ -127,7 +165,7 @@ Route::middleware(['auth:sanctum', 'verified', 'ETASettings'])->group(function (
     Route::get('/xrays/allSpeciatlyRays', [XRayController::class, 'allSpeciatlyRays'])->name("xray.allSpeciatlyRays");
     Route::get('/reseptionist/all', [ReseptionistController::class, 'all'])->name("reseptionist.all");
 
-    Route::get('patient/history/{patient_id}',[PatientController::class, 'getHistory'])->name("patient.getHistory");
+    Route::get('patient/history/{patient_id}', [PatientController::class, 'getHistory'])->name("patient.getHistory");
 
     Route::post('/appointment/searchData', [AppointmentController::class, 'searchData'])->name("appointment.searchData");
     Route::post('/appointment/reserve', [AppointmentController::class, 'reserve'])->name("appointment.reserve");
@@ -136,10 +174,10 @@ Route::middleware(['auth:sanctum', 'verified', 'ETASettings'])->group(function (
     Route::post('/appointment/cancelUnreserved', [AppointmentController::class, 'cancelUnreserved'])->name("appointment.cancel.unreserved");
     Route::post('/appointment/cancelAll', [AppointmentController::class, 'cancelAll'])->name("appointment.cancel.all");
     Route::get('/appointment/showHistory/{patient_id}', [AppointmentController::class, 'showHistory'])->name("appointment.showHistory");
-    
+
     Route::get('/item/show', [ItemController::class, 'showAll'])->name("items.showAll");
 
-    Route::get('/bill/show', [BillController::class, 'showAll'])->name("bills.showAll");  
+    Route::get('/bill/show', [BillController::class, 'showAll'])->name("bills.showAll");
     Route::get('/bill/search', [BillController::class, 'search'])->name("bills.search");
     Route::post('/bill/searchExpensesData', [BillController::class, 'searchExpensesData'])->name("bills.expenses.searchData");
     Route::post('/bill/searchIncomeData', [BillController::class, 'searchIncomeData'])->name("bills.income.searchData");
@@ -156,13 +194,13 @@ Route::middleware(['auth:sanctum', 'verified', 'ETASettings'])->group(function (
     Route::get('/doses', [PrescriptionController::class, 'index_doses'])->name("doses");
     Route::get('/durations', [PrescriptionController::class, 'index_duration'])->name("durations");
     Route::get('/history/{patient_id}', [PrescriptionController::class, 'getHistory'])->name("patient.history");
-    Route::get('/prescription/itemsFees/{appointment_id}',[PrescriptionController::class,'getItemsFees'])->name("prescription.serviceFees");
+    Route::get('/prescription/itemsFees/{appointment_id}', [PrescriptionController::class, 'getItemsFees'])->name("prescription.serviceFees");
 
-    Route::get('/appointment/today/{clinic_id}',[PrescriptionController::class, 'getTodaysPatients'])->name("appointment.today");
+    Route::get('/appointment/today/{clinic_id}', [PrescriptionController::class, 'getTodaysPatients'])->name("appointment.today");
 
-    Route::get('/prescription/items/{prescription_id}',[PrescriptionItemsController::class,'getItems'])->name("prescriptionItems.details");
+    Route::get('/prescription/items/{prescription_id}', [PrescriptionItemsController::class, 'getItems'])->name("prescriptionItems.details");
 
-    Route::post('payment/serviceFees',[PaymentController::class,'payServiceFees'])->name('payments.payServiceFees');
+    Route::post('payment/serviceFees', [PaymentController::class, 'payServiceFees'])->name('payments.payServiceFees');
 
     Route::get('/json/branches', [BranchController::class, 'index_json'])->name("json.branches");
     Route::get('/json/customers', [CustomerController::class, 'index_json'])->name("json.customers");
@@ -314,7 +352,7 @@ Route::middleware(['auth:sanctum', 'verified', 'ETASettings'])->group(function (
         ->name("accounting.book.item.download")
         ->whereNumber('id')
         ->whereNumber('book_data');
-    
+
 
 
     Route::get("/accounting/activity/index", [AccountingactivityController::class, 'index'])->name("accounting.activity.index");

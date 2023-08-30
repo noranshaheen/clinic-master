@@ -47,7 +47,7 @@ class DatabaseSeeder extends Seeder
 
 		$item1 = new User();
 		$item1->name = "Reseptionist";
-		$item1->email = "admin@invoicemaster.com";
+		$item1->email = "admin@clinicmaster.com";
 		$item1->password = Hash::make("123456789");
 		$item1->current_team_id = 1;
 		$item->doc_res_id = 1;
