@@ -43,6 +43,7 @@ use App\Http\Controllers\XRayController;
 use App\Models\Appointment;
 use App\Models\Item;
 use App\Models\Patient;
+use App\Models\XRay;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -128,9 +129,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/json/ActivityCodes.json', [SettingsController::class, 'indexActivityCodes_json'])->name("json.eta.activityCodes");
 });
 
-Route::middleware(['auth:sanctum', 'verified', 'ETASettings','complete.data'])->group(function () {
+Route::middleware(['auth:sanctum', 'verified', 'ETASettings'])->group(function () {
 
-    Route::get('/', [DashboardController::class, 'dashboard'])->name('dashboard');
+    Route::get('/', [DashboardController::class, 'dashboard'])->name('dashboard')->middleware(['complete.data','guest']);
 
     Route::resources([
         'invoices' => InvoiceController::class,
@@ -210,6 +211,8 @@ Route::middleware(['auth:sanctum', 'verified', 'ETASettings','complete.data'])->
     Route::post('/ETA/customers/Upload', [ETAController::class, 'UploadCustomer'])->name("eta.customer.upload");
     Route::post('/drugs/Upload', [DrugController::class, 'UploadDrugs'])->name("drug.upload");
     Route::post('/patients/Upload', [PatientController::class, 'UploadPatients'])->name("patient.upload");
+    Route::post('/rays/Upload', [XRayController::class, 'UploadRays'])->name("rays.upload");
+    Route::post('/analysiss/Upload', [AnalysisController::class, 'UploadAnalysis'])->name("analysis.upload");
 
     Route::post('/invoice/copy', [ETAController::class, 'saveCopy'])->name('invoices.copy');
     Route::post('/ETA/Items/Upload', [ETAController::class, 'UploadItem'])->name("eta.items.upload");

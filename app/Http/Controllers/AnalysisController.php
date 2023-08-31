@@ -10,10 +10,15 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Spatie\QueryBuilder\QueryBuilder;
 use ProtoneMedia\LaravelQueryBuilderInertiaJs\InertiaTable;
+use App\Models\Specialty;
+use App\Http\Traits\ExcelWrapper;
+
 
 
 class AnalysisController extends Controller
 {
+    use ExcelWrapper;
+
     /**
      * Display a listing of the resource.
      */
@@ -40,6 +45,62 @@ class AnalysisController extends Controller
         $analysis->description = $request->description;
         $analysis->specialty_id = $request->specialty_id;
         $analysis->save();
+    }
+
+
+    public function UploadAnalysis(Request $request)
+    {
+        $temp = [];
+        $extension = $request->file->extension();
+        if ($extension == 'xlsx' || $extension == 'xls')
+            $temp = $this->xlsxToArray($request->file, $extension);
+        elseif ($extension == 'csv')
+            $temp = $this->csvToArray($request->file);
+        else
+            return json_encode(["Error" => true, "Message" => __("Unsupported File Type!")]);
+
+
+        foreach ($temp as $key => $value) {
+            $speciality = $temp[$key]['spaeciality'];
+
+            $analysis = Analysis::where('name','=',$temp[$key]['name'])->first();
+            if(!$analysis){
+                $spc = Specialty::where('name', '=', $speciality)->first();
+                if(!$spc){
+                    $sp = new Specialty();
+                    $sp->name = $speciality;
+                    $sp->save();
+                    $analysis = new Analysis();
+                    $analysis->name = $temp[$key]['name'];
+                    $analysis->description = $temp[$key]['description'];
+                    $analysis->specialty_id = $sp->id;
+                    $analysis->save();
+                }else{
+                    $analysis = new Analysis();
+                    $analysis->name = $temp[$key]['name'];
+                    $analysis->description = $temp[$key]['description'];
+                    $analysis->specialty_id = $spc->id;
+                    $analysis->save();
+                }
+            }else{
+                $spc = Specialty::where('name', '=', $speciality)->first();
+                if(!$spc){
+                    $sp = new Specialty();
+                    $sp->name = $speciality;
+                    $sp->save();
+                    $analysis->name = $temp[$key]['name'];
+                    $analysis->description = $temp[$key]['description'];
+                    $analysis->specialty_id = $sp->id;
+                    $analysis->save();
+                }else{
+                    $analysis->name = $temp[$key]['name'];
+                    $analysis->description = $temp[$key]['description'];
+                    $analysis->specialty_id = $spc->id;
+                    $analysis->save();
+                }
+
+            }
+        }
     }
 
     /**

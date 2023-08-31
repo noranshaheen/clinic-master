@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class SetupDataController extends Controller
 {
@@ -151,8 +152,6 @@ class SetupDataController extends Controller
 
     public function demo_step2_store(Request $request)
     {
-        // dd($request);
-
         //make appointments
 
         //validation
@@ -178,7 +177,6 @@ class SetupDataController extends Controller
         foreach ($days as $day) {
             $from = $day . " " . $request['from'];
             $to = $day . " " . $request['to'];
-            // dd($from,$to);
             $interval = $this->timeInterval($from, $to, $request['numberOfCases']);
             $timesArray = CarbonInterval::minutes($interval)->toPeriod($from, $to)->toArray();
             $timesArrayFormated = array_map(fn ($time) => $time->format('H:i'), $timesArray);
@@ -204,29 +202,41 @@ class SetupDataController extends Controller
 
     public function actual_step1_store(Request $request)
     {
-        dd($request);
+        // dd($request);
+
+        //validation
+        $request->validate([
+            "clinic_name" => ['required', 'max:255'],
+            "clinic_phone" => ['required', 'max:255'],
+            "clinic_phone" => ['required', 'max:255'],
+            "room1_name" => ['required', 'max:255'],
+            "room2_name" => ['nullable', 'max:255'],
+        ]);
 
         //add clinic
         $clinic = new Clinic();
-        $clinic->name = $request->name;
-        $clinic->phone = $request->phone;
-        $clinic->address = $request->address;
+        $clinic->name = $request->clinic_name;
+        $clinic->phone = $request->clinic_phone;
+        $clinic->address = $request->clinic_address;
         $clinic->save();
 
         //add rooms
         for ($i = 1; $i <= 2; $i++) {
-            if ($i = 2) {
-                if ($request->room2 !== "") {
+            if ($i == 2) {
+                if ($request->room2_name !== "") {
                     $room = new Room();
                     $room->name = $request->room2_name;
-                    $room->clinic_id = 1;
+                    $room->clinic_id = $clinic->id;
                     $room->save();
+
+                    return "Data stored successfully";
                 }
+            } else {
+                $room = new Room();
+                $room->name = $request->room1_name;
+                $room->clinic_id = $clinic->id;
+                $room->save();
             }
-            $room = new Room();
-            $room->name = $request->room1_name;
-            $room->clinic_id = 1;
-            $room->save();
         }
 
         return "Data stored successfully";
@@ -239,8 +249,8 @@ class SetupDataController extends Controller
 
         // validation
         $request->validate([
-            'email' 	=> ['required', 'string', 'email', 'max:255'],
-            'password'	=> ['required', 'min:8'], 
+            'email'     => ['required', 'string', 'email', 'max:255'],
+            'password'    => ['required', 'min:8'],
         ]);
 
         $doc = Doctor::latest('id')->first(); //same as DB::table('doctors')->orderBy('id', 'desc')->first(); 
@@ -258,7 +268,6 @@ class SetupDataController extends Controller
 
     public function actual_step3_store(Request $request)
     {
-        //
     }
 
     /**

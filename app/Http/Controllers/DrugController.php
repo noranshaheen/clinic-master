@@ -159,12 +159,19 @@ class DrugController extends Controller
                 }
             }
             // dd($diagnosis);
-            $drug = Drug::where('name', $temp[$key]['name'])->first();
+            $drug = Drug::where('name','=', $temp[$key]['name'])->first();
             if (!$drug) {
                 $drug = new Drug();
                 $drug->name = $temp[$key]['name'];
                 $drug->description = $temp[$key]['description'];
                 $drug->save();
+
+                $dose = DB::table('doses')->where('name','=',$temp[$key]['default dose'])->first();
+                if(!$dose){
+                    $dose = DB::table('doses')->insert([
+                        'name' => $temp[$key]['default dose']
+                    ]);
+                }
 
                 foreach ($diagnosis as $val) {
                     $diagnose = Diagnosis::where('name', '=', $val)->first();
@@ -193,6 +200,13 @@ class DrugController extends Controller
                 }
             } else {
                 $drug->diagnosis()->detach();
+
+                $dose = DB::table('doses')->where('name','=',$temp[$key]['default dose'])->first();
+                if(!$dose){
+                    $dose = DB::table('doses')->insert([
+                        'name' => $temp[$key]['default dose']
+                    ]);
+                }
 
                 foreach ($diagnosis as $val) {
                     $diagnose = Diagnosis::where('name', '=', $val)->first();

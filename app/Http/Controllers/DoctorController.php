@@ -103,8 +103,8 @@ class DoctorController extends Controller
         $request->validate([
             'name' => ['string', 'max:255', 'min:2', 'required', 'regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
             'phone' => ['numeric', 'min:11', 'required'],
-            'another_phone' => ['nullable', 'numeric', 'min:11', 'unique:doctors,another_phone'],
-            'date_of_birth' => ['date', 'required', 'before_or_equal:' . $today],
+            'another_phone' => ['nullable', 'numeric', 'min:11'],
+            'date_of_birth' => ['date', 'required', 'before:' . $today],
             'specialty_id' => ['string', 'max:255', 'required'],
             'title' => ['string', 'max:255', 'required'],
         ]);
