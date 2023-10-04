@@ -20,16 +20,16 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <div class="">
-                            <jet-label for="phone" :value="__('Clinic Phone')" />
+                            <jet-label for="phone" :value="__('تلفون العيادة')" />
                             <jet-input id="phone" type="text" class="mt-1 block w-full" v-model="form.phone" required />
                         </div>
                         <div class="mt-4">
-                            <jet-label for="Rooms" :value="__('Number of Rooms')" />
+                            <jet-label for="Rooms" :value="__('عدد الغرف')" />
                             <jet-input id="Rooms" type="number" class="mt-1 block w-full" v-model="form.numberOfRooms"
                                 required />
                         </div>
                         <div class="mt-4">
-                            <jet-label for="doctors" :value="__('Number of Doctors')" />
+                            <jet-label for="doctors" :value="__('عدد الاطباء')" />
                             <jet-input id="doctors" type="number" class="mt-1 block w-full" v-model="form.numberOfDoctors"
                                 required />
                         </div>
@@ -37,15 +37,15 @@
                     </div>
                     <div>
                         <div class="">
-                            <jet-label for="name" :value="__('Clinic Name')" />
+                            <jet-label for="name" :value="__('اسم العيادة')" />
                             <jet-input id="name" type="text" class="mt-1 block w-full" v-model="form.name" required />
                         </div>
                         <div class="mt-4">
-                            <jet-label for="location" :value="__('Clinic Address')" />
+                            <jet-label for="location" :value="__('عنوان العيادة')" />
                             <jet-input id="location" type="text" class="mt-1 block w-full" v-model="form.address" />
                         </div>
                         <div class="mt-4">
-                            <jet-label for="Patients" :value="__('Number of Patients')" />
+                            <jet-label for="Patients" :value="__('عدد المرضى')" />
                             <jet-input id="Patients" type="number" class="mt-1 block w-full" v-model="form.numberOfPatients"
                                 required />
                         </div>

@@ -135,6 +135,11 @@ class SetupDataController extends Controller
             $analysis->save();
         }
 
+        //add items
+        
+
+        //add inventories
+
         return "date stored succefully";
     }
 
@@ -153,6 +158,8 @@ class SetupDataController extends Controller
     public function demo_step2_store(Request $request)
     {
         //make appointments
+
+        // dd($request);
 
         //validation
         $request->validate([
@@ -196,6 +203,7 @@ class SetupDataController extends Controller
                 $apt->save();
             }
         }
+        // dd(Appointment::get());
         return "appointments stored succefully";
     }
 

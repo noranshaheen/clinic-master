@@ -107,7 +107,7 @@ class ReseptionistController extends Controller
 
         $date =  $request->validate([
             'name' =>['string','max:255','min:2','required','regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
-            'phone' =>['numeric','min:11','required','unique:patients,phone'],
+            'phone' =>['numeric','min:11','required'],
             'gender' =>['required',Rule::in(['M','F'])],
             'date_of_birth' => ['date','required','before_or_equal:'.$today],
         ]);

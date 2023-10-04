@@ -16,6 +16,7 @@
         <upload-drugs-dialog ref="dlg12"/>
         <upload-patients-dialog ref="dlg14"/>
         <new-item-dialog ref="dlg13" />
+        <new-inventory-dialog ref="dlg15"/> 
 
         <!-- <new-customer-dialog ref="dlg1" />
         <new-branch-dialog ref="dlg2" />
@@ -65,6 +66,7 @@ import NewUserDialog from "@/Pages/Users/Edit.vue";
 import LoadItemsDialog from "@/Pages/Items/Load.vue";
 import LoadInvoicesDialog from "@/Pages/Invoices/Load.vue";
 import NewItemDialog from "@/Pages/Items/Edit.vue";
+import NewInventoryDialog from "@/Pages/Inventories/Edit.vue";
 import UploadInvoicesDialog from "@/Pages/Invoices/Upload.vue";
 import UploadCustomersDialog from "@/Pages/Customers/Upload.vue";
 import UploadPatientsDialog from "@/Pages/Patients/Upload.vue";
@@ -102,6 +104,7 @@ export default {
         NewUserDialog,
         NewBranchDialog,
         LoadItemsDialog,
+        NewInventoryDialog,
         LoadInvoicesDialog,
 		SettingsDialog1, SettingsDialog2,
         SbItemsMapDialog, SbLoadInvoicesDialog,

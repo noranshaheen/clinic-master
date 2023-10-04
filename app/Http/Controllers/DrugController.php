@@ -74,7 +74,8 @@ class DrugController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255', 'regex:/^[\p{Arabic}A-Za-z0-9\s]+$/u'],
             'description' => ['nullable', 'string', 'max:255'],
-            'diagnose.*.id' => ['required']
+            'diagnose' => ['required','array'],
+            'diagnose.*.id' => ['required','exists:App\Models\Diagnosis,id']
         ]);
 
         $drug = new Drug();
@@ -110,18 +111,21 @@ class DrugController extends Controller
     {
         // dd($request);
         $data = $request->validate([
-            'name' => ['required', 'string', 'max:255', 'regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
-            'description' => ['nullable', 'string', 'max:255']
+            'name' => ['required', 'string', 'max:255', 'regex:/^[\p{Arabic}A-Za-z0-9\s]+$/u'],
+            'description' => ['nullable', 'string', 'max:255'],
+            'diagnose' => ['required','array'],
+            'diagnose.*.id' => ['required','exists:App\Models\Diagnosis,id']
         ]);
 
-        $drug->update($data);
+        $drug->update([
+            'name'=> $request->name,
+            'description'=> $request->description,
+        ]);
 
-        // if (!empty($request->diagnose)) {
             $drug->diagnosis()->detach();
             foreach ($request->diagnose as $diagnose) {
                 $drug->diagnosis()->attach($diagnose['id']);
             }
-        // }
     }
 
     /**
@@ -129,6 +133,7 @@ class DrugController extends Controller
      */
     public function destroy(Drug $drug)
     {
+        $drug->diagnosis()->detach();
         $drug->delete();
     }
 

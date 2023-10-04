@@ -8,21 +8,31 @@
 			<jet-validation-errors class="mb-4" />
 
 			<form @submit.prevent="submit">
-				<div class="sm:grid sm:grid-cols-2 sm:gap-4">
+				<div class="sm:grid sm:grid-cols-1 sm:gap-4">
 					<div>
-						<jet-label for="itemName" :value="__('Name')" />
-						<jet-input id="itemName" type="text" class="mt-1 block w-full" v-model="form.name" required
-							autofocus />
-						<jet-label for="measurement_unit" :value="__('Measurement Unit')" />
-						<multiselect v-model="form.measurement_unit" :options="units" label="desc_en" :searchable="true"
+						<div class="">
+							<jet-label for="itemName" :value="__('Name')" />
+							<jet-input id="itemName" type="text" class="mt-1 block w-full" v-model="form.name" required
+								autofocus />
+						</div>
+						<div class="mt-1">
+							<jet-label :value="__('Measurement Unit')" />
+							<multiselect 
+							v-model="form.measurement_unit" 
+							:options="units" 
+							label="desc_en" 
+							:searchable="true"
+							track-by="id" 
 							:placeholder="__('Select Unit')" class="mt-1 block w-full" />
-						<div class="hidden sm:block mt-1">
-							<jet-input class="m-1" type="checkbox" name="hidden" value="1" v-model="form.hiddenItem" />
-							<jet-label :value="__('Hidden Item')" />
+						</div>
+						<div class="hidden sm:block mt-2">
+							<input type="checkbox" class="m-1" name="storableItem" :true-value="1"
+								:false-value="0" v-model="form.storableItem" />
+							<jet-label :value="__('Storable Item')" />
 						</div>
 
 					</div>
-					<div>
+					<!-- <div>
 						<jet-label for="weight" :value="__('Item Weight/Volume')" />
 						<span class="text-sm text-gray-500">{{ __(' (optional)') }}</span>
 						<jet-input id="weight" type="number" class="mt-1 block w-full" v-model="form.weight" required
@@ -35,7 +45,7 @@
 							<jet-input class="m-1" type="checkbox" name="hidden" value="1" v-model="form.hiddenItem" />
 							<jet-label :value="__('Hidden Item')" />
 						</div>
-					</div>
+					</div> -->
 				</div>
 			</form>
 		</template>
@@ -45,7 +55,7 @@
 					{{ __('Cancel') }}
 				</jet-secondary-button>
 
-				<jet-button class="ms-2" @click="SaveNew()" :class="{ 'opacity-25': form.processing }"
+				<jet-button class="ms-2" @click="submit()" :class="{ 'opacity-25': form.processing }"
 					:disabled="form.processing">
 					{{ __('Save') }}
 				</jet-button>
@@ -103,10 +113,10 @@ export default {
 			units: [],
 			form: this.$inertia.form({
 				name: "",
-				weight: "",
 				measurement_unit: "",
-				selling_price: "",
-				hiddenItem: 0
+				storableItem: 0,
+				// selling_price: "",
+				// weight: "",
 			}),
 			addingNew: false,
 		}
@@ -116,10 +126,10 @@ export default {
 		ShowDialog() {
 			if (this.item !== null) {
 				this.form.name = this.item.name;
-				this.form.weight = this.item.weight;
-				this.form.measurement_unit = this.item.measurement_unit;
-				this.form.selling_price = this.item.selling_price;
-				this.form.hiddenItem = this.item.hidden;
+				// this.form.measurement_unit = this.item.unit;
+				this.form.storableItem = this.item.storable;
+				// this.form.selling_price = this.item.selling_price;
+				// this.form.weight = this.item.weight;
 			}
 			this.addingNew = true;
 		},

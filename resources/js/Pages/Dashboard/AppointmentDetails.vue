@@ -1,5 +1,4 @@
 <template>
-    <ServiceFees ref="dlg1" :prescription="prescription" :appointment_id="form.appointment_id"/>
     <div>
         <jet-dialog-modal :show="showDialog" @close="showDialog = amount = false" maxWidth="md">
             <template #title>
@@ -89,18 +88,26 @@
                     v-if="appointment_Details[0].amount == null && appointment_Details[0].cancelled == null" @click="save()">
                     {{__("Save")}}</JetButton>
                 <JetButton class="ml-2" v-else :disabled="true">{{__("Save")}}</JetButton>
+                <JetDangerButton class="ml-2" 
+                v-if="appointment_Details[0].amount == null && appointment_Details[0].cancelled == null"
+                @click="cancelAppointment()"
+                >{{__("Delete")}}</JetDangerButton>
                 <JetSecondaryButton class="ml-2" @click="close()">{{ __("Close") }}</JetSecondaryButton>
             </template>
         </jet-dialog-modal>
     </div>
+    <ServiceFees ref="dlg1" :prescription="prescription" :appointment_id="form.appointment_id"/>
 </template>
 <script>
-import ServiceFees from "./ServiceFees.vue";
+import ServiceFees from "@/Pages/Dashboard/ServiceFees.vue";
 import JetButton from "@/Jetstream/Button.vue";
 import JetDialogModal from "@/Jetstream/DialogModal.vue";
 import JetSecondaryButton from "@/Jetstream/SecondaryButton.vue";
+import JetDangerButton from "@/Jetstream/DangerButton.vue";
 import JetInput from "@/Jetstream/Input.vue";
 import axios from "axios";
+import swal from "sweetalert";
+
 
 export default {
     components: {
@@ -108,8 +115,10 @@ export default {
         JetButton,
         JetDialogModal,
         JetSecondaryButton,
+        JetDangerButton,
         JetInput,
-        axios
+        axios,
+        swal
 
     },
     props: {
@@ -148,7 +157,7 @@ export default {
                     this.$nextTick(() => {
                         this.$refs.dlg1.ShowDialog();
                     });
-                    this.showDialog = false;
+                    // this.showDialog = false;
                 })
         },
         save() {
@@ -159,6 +168,30 @@ export default {
                     this.close();
                 }).catch((error) => {
                 })
+        },
+        cancelAppointment() {
+            var appointment_id = this.appointment_Details[0].id;
+            swal({
+                title: this.__("Are you sure?"),
+                text: this.__("Once approved it will cancel this appointment"),
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((approved) => {
+                if (approved) {
+                    axios
+                    .delete(route("appointments.destroy", {appointment:appointment_id}))
+                        .then((response) => {
+                            swal({
+                                title: this.__("This appointment have been cancelled"),
+                                icon: "success",
+                            }).then((approve) => {
+                                this.showDialog = false;
+                                this.$emit('Delete');
+                            })
+                    })
+                }
+            })
         },
         close() {
             this.showDialog = false;

@@ -23,8 +23,8 @@
                             <TextField v-model="form.date" itemType="date" :itemLabel="__('Date')" />
                         </div>
                     </div>
-                    <div>
-                        <div>
+                    <div class="w-full">
+                        <div class="w-full">
                             <div class="result my-5 w-full">
                                 <!-- mobile screen -->
                                 <table class="w-full mx-auto md:hidden max-w-4xl lg:max-w-full">
@@ -75,8 +75,8 @@
                                                 <i class="fa-solid fa-plus"></i>
                                             </button>
                                         </th>
-                                        <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">{{ __('Unit') }}</th>
-                                        <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">{{ __('Price/Unit')
+                                        <th class="bg-[#f8f9fa] p-1 border border-[#eceeef] w-3/12">{{ __('Unit') }}</th>
+                                        <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">{{ __('Unit Price')
                                         }}</th>
                                         <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">{{ __('Quantity') }}</th>
                                         <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">{{ __('Total') }}</th>

@@ -33,9 +33,9 @@ class DatabaseSeeder extends Seeder
 	 */
 	public function run()
 	{
-		$item = new Team(["name" => "Reseptionist",   "personal_team" => 0, "user_id" => 1]);
+		$item = new Team(["name" => "Reseptionist",   "personal_team" => 0,'user_id'=>1]);
 		$item->save();
-		$item = new Team(["name" => "Doctor",   "personal_team" => 0, "user_id" => 1]);
+		$item = new Team(["name" => "Doctor",   "personal_team" => 0, 'user_id' => null]);
 		$item->save();
 
 		$item2 = new Reseptionist();
@@ -50,7 +50,7 @@ class DatabaseSeeder extends Seeder
 		$item1->email = "admin@clinicmaster.com";
 		$item1->password = Hash::make("123456789");
 		$item1->current_team_id = 1;
-		$item->doc_res_id = 1;
+		$item1->doc_res_id = 1;
 		$item1->save();
 
 

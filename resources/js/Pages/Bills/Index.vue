@@ -10,9 +10,9 @@
                         <template #cell(date)="{item : bill}">
                             {{ new Date(bill.date).toLocaleDateString() }}
                         </template>
-                        <template #cell(doctor)="{item : bill}">
+                        <!-- <template #cell(doctor)="{item : bill}">
                             {{ bill.doctor.name }}
-                        </template>
+                        </template> -->
                         <template #cell(clinic)="{item : bill}">
                             {{ bill.clinic.name }}
                         </template>

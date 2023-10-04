@@ -161,7 +161,7 @@ return new class extends Migration
             $table->foreignId('appointment_id');
             $table->foreignId('doctor_id');
             $table->integer('detection_fees');
-            $table->integer('service_fees');
+            $table->integer('service_fees')->nullable();
             $table->timestamps();
         });
 
@@ -174,28 +174,65 @@ return new class extends Migration
         Schema::create('items', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->float('weight');
-            $table->string('measurement_unit');
-            $table->float('selling_price');
-            $table->tinyInteger('hidden');
+            $table->string('unit')->nullable();
+            $table->tinyInteger('storable')->nullable();
+            // $table->float('selling_price')->nullable();
+            // $table->float('purches_price')->nullable();
             $table->timestamps();
         });
+
+        Schema::create('inventories', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('location')->nullable();
+            $table->foreignId('clinic_id')->constrained('clinics');
+            $table->timestamps();
+        });
+
+        Schema::create('inv_stock', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->foreignId('inventory_id')->constrained('inventories');
+            $table->timestamps();
+        });
+
+        Schema::create('stock_movements', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('inv_stock_id')->constrained('inv_stock');
+            $table->foreignId('item_id')->constrained('items');
+            $table->date('date');
+            $table->enum('type',['in','out']);
+            $table->integer('quantity');
+            $table->float('unit_price')->nullable();
+            $table->float('total_price')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('stock_total_items', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('inv_stock_id')->constrained('inv_stock');
+            $table->foreignId('item_id')->constrained('items');
+            $table->integer('quantity_in_hand');
+            $table->timestamps();
+        });
+
         Schema::create('bills', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('doctor_id');
-            $table->foreignId('clinic_id');
+            $table->enum('type',['administrative','purchase']);
+            $table->foreignId('doctor_id')->nullable();
+            $table->foreignId('clinic_id')->constrained('clinics');
             $table->date('date');
             $table->string('totalAmount');
             $table->timestamps();
         });
         Schema::create('bill_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('item_id');
-            $table->float('purches_price');
-            $table->float('quantity');
+            $table->foreignId('item_id')->constrained('items');
+            $table->float('price')->nullable();
+            $table->float('quantity')->nullable();
             $table->string('total');
             $table->date('date');
-            $table->foreignId('bill_id');
+            $table->foreignId('bill_id')->constrained('bills');
             $table->timestamps();
         });
         Schema::create('spendings', function (Blueprint $table) {

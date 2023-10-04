@@ -5,15 +5,15 @@
             <template #content>
                 <div class="mb-2 border-b">
                     <div class="mb-2">
-                        <input id="1" type="radio" name="type" value="Normal" v-model="form.type"/>
+                        <input id="1" type="radio" name="type" value="Normal" v-model="form.appointment_type"/>
                         <label for="1" class="ml-2">{{__("Normal")}}</label>
                     </div>
                     <div class="mb-2">
-                        <input id="2" type="radio" name="type" value="Emergency" v-model="form.type"/>
+                        <input id="2" type="radio" name="type" value="Emergency" v-model="form.appointment_type"/>
                         <label for="2" class="ml-2">{{ __("Emergency") }}</label>
                     </div>
                     <div class="mb-2">
-                        <input id="3" type="radio" name="type" value="Consultation" v-model="form.type"/>
+                        <input id="3" type="radio" name="type" value="Consultation" v-model="form.appointment_type"/>
                         <label for="3" class="ml-2">{{ __("Consultation") }}</label>
                     </div>
                 </div>
@@ -52,7 +52,7 @@ export default {
             showDialog: false,
             form: this.$inertia.form({
                 patient: "",
-                type: ""
+                appointment_type: ""
             }),
             allPatients: [],
             errors: []
@@ -73,7 +73,7 @@ export default {
             } else {
                 axios
                     .post(route('appointment.reserve', { appointment_id: this.appointment_id }),
-                        { form: this.form })
+                        this.form )
                     .then((response) => {
                         this.$store.dispatch("setSuccessFlashMessage", true);
                         this.showDialog = false;

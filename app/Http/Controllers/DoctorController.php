@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Appointment;
 use App\Models\Doctor;
+use App\Models\Prescription;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use ProtoneMedia\LaravelQueryBuilderInertiaJs\InertiaTable;
 use Spatie\QueryBuilder\QueryBuilder;
 use Carbon\Carbon;
+use Illuminate\Validation\ValidationException;
+
 
 class DoctorController extends Controller
 {
@@ -19,8 +23,8 @@ class DoctorController extends Controller
         $doctors = QueryBuilder::for(Doctor::class)
             ->with('specialties')
             ->defaultSort('id')
-            ->allowedSorts(['id', 'name', 'phone', 'date_of_birth', 'title', 'specialty_id'])
-            ->allowedFilters(['id', 'name', 'phone', 'date_of_birth', 'title', 'specialty_id', 'another_phone'])
+            ->allowedSorts(['id', 'name', 'phone', 'date_of_birth', 'title'])
+            ->allowedFilters(['id', 'name', 'phone', 'date_of_birth', 'title', 'specialties.name', 'another_phone'])
             ->paginate(Request()->input('perPage', 20))
             ->withQueryString();
 
@@ -58,7 +62,7 @@ class DoctorController extends Controller
                 sortable: true,
                 searchable: true
             )->column(
-                key: 'specialty_id',
+                key: 'specialties.name',
                 label: __('Speciatly'),
                 canBeHidden: true,
                 hidden: false,
@@ -98,14 +102,16 @@ class DoctorController extends Controller
      */
     public function store(Request $request)
     {
-        $today = Carbon::parse('1-1-2023')->subYears(25);;
+        $today = Carbon::parse('this year')->subYears(25);
+
+        // dd($today);
 
         $request->validate([
             'name' => ['string', 'max:255', 'min:2', 'required', 'regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
             'phone' => ['numeric', 'min:11', 'required'],
             'another_phone' => ['nullable', 'numeric', 'min:11'],
-            'date_of_birth' => ['date', 'required', 'before:' . $today],
-            'specialty_id' => ['string', 'max:255', 'required'],
+            'date_of_birth' => ['date', 'required', 'before_or_equal:' . $today],
+            'specialty_id' => ['string', 'max:255', 'required', 'exists:App\Models\Specialty,id'],
             'title' => ['string', 'max:255', 'required'],
         ]);
         $doc = new Doctor();
@@ -142,14 +148,14 @@ class DoctorController extends Controller
     public function update(Request $request, Doctor $doctor)
     {
         // dd($request);
-        $today = Carbon::parse('today');
+        $today = Carbon::parse('this year')->subYears(25);
 
         $date = $request->validate([
             'name' => ['string', 'max:255', 'min:2', 'required', 'regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
             'phone' => ['numeric', 'min:11', 'required'],
             'another_phone' => ['nullable', 'numeric', 'min:11', 'unique:doctors,another_phone'],
             'date_of_birth' => ['date', 'required', 'before_or_equal:' . $today],
-            'specialty_id' => ['required'],
+            'specialty_id' => ['required', 'exists:App\Models\Specialty,id'],
             'title' => ['string', 'max:255', 'required'],
         ]);
         $doctor->update($date);
@@ -162,7 +168,15 @@ class DoctorController extends Controller
      */
     public function destroy(Doctor $doctor)
     {
-        $doctor->delete();
+        $prescription = Prescription::where('doctor_id', '=', $doctor->id)->first();
+
+        if ($prescription) {
+            throw ValidationException::withMessages([
+                'error' => "can't delete this doctor"
+            ]);
+        } else {
+            $doctor->delete();
+        }
     }
 
     public function all()

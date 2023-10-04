@@ -2,6 +2,7 @@
     <div class=" my-2 px-3 py-6 flex justify-center items-center" dir="rtl">
         <div
             class="grid grid-cols-1 gap-4 w-full lg:w-2/5 xl:w-2/5 2xl:w-1/3 border border-gray-200 rounded-lg shadow-lg p-6">
+           
             <div class="col-span-1 items-center justify-center h-full p-12">
                 <div class="w-full">
                     <h1 class="text-center text-2xl font-semibold text-gray-700">مرحباً فى برنامج كلينيك ماستر</h1>
@@ -16,6 +17,7 @@
                     أدخال بيانات الفرع الرئيسي
                 </div>
             </div>
+            <jet-validation-errors class="mb-4" />
             <form @submit.prevent="submit">
                 <div class="grid grid-cols-1 gap-4">
 
@@ -78,6 +80,7 @@ import JetLabel from "@/Jetstream/Label.vue";
 import JetSecondaryButton from "@/Jetstream/SecondaryButton.vue";
 import JetSectionBorder from "@/Jetstream/SectionBorder.vue";
 import JetValidationErrors from "@/Jetstream/ValidationErrors.vue";
+
 import swal from "sweetalert";
 
 export default {

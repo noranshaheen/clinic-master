@@ -14,12 +14,7 @@ class Item extends Model
     protected $table = 'items';
     public $primaryKey = 'id';
 
-    protected $fillable = ['name', 'weight', 'measurement_unit', 'selling_price'];
-
-    protected $casts = [
-        'weight' => 'float',
-        'selling_price' => 'float'
-    ];
+    protected $fillable = ['name', 'name', 'unit', 'storable'];
 
     public function billDetails(): HasMany
     {

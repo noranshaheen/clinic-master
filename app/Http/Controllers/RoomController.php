@@ -18,8 +18,8 @@ class RoomController extends Controller
         $rooms = QueryBuilder::for (Room::class)
             ->with('clinic')
             ->defaultSort('id')
-            ->allowedSorts(['id', 'name'])
-            ->allowedFilters(['name'])
+            ->allowedSorts(['id', 'name','clinic_id'])
+            ->allowedFilters(['name', 'clinic.name'])
             ->paginate(Request()->input('perPage', 20))
             ->withQueryString();
 
@@ -40,7 +40,7 @@ class RoomController extends Controller
                 sortable:true,
                 searchable:true
             )->column(
-                key:"branch",
+                key:"clinic.name",
                 label:__("Branch"),
                 canBeHidden:true,
                 hidden:false,

@@ -30,7 +30,7 @@ class PrescriptionController extends Controller
             ->with('patient')
             ->with('prescriptionItems')
             ->allowedSorts(['id', 'doctor_id', 'patient_id', 'dateTimeIssued'])
-            ->allowedFilters(['id', 'doctor_id', 'patient_id', 'dateTimeIssued'])
+            ->allowedFilters(['id', 'doctor.name', 'patient.name', 'dateTimeIssued'])
             ->paginate(Request()->input('perPage', 20))
             ->withQueryString();
 
@@ -45,14 +45,14 @@ class PrescriptionController extends Controller
                 hidden: false,
                 sortable: true
             )->column(
-                key: "doctor_id",
+                key: "doctor.name",
                 label: __("Doctor"),
                 canBeHidden: true,
                 hidden: false,
                 sortable: true,
                 searchable: true
             )->column(
-                key: "patient_id",
+                key: "patient.name",
                 label: __("Patient"),
                 canBeHidden: true,
                 hidden: false,
@@ -90,14 +90,20 @@ class PrescriptionController extends Controller
     public function store(Request $request)
     {
         // dd($request);
-        $request->validate([
-            'patient_id' => ['required'],
-            'appointment_id' => ['required'],
-            'dateTimeIssued' => ['required'],
-        ]);
+
         $today = Carbon::parse('today')->format('Y-m-d');
-        $appointment = Appointment::where('patient_id', $request->patient_id)->where('date', $today)->first();
-        $appointment->done = 1;
+
+        $request->validate([
+            'patient_id' => ['required','exists:App\Models\Patient,id'],
+            'appointment_id' => ['required','exists:App\Models\Appointment,id'],
+            'dateTimeIssued' => ['required','date_equals:'.$today],
+            'prescriptionLines' => ['array','nullable'],
+            'diagnosis'=>['array','nullable'],
+            'analysis'=>['array','nullable'],
+            'rays'=>['array','nullable'],
+            'notes'=>['nullable'],
+            'selected_clinic.id'=>['required','exists:App\Models\Clinic,id']
+        ]);
 
         $prescription = new Prescription();
         $prescription->patient_id = $request->patient_id;
@@ -105,20 +111,18 @@ class PrescriptionController extends Controller
         $prescription->clinic_id = $request->selected_clinic['id'];
         $prescription->doctor_id = Auth::user()->doc_res_id;
         $prescription->dateTimeIssued = Carbon::parse($request->dateTimeIssued)->addHours(3)->addMinutes(5);
-
-        $prescription->diagnosis = is_array($request->diagnosis) ?
-            json_encode($request['diagnosis']) : $request['diagnosis'];
-
-        $prescription->analysis = is_array($request->analysis) ?
-            json_encode($request['analysis']) : $request['analysis'];
-
-        $prescription->rays = is_array($request->rays) ?
-            json_encode($request['rays']) : $request['rays'];
-
+        
+        $prescription->diagnosis = is_array($request->diagnosis) ? json_encode($request->diagnosis) : $request->diagnosis;
+        $prescription->analysis = is_array($request->analysis) ?json_encode($request->analysis) : $request->analysis;
+        $prescription->rays = is_array($request->rays) ? json_encode($request->rays) : $request->rays;
         $prescription->notes = $request->notes;
-
         $prescription->save();
         
+        $appointment = Appointment::where('patient_id', $request->patient_id)
+                                    ->where('date', $today)
+                                    ->where('doctor_id','=',$prescription->doctor_id)
+                                    ->first();
+        $appointment->done = 1;
         $appointment->update();
 
 
@@ -126,6 +130,12 @@ class PrescriptionController extends Controller
             $prescriptionItem = new PrescriptionItems();
             $prescriptionItem->drug_id = $request->prescriptionLines[$i]['id'];
             if (array_key_exists("dose", $request->prescriptionLines[$i])) {
+                $dose = DB::table('doses')->where('name','=',$request->prescriptionLines[$i]['dose'])->first();
+                if(!$dose){
+                    $dose = DB::table('doses')->insert([
+                        'name' => $request->prescriptionLines[$i]['dose']
+                    ]);
+                }
                 $prescriptionItem->dose = $request->prescriptionLines[$i]['dose'];
             } else {
                 $prescriptionItem->dose = null;
@@ -139,16 +149,16 @@ class PrescriptionController extends Controller
             $prescription->prescriptionItems()->save($prescriptionItem);
         }
 
-        foreach ($request->consumedItems as $item) {
-            $spendings = new Spending();
-            $spendings->doctor_id = Auth::user()->doc_res_id;
-            $spendings->clinic_id = $request->selected_clinic['id'];
-            $spendings->item_id   = $item['id'];
-            $spendings->quantity  = $item['quantity'];
-            $spendings->cost      = $item['quantity'] * $item['selling_price'];
-            $spendings->patient_id = $request->patient_id;
-            $spendings->save();
-        }
+        // foreach ($request->consumedItems as $item) {
+        //     $spendings = new Spending();
+        //     $spendings->doctor_id = Auth::user()->doc_res_id;
+        //     $spendings->clinic_id = $request->selected_clinic['id'];
+        //     $spendings->item_id   = $item['id'];
+        //     $spendings->quantity  = $item['quantity'];
+        //     $spendings->cost      = $item['quantity'] * $item['selling_price'];
+        //     $spendings->patient_id = $request->patient_id;
+        //     $spendings->save();
+        // }
     }
     /**
      * Display the specified resource.
@@ -160,7 +170,11 @@ class PrescriptionController extends Controller
 
     public function getHistory($patient_id)
     {
-        $patient_history = Prescription::with('patient')->with('doctor')->where('patient_id', '=', $patient_id)->get();
+        $patient_history = Prescription::with('patient')
+                                        ->with('doctor')
+                                        ->where('patient_id', '=', $patient_id)
+                                        ->where('doctor_id', '=', Auth::user()->doc_res_id)
+                                        ->get();
         return $patient_history;
     }
 
@@ -183,6 +197,8 @@ class PrescriptionController extends Controller
         $prescriptionItems = Prescription::where('appointment_id', '=', $appointment_id)
             ->with('prescriptionItems')
             ->with('prescriptionItems.drugs')
+            ->with('appointment')
+            ->with('appointment.payment')
             ->get();
         return $prescriptionItems;
         // dd($prescriptionItems);

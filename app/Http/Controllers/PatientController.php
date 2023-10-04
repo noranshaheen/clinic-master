@@ -104,7 +104,7 @@ class PatientController extends Controller
 
         $request->validate([
             'name' =>['string','max:255','min:2','required','regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
-            'phone' =>['numeric','min:11','required','unique:patients,phone'],
+            'phone' =>['numeric','min:11','required'],
             'type' =>['required',Rule::in(['I','P'])],
             'gender' =>['required',Rule::in(['M','F'])],
             'date_of_birth' => ['date','before_or_equal:'.$today],
@@ -167,7 +167,6 @@ class PatientController extends Controller
 
     public function getHistory($patient_id){
        
-        // $patient_appointments = Appointment::with('patient')->where('patient_id','=',$patient_id)->get();
         $patient_history=Prescription::with('doctor')
                                         ->with('prescriptionItems')
                                         ->with('prescriptionItems.drugs')

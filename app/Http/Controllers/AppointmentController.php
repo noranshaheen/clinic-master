@@ -103,11 +103,11 @@ class AppointmentController extends Controller
 
 
         $data = $request->validate([
-            'doctor_id' => ['numeric', 'required'],
-            'clinic_id' => ['numeric', 'required'],
+            'doctor_id' => ['numeric', 'required', 'exists:App\Models\Doctor,id'],
+            'clinic_id' => ['numeric', 'required', 'exists:App\Models\Clinic,id'],
             'records' => ['required', 'array', 'min:1'],
             'records.*.date' => ['date', 'required', 'after_or_equal:' . $today],
-            'records.*.room_id' => ['numeric', 'required'],
+            'records.*.room_id' => ['numeric', 'required', 'exists:App\Models\Room,id'],
             'records.*.num_of_cases' => ['numeric', 'min:1', 'required'],
             'records.*.from' => ['required'],
             'records.*.to' => ['required'],
@@ -208,7 +208,9 @@ class AppointmentController extends Controller
 
     public function destroy(Appointment $appointment)
     {
-        $appointment->delete();
+        // dd($appointment);
+        $appointment->patient_id = null;
+        $appointment->save();
     }
 
     public function searchData(Request $request)
@@ -234,9 +236,15 @@ class AppointmentController extends Controller
 
     public function reserve(Request $request)
     {
-        $appointment = Appointment::find($request->input('appointment_id'));
-        $appointment->patient_id = $request->form["patient"]["id"];
-        $appointment->type = $request->form["type"];
+        // dd($request);
+        $request->validate([
+            'appointment_type' => ['string', 'required', Rule::in(['Normal', 'Emergency', 'Consultation'])],
+            'patient' => ['required']
+        ]);
+
+        $appointment = Appointment::find($request->query('appointment_id'));
+        $appointment->patient_id = $request->patient["id"];
+        $appointment->type = $request->appointment_type;
         $appointment->save();
         // dd($request->form);
     }
@@ -247,13 +255,15 @@ class AppointmentController extends Controller
         $today = Carbon::parse('today');
 
         $request->validate([
-            'name' => ['string', 'max:255', 'min:2', 'required'],
+            'name' => ['string', 'max:255', 'min:2', 'required', 'regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
             'phone' => ['numeric', 'min:11', 'required'],
             'type' => ['required', Rule::in(['I', 'P'])],
             'gender' => ['required', Rule::in(['M', 'F'])],
-            'date_of_birth' => ['date', 'required', 'before_or_equal:' . $today],
+            'date_of_birth' => ['date', 'before_or_equal:' . $today],
             'insurance_number' => ['string', 'max:255', 'nullable'],
             'insurance_company' => ['string', 'max:255', 'nullable'],
+            'additionalInformation' => ['string', 'max:4000', 'nullable'],
+            'appointment_type' => ['string', 'required', Rule::in(['Normal', 'Emergency', 'Consultation'])]
         ]);
 
         $patient = new Patient();
@@ -264,6 +274,7 @@ class AppointmentController extends Controller
         $patient->date_of_birth = $request->date_of_birth;
         $patient->insurance_number = $request->insurance_number;
         $patient->insurance_company = $request->insurance_company;
+        $patient->additionalInformation = $request->additionalInformation;
         $patient->save();
 
         $appointment = Appointment::find($request->input('appointment_id'));

@@ -225,42 +225,140 @@
               </template>
             </dropdown>
 
+            <!-- item -->
+            <dropdown :align="alignDropDown()" width="48" class="ms-3 mb-3 lg:mb-0">
+              <template #trigger>
+                <span class="grid justify-items-center cursor-pointer hover:text-[#4099de]" :class="{
+                  'text-[#4099de]': $page.url.startsWith('/items'),
+                }">
+                  <i class="fa fa-file-invoice"></i>
+                  {{ __("Items") }}
+                </span>
+              </template>
+              <template #content>
+                <div>
+                  <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg13')" class="cursor-pointer">
+                    {{ __("Add item") }}
+                  </dropdown-link>
+                  <dropdown-link as="a" :href="route('items.showAll')" class="cursor-pointer">
+                    {{ __("Show items") }}
+                  </dropdown-link>
+                </div>
+              </template>
+            </dropdown>
+
+            <!-- inventory -->
+            <dropdown :align="alignDropDown()" width="48" class="ms-3 mb-3 lg:mb-0">
+              <template #trigger>
+                <span class="grid justify-items-center cursor-pointer hover:text-[#4099de]" :class="{
+                  'text-[#4099de]': $page.url.startsWith('/inventories'),
+                }">
+                  <i class="fa-solid fa-warehouse"></i>
+                  {{ __("inventory") }}
+                </span>
+              </template>
+              <template #content>
+                <!-- warehouse -->
+                <div>
+                  <div class="p-1 border-b flex justify-between">
+                    <p>{{ __("Warehouses") }}</p>
+                    <i class="fa-solid fa-caret-down cursor-pointer" @click="warehouse = false" v-show="warehouse"></i>
+                    <i class="fa-solid fa-caret-left cursor-pointer" @click="warehouse = true" v-show="!warehouse"></i>
+                  </div>
+                  <div v-show="warehouse">
+                    <dropdown-link as="a" @click.prevent="openDlg('dlg15')" class="cursor-pointer">
+                      <!-- <i class="fas fa-plus"></i> -->
+                      {{ __("Add Warehouse") }}
+                    </dropdown-link>
+                    <dropdown-link as="a" :href="route('inventories.index')" class="cursor-pointer">
+                      <!-- <i class="fas fa-plus"></i> -->
+                      {{ __("Show Warehouses") }}
+                    </dropdown-link>
+                    <dropdown-link as="a" :href="route('inventories.show.items')" class="cursor-pointer">
+                      <!-- <i class="fas fa-plus"></i> -->
+                      {{ __("Show Items") }}
+                    </dropdown-link>
+                  </div>
+                </div>
+
+                <!-- inventory movement -->
+                <div>
+                  <div class="p-1 border-b flex justify-between">
+                    <p>{{ __("Inventory Movements") }}</p>
+                    <i class="fa-solid fa-caret-down cursor-pointer" @click="inventoryMovements = false"
+                      v-show="inventoryMovements"></i>
+                    <i class="fa-solid fa-caret-left cursor-pointer" @click="inventoryMovements = true"
+                      v-show="!inventoryMovements"></i>
+                  </div>
+                  <div v-show="inventoryMovements">
+                    <dropdown-link as="a" :href="route('inventory.show.ins')" class="cursor-pointer">
+                      {{ __("Inbounds") }}
+                    </dropdown-link>
+                    <dropdown-link as="a" :href="route('inventory.show.outs')" class="cursor-pointer">
+                      {{ __("Outbounds") }}
+                    </dropdown-link>
+                    <dropdown-link as="a" :href="route('inventory.create.ins')" class="cursor-pointer">
+                      {{ __("Add Items To Stock") }}
+                    </dropdown-link>
+                    <dropdown-link as="a" :href="route('inventory.create.outs')" class="cursor-pointer">
+                      {{ __("Withdraw Items From Stock") }}
+                    </dropdown-link>
+                  </div>
+                </div>
+              </template>
+            </dropdown>
+
+
             <!-- Bill -->
             <dropdown :align="alignDropDown()" width="48" class="ms-3 mb-3 lg:mb-0">
               <template #trigger>
                 <span class="grid justify-items-center cursor-pointer hover:text-[#4099de]" :class="{
-                  'text-[#4099de]': $page.url.startsWith('/bill'),
+                  'text-[#4099de]': $page.url.startsWith('/bills'),
+                }">
+                  <i class="fa fa-file-invoice"></i>
+                  {{ __("Bills") }}
+                </span>
+              </template>
+              <template #content>
+                <div>
+                  <dropdown-link as="a" :href="route('bills.administrative.create')">
+                    {{ __("Administrative Bills") }}
+                  </dropdown-link>
+                  <dropdown-link as="a" :href="route('bills.purchase.create')">
+                    {{ __("Purchase Bills") }}
+                  </dropdown-link>
+                  <dropdown-link as="a" :href="route('bills.showAll')">
+                    {{ __("Show Bills") }}
+                  </dropdown-link>
+                </div>
+              </template>
+            </dropdown>
+
+
+            <!-- reports -->
+            <dropdown :align="alignDropDown()" width="48" class="ms-3 mb-3 lg:mb-0">
+              <template #trigger>
+                <span class="grid justify-items-center cursor-pointer hover:text-[#4099de]" :class="{
+                  'text-[#4099de]': $page.url.startsWith('/reports'),
                 }">
                   <i class="fa fa-file-invoice"></i>
                   {{ __("Reports") }}
                 </span>
               </template>
               <template #content>
-                <dropdown-link as="a" :href="route('bills.index')">
-                  <!-- <i class="fas fa-plus"></i> -->
-                  {{ __("Add Bill") }}
-                </dropdown-link>
-                <dropdown-link as="a" :href="route('bills.showAll')">
-                  <!-- <i class="fas fa-plus"></i> -->
-                  {{ __("Show Bills") }}
-                </dropdown-link>
-                <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg13')">
-                  <!-- <i class="fas fa-plus"></i> -->
-                  {{ __("Add Item") }}
-                </dropdown-link>
-                <dropdown-link as="a" :href="route('items.showAll')">
-                  <!-- <i class="fas fa-plus"></i> -->
-                  {{ __("Show Items") }}
-                </dropdown-link>
-                <dropdown-link as="a" :href="route('bills.search')">
-                  <!-- <i class="fa-solid fa-magnifying-glass mx-1"></i> -->
-                  {{ __("Expensess & Incomes") }}
-                </dropdown-link>
+                <div>
+                  <dropdown-link :href="route('bills.incomes.search')" as="a">
+                    {{ __("Incomes") }}
+                  </dropdown-link>
+                  <dropdown-link :href="route('bills.expenses.search')" as="a">
+                    {{ __("Expenses") }}
+                  </dropdown-link>
+                  <dropdown-link as="a" :href="route('inventory.items.balance')">
+                    {{ __("Inventory Balance") }}
+                  </dropdown-link>
+                </div>
               </template>
             </dropdown>
-
-
-
 
             <!-- <dropdown :align="alignDropDown()" class="ms-3 mb-3 lg:mb-0">
               <template #trigger>
@@ -711,9 +809,9 @@
                 <dropdown-link :href="route('users.index')">
                   {{ __("Users") }}
                 </dropdown-link>
-                <dropdown-link as="a" @click.prevent="openDlg('dlg10')" href="#">
+                <!-- <dropdown-link as="a" @click.prevent="openDlg('dlg10')" href="#">
                   {{ __("Settings") }}
-                </dropdown-link>
+                </dropdown-link> -->
 
                 <dropdown-link as="a" @click.prevent="openDlg('dlg8')" href="#">
                   {{ __("Add New User") }}
@@ -766,7 +864,12 @@ export default {
       room: false,
       drug: false,
       diagnose: false,
-      prescription: false
+      prescription: false,
+      inventoryMovements: false,
+      warehouse: false,
+      items: false,
+      reports: false,
+      bills: false
     };
   },
   methods: {

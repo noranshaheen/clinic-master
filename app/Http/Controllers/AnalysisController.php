@@ -40,9 +40,14 @@ class AnalysisController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'name' => ['string','max:255','min:2','required','regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
+            'description' => ['string','max:255','min:2','nullable','regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
+            'specialty_id' => ['required','exists:App\Models\Specialty,id']
+        ]);
         $analysis = new Analysis();
         $analysis->name = $request->name;
-        $analysis->description = $request->description;
+        $analysis->description = $request->desc;
         $analysis->specialty_id = $request->specialty_id;
         $analysis->save();
     }
@@ -126,8 +131,8 @@ class AnalysisController extends Controller
     {
         $data = $request->validate([
             'name' => ['string','max:255','min:2','required','regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
-            'description' => ['string','max:255','min:2','required','regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
-            'specialty_id' => ['required']
+            'description' => ['string','max:255','min:2','nullable','regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
+            'specialty_id' => ['required','exists:App\Models\Specialty,id']
         ]);
         $analysis->update($data);
     }

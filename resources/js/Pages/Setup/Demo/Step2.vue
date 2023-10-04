@@ -20,11 +20,11 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <div class="">
-                            <jet-label for="date" :value="__('Date')" />
+                            <jet-label for="date" :value="__('التاريخ')" />
                             <jet-input id="date" type="text" readonly class="mt-1 block w-full" v-model="form.date" required />
                         </div>
                         <div class="mt-4">
-                            <jet-label for="Room" :value="__('Room')" />
+                            <jet-label for="Room" :value="__('الغرفة')" />
                             <select id="Room" 
                             class="mt-1 block w-full rounded border border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm" 
                             v-model="form.room">
@@ -34,23 +34,23 @@
                             </select>
                         </div>
                         <div class="mt-4">
-                            <jet-label for="To" :value="__('To')" />
+                            <jet-label for="To" :value="__('إلى')" />
                             <jet-input id="To" type="time" class="mt-1 block w-full" v-model="form.to"
                                 required />
                         </div>
                         <div class="mt-4">
-                            <jet-label for="cases" :value="__('Number Of Cases')" />
+                            <jet-label for="cases" :value="__('عدد الحالات')" />
                             <jet-input id="cases" type="number" class="mt-1 block w-full" v-model="form.numberOfCases"
                                 required />
                         </div>
                     </div>
                     <div>
                         <div class="">
-                            <jet-label for="name" :value="__('Clinic Name')" />
+                            <jet-label for="name" :value="__('اسم العيادة')" />
                             <jet-input id="name" type="text" v-model="form.name" vlaue="{{all_clinics[0].name}}" readonly class="mt-1 block w-full"  required />
                         </div>
                         <div class="mt-4">
-                            <jet-label for="Doctors" :value="__('Doctor')" />
+                            <jet-label for="Doctors" :value="__('الطبيب')" />
                             <select id="Doctors" 
                             class="mt-1 block w-full rounded border border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm" 
                             v-model="form.doctor">
@@ -60,7 +60,7 @@
                             </select>
                         </div>
                         <div class="mt-4">
-                            <jet-label for="from" :value="__('From')" />
+                            <jet-label for="from" :value="__('من')" />
                             <jet-input id="from" type="time" class="mt-1 block w-full" v-model="form.from"
                                 required />
                         </div>

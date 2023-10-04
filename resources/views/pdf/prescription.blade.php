@@ -23,7 +23,7 @@
     <div class="wrapper flex justify-between">
         <div class="invoice w-full lg:w-5/6 my-5 shadow-lg rounded-xl rtl:mr-2 ltr:ml-2">
             <div class="invoice-header flex justify-between px-5">
-            <div class="invoice-details self-center p-5">
+                <div class="invoice-details self-center p-5">
                     <div class="mb-5">
                         <h2 class="text-3xl uppercase font-bold text-center">@lang('Doctor')</h2>
                     </div>
@@ -54,20 +54,14 @@
                                 <span class="font-semibold">{{ __('Prescription Number') }}</span> :
                                 <span>{{ $data->id}}</span>
                             </li>
-                            <!-- <li class="pb-2 text-gray-600">
-                                <span class="font-semibold">{{ __('Doctor Name') }}</span> :
-                                <span>{{ $data->doctor->name}}</span>
-                            </li> -->
+                            <li class="pb-2 text-gray-600">
+                                <span class="font-semibold">{{ __('Detection Type') }}</span> :
+                                <span>{{ __($data->appointment->type)}}</span>
+                            </li>
                             <li class="pb-2 text-gray-600">
                                 <span class="font-semibold">{{ __('Date Of Issue') }}</span> :
                                 <span>
                                     {{\Carbon\Carbon::parse($data->dateTimeIssued)->toDateString() }}
-                                </span>
-                            </li>
-                            <li class="pb-2 text-gray-600">
-                                <span class="font-semibold">{{ __('Time Of Issue') }}</span> :
-                                <span>
-                                    {{\Carbon\Carbon::parse($data->dateTimeIssued)->toTimeString() }}
                                 </span>
                             </li>
                         </ul>
@@ -92,8 +86,7 @@
                     $diagnosis = json_decode($data->diagnosis);
                     $x=count($diagnosis);
                     @endphp
-                    @for($i=0 ; $i<$x ; $i++) 
-                    <span class="text-gray-600 p-2">
+                    @for($i=0 ; $i<$x ; $i++) <span class="text-gray-600 p-2">
                         @if($i == ($x-1))
                         @php
                         echo $diagnosis[$i]." . ";
@@ -126,25 +119,25 @@
                     <div class="mb-2">
                         <p class="text-gray-600 pb-2 font-semibold underline decoration-2 inline">{{ __('Analysis') }} :</p>
                         <ul class="list-disc list-inside px-4">
-                        @foreach(json_decode($data->analysis) as $analysis)
-                        <li class="text-gray-600">
-                        @php
-                        echo $analysis;
-                        @endphp
-                        </li>
-                        @endforeach
+                            @foreach(json_decode($data->analysis) as $analysis)
+                            <li class="text-gray-600">
+                                @php
+                                echo $analysis;
+                                @endphp
+                            </li>
+                            @endforeach
                         </ul>
                     </div>
                     <div class="mb-2">
-                    <p class="text-gray-600 pb-2 font-semibold underline decoration-2 inline">{{ __('X-Rays') }} :</p>
+                        <p class="text-gray-600 pb-2 font-semibold underline decoration-2 inline">{{ __('X-Rays') }} :</p>
                         <ul class="list-disc list-inside px-4">
-                        @foreach(json_decode($data->rays) as $ray)
-                        <li class="text-gray-600">
-                        @php
-                        echo $ray;
-                        @endphp
-                        </li>
-                        @endforeach
+                            @foreach(json_decode($data->rays) as $ray)
+                            <li class="text-gray-600">
+                                @php
+                                echo $ray;
+                                @endphp
+                            </li>
+                            @endforeach
                         </ul>
                     </div>
                     <p class="capitalize text-gray-600 pb-2 font-semibold underline decoration-2">{{ __('Notes') }}:

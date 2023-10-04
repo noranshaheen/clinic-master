@@ -19,7 +19,7 @@ createInertiaApp({
             .use(ZiggyVue, Ziggy)
 	        .mixin({ methods:{ route }})
 			.mixin(BaseMixin)
-	        .use(store)
+            .use(store)
             .mount(el);
     },
     progress: {

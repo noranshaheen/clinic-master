@@ -18,7 +18,7 @@
 
             <div class="mt-4">
               <jet-label for="type" :value='__("X-Ray Description")' />
-              <jet-input id="type" type="text" class="mt-1 block w-full" v-model="form.description" />
+              <jet-input id="type" type="text" class="mt-1 block w-full" v-model="form.description" :placeholder='__("(optional)")' />
             </div>
 
             <div class="mt-4">
@@ -91,7 +91,7 @@ export default {
       allSpecialties: [],
       form: this.$inertia.form({
         name: "",
-        desc: "",
+        description: "",
         specialty_id: ""
       }),
       showDialog: false,
@@ -144,7 +144,7 @@ export default {
         .catch((error) => {
           this.form.processing = false;
           this.$page.props.errors = error.response.data.errors;
-          this.errors = error.response.data.errors; //.password[0];
+          // this.errors = error.response.data.errors; //.password[0];
           //this.$refs.password.focus()
         });
     },

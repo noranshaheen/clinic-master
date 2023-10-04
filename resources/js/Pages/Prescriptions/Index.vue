@@ -8,12 +8,12 @@
             <div class="mx-auto sm:px-6 lg:px-8">
                 <div class="wrapper Gbg-white shadow-xl sm:rounded-lg p-4">
                     <Table :resource="prescriptions">
-                        <template #cell(doctor_id)="{ item: prescription }">
+                        <!-- <template #cell(doctor_id)="{ item: prescription }">
                             {{ prescription.doctor ? prescription.doctor.name : __('N/A') }}
-                        </template>
-                        <template #cell(patient_id)="{ item: prescription }">
+                        </template> -->
+                        <!-- <template #cell(patient_id)="{ item: prescription }">
                             {{ prescription.patient.name }}
-                        </template>
+                        </template> -->
                         <template #cell(dateTimeIssued)="{ item: prescription }">
                             {{ new Date(prescription.dateTimeIssued).toLocaleDateString() }}
                         </template>

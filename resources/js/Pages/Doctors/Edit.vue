@@ -221,7 +221,7 @@ export default {
         .catch((error) => {
           this.form.processing = false;
           this.$page.props.errors = error.response.data.errors;
-          this.errors = error.response.data.errors; //.password[0];
+          // this.errors = error.response.data.errors; //.password[0];
           //this.$refs.password.focus()
         });
     },

@@ -16,6 +16,8 @@
                     ادخال بيانات طبيب الفرع الرئيسي
                 </div>
             </div>
+            <jet-validation-errors class="mb-4" />
+
             <form @submit.prevent="submit">
                 <div class="grid grid-cols-1 gap-4">
 
@@ -176,6 +178,12 @@ export default {
                             //this.$refs.password.focus()
                         });
                 })
+                .catch((error) => {
+                //   this.form.processing = false;
+                this.$page.props.errors = error.response.data.errors;
+                this.errors = error.response.data.errors; //.password[0];
+                //this.$refs.password.focus()
+                });
 
 
         },

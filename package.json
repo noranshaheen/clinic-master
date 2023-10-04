@@ -25,6 +25,7 @@
         "lodash": "^4.17.21",
         "sweetalert": "^2.1.2",
         "vue-echarts": "^6.5.4",
+        "vue3-excel-editor": "^1.0.20",
         "vuex": "^4.1.0"
     }
 }

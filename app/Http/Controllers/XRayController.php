@@ -34,6 +34,12 @@ class XRayController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'name' => ['string','max:255','min:2','required','regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
+            'description' => ['string','max:255','min:2','nullable','regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
+            'specialty_id' => ['required','exists:App\Models\Specialty,id']
+        ]);
+
         $analysis = new XRay();
         $analysis->name = $request->name;
         $analysis->description = $request->description;
@@ -119,11 +125,12 @@ class XRayController extends Controller
      */
     public function update(Request $request, XRay $xray)
     {
-        $data = $request->validate([
-            'name' => ['string', 'max:255', 'min:2', 'required', 'regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
-            'description' => ['string', 'max:255', 'min:2', 'required', 'regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
-            'specialty_id' => ['required']
+        $data =  $request->validate([
+            'name' => ['string','max:255','min:2','required','regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
+            'description' => ['string','max:255','min:2','nullable','regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
+            'specialty_id' => ['required','exists:App\Models\Specialty,id']
         ]);
+
         $xray->update($data);
     }
 

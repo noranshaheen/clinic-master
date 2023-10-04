@@ -1,6 +1,8 @@
 <template>
     <app-layout>
         <show-prescription ref="dlg1" :prescription="prescription_details" />
+        <appointment-details ref="dlg3" :appointment_Details="appointment_Details" />
+        <ServiceFees ref="dlg2" :prescription="prs"/>
         <div class="py-4">
             <div class="mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg px-4 pb-4 pt-0">
@@ -20,14 +22,14 @@
                     <div v-show="tab_idx == 1" class="overflow-auto">
                         <table class="w-full">
                             <tr>
-                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{__("Date")}}</th>
-                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{__("Detection Type")}}</th>
+                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{ __("Date") }}</th>
+                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{ __("Detection Type") }}</th>
                                 <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{ __("Payment Status") }}</th>
                                 <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{ __("Detection Fees") }}</th>
                                 <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{ __("Total Service Fees") }}</th>
                                 <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{ __("Paid Service Fees") }}</th>
-                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{__("Remains")}}</th>
-                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{__("Actions")}}</th>
+                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{ __("Remains") }}</th>
+                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{ __("Actions") }}</th>
                             </tr>
                             <tr v-for="prescription in prescriptions" :key="prescription.id">
                                 <td class="text-center  border p-2">{{ new
@@ -36,28 +38,28 @@
                                 <td class="text-center  border p-2">{{ __(prescription.appointment.type) }}</td>
                                 <td class="text-center  border p-2">{{ __(prescription.appointment.status) }}</td>
                                 <td class="text-center  border p-2">{{ prescription.appointment.amount }}</td>
-                                <td class="text-center  border p-2">{{
-                                    prescription.appointment.payment !== null ? getTotalServiceFees(prescription) :
-                                    __("Not Found")
-                                }}</td>
                                 <td class="text-center  border p-2">
-                                    <!-- <span v-for="payment in prescription.appointment.payment">
-                                        <span v-if="payment.appointment_id == prescription.appointment_id">
-                                            {{ payment.service_fees? payment.service_fees:"Not Paid" }}
-                                        </span>
-                                    </span> -->
-                                    <span>
-                                        {{ prescription.appointment.payment !== null ?
-                                            __(getPaidServiceFees(prescription)) : __("Not Paid") }}
-                                    </span>
+                                    {{
+                                        prescription.appointment.prescription_items !== null ?
+                                        getTotalServiceFees(prescription) : "0"
+                                    }}
                                 </td>
                                 <td class="text-center  border p-2">
-                                    {{ prescription.appointment.payment !== null ?
+                                    {{
+                                        prescription.appointment.payment !== null ?
+                                        __(getPaidServiceFees(prescription)) : __("Not Paid")
+                                    }}
+                                </td>
+                                <td class="text-center  border p-2">
+                                    {{ prescription.appointment.prescription_items !== null ?
                                         getRemainingOfServiceFees(prescription) : "0" }}
                                 </td>
                                 <td class="text-center  border p-2">
                                     <JetButton @click="downloadPDF(prescription)">
-                                        {{__("Print")}}
+                                        {{ __("Print") }}
+                                    </JetButton>
+                                    <JetButton @click="payRemaining(prescription)">
+                                        {{ __("Pay") }}
                                     </JetButton>
                                 </td>
                             </tr>
@@ -68,8 +70,8 @@
                         <table class="w-full" v-if="this.prescriptions.length !== 0">
                             <tr>
                                 <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{ __("Date") }}</th>
-                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{__("Doctor")}}</th>
-                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{__("Diagnose")}}</th>
+                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{ __("Doctor") }}</th>
+                                <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{ __("Diagnose") }}</th>
                                 <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{ __("Actions") }}</th>
                             </tr>
                             <tr v-for="prescription in prescriptions" :key="prescription.id">
@@ -85,10 +87,12 @@
                                 </td>
                                 <td class="text-center border py-2">
                                     <div class="flex flex-col sm:flex-row justify-center items-center">
-                                        <JetButton class="w-full sm:w-min" @click="downloadPrescriptionPDF(prescription)">{{__("Print")}}</JetButton>
-                                    <JetButton class="w-full sm:w-min" @click="openDlg(prescription)">{{__("Show")}}</JetButton>
+                                        <JetButton class="w-full sm:w-min" @click="downloadPrescriptionPDF(prescription)">
+                                            {{ __("Print") }}</JetButton>
+                                        <JetButton class="w-full sm:w-min" @click="openDlg(prescription)">{{ __("Show") }}
+                                        </JetButton>
                                     </div>
-                                    
+
                                 </td>
                             </tr>
                         </table>
@@ -119,6 +123,8 @@ import TextField from "@/UI/TextField.vue";
 import Multiselect from "@suadelabs/vue3-multiselect";
 import DialogInvoiceLine from "@/Pages/Invoices/EditLine.vue";
 import ShowPrescription from "@/Pages/Prescriptions/Show.vue";
+import ServiceFees from "@/Pages/Dashboard/ServiceFees.vue";
+import AppointmentDetails from '@/Pages/Dashboard/AppointmentDetails.vue';
 import axios from 'axios';
 
 export default {
@@ -131,7 +137,10 @@ export default {
         DialogInvoiceLine,
         TextField,
         Multiselect,
-        ShowPrescription
+        ShowPrescription,
+        ServiceFees,
+        AppointmentDetails,
+        axios
     },
     props: {
         // appointments: {
@@ -147,8 +156,11 @@ export default {
     data() {
         return {
             tab_idx: 1,
+            // remainingBtn: false,
             errors: [],
             prescription_details: "",
+            appointment_Details:"",
+            prs:"",
             totalServiceFees: 0
         };
     },
@@ -179,12 +191,45 @@ export default {
             return total;
         },
         getRemainingOfServiceFees(prescription) {
-            if (this.totalServiceFees != 0 && prescription.appointment.payment.service_fees !== null) {
-                var paidFees = prescription.appointment.payment.service_fees;
-                return this.totalServiceFees - Number(paidFees);
-            } else if (prescription.appointment.payment.service_fees == null) {
+            // console.log(prescription)
+            if (prescription.appointment.payment) {
+                if (this.totalServiceFees != 0 && prescription.appointment.payment.service_fees !== null) {
+                    var paidFees = prescription.appointment.payment.service_fees;
+                    return this.totalServiceFees - Number(paidFees);
+                } else if (prescription.appointment.payment.service_fees == null) {
+                    return this.totalServiceFees;
+                }
+            } else {
                 return this.totalServiceFees;
             }
+        },
+        // showRemainingBtn(prescription) {
+        //     console.log(prescription)
+        //     return true
+        // },
+        payRemaining(prescription) {
+            if(prescription.appointment.payment == null){
+                this.showDetails(prescription.appointment_id)
+            } else {
+                axios.get(route('prescription.serviceFees', prescription.appointment_id))
+                    .then((response) => {
+                        this.prs = response.data;
+                        this.$nextTick(() => {
+                            this.$refs.dlg2.ShowDialog();
+                        });
+                    })
+            }
+        },
+        showDetails(appointment_id) {
+            axios
+                .get(route('appointments.show', { appointment: appointment_id }))
+                .then((response) => {
+                    console.log(response.data);
+                    this.appointment_Details = response.data;
+                    this.$nextTick(() => {
+                            this.$refs.dlg3.ShowDialog();
+                        });
+                })
         },
         downloadPDF(prescription) {
             window.open(route("pdf.payment.preview", [prescription.id]));

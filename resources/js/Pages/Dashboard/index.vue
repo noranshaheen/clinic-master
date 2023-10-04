@@ -3,7 +3,7 @@
         <type-of-patient ref="dlg1" :appointment_id="selectedAppointemt_id" @Save="searchData()" />
         <choose-cancellation-method ref="dlg2" :doctor_id="cancelledAppointments.doctor_id"
             :date="cancelledAppointments.date" @Save="searchData()" />
-        <appointment-details ref="dlg3" :appointment_Details="appointment_Details" />
+        <appointment-details ref="dlg3" :appointment_Details="appointment_Details" @Delete="searchData()"/>
         <div class="relative bg-white shadow-md dark:bg-gray-800 sm:rounded-lg m-1 p-1 md:mx-4 md:px-4">
             <div class="p-1">
                 <div class="sm:flex justify-between">

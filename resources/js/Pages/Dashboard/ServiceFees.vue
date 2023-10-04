@@ -16,11 +16,19 @@
                         </td>
                     </tr>
                     <tr class="border">
-                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">{{ __("Total") }}</th>
+                        <th class="bg-[#f8f9fa] p-2 w-3/5 text-center">{{ __("Total") }}</th>
                         <td class="font-bold">{{ total }}</td>
                     </tr>
                     <tr class="border">
-                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">{{ __("Pay") }}</th>
+                        <th class="bg-[#f8f9fa] p-2 w-3/5 text-center">{{ __("Paid Service Fees") }}</th>
+                        <td class="font-bold">{{ __(getPaidServiceFees(prescription[0])) }}</td>
+                    </tr>
+                    <tr class="border">
+                        <th class="bg-[#f8f9fa] p-2 w-3/5 text-center">{{ __("Remains") }}</th>
+                        <td class="font-bold">{{ getRemainingOfServiceFees() }}</td>
+                    </tr>
+                    <tr class="border">
+                        <th class="bg-[#f8f9fa] p-2 w-3/5 text-center">{{ __("Pay") }}</th>
                     <tr class="border">
                         <jet-input id="type" type="number" class=" block w-full rounded" v-model="form.paid" />
                     </tr>
@@ -29,7 +37,8 @@
                 <div v-else>
                     <p class="text-center text-red-600 my-5">
                         <i class="fa fa-exclamation-circle mr-1"></i>
-                        {{ __("No Additional Payments Were Found") }}
+                        <!-- {{ __("No Additional Payments Were Found") }} -->
+                        {{ __(message) }}
                     </p>
                 </div>
             </template>
@@ -60,14 +69,15 @@ export default {
         prescription: {
             default: null
         },
-        appointment_id: {
-            default: null
-        }
+        // appointment_id: {
+        //     default: null
+        // }
     },
     data() {
         return {
             showDialog: false,
-            total: "",
+            total: 0,
+            partialy_paid:0,
             message: null,
             form: this.$inertia.form({
                 paid: 0,
@@ -80,11 +90,16 @@ export default {
             this.showDialog = true;
             this.message = null;
             console.log(this.prescription);
-            this.form.appointment = this.appointment_id;
+            
             if (this.prescription !== null && this.prescription.length > 0) {
+                this.form.appointment = this.prescription[0].appointment_id;
                 this.getTotalServiceFees(this.prescription[0].prescription_items);
-            } else {
+            }
+            else {
                 this.message = "Not Fount Any Additional Payments";
+            }
+            if (this.prescription[0].appointment.payment == null) {
+                this.message = "You Have To Pay Detection Fees First";
             }
         },
         getTotalServiceFees(prescriptionItems) {
@@ -96,7 +111,20 @@ export default {
             });
             this.total = total;
         },
+        getPaidServiceFees(prescription) {
+            
+            if (prescription.appointment.payment.service_fees) {
+                this.partialy_paid =prescription.appointment.payment.service_fees;
+                return this.partialy_paid;
+            } else {
+                return 'Not Paid'
+            }
+        },
+        getRemainingOfServiceFees() {
+            return this.total - this.partialy_paid;
+        },
         save() {
+            // console.log(this.form);
             axios.post(route("payments.payServiceFees"), this.form)
                 .then((response) => {
                     this.$store.dispatch("setSuccessFlashMessage", true);
@@ -108,6 +136,9 @@ export default {
         close() {
             this.showDialog = false;
             this.form.reset();
+            this.total = 0;
+            this.partialy_paid = 0;
+            this.message = null;
         },
     }
 }

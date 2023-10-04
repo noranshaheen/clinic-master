@@ -12,7 +12,7 @@
                                 {{ __('Item') }}
                             </th>
                             <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">{{ __('Unit') }}</th>
-                            <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">{{ __('Price') }}</th>
+                            <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">{{ __('Unit Price') }}</th>
                             <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">{{ __('Quantity') }}</th>
                             <th class="bg-[#f8f9fa] p-1 border border-[#eceeef]">{{ __('Total') }}</th>
                         </thead>
@@ -22,10 +22,10 @@
                                     {{ row.item.name }}
                                 </td>
                                 <td class="p-1 border border-[#eceeef]">
-                                    {{ row.item.measurement_unit }}
+                                    {{ row.item.unit }}
                                 </td>
                                 <td class="p-1 border border-[#eceeef]">
-                                    {{ row.purches_price }}
+                                    {{ row.price }}
                                 </td>
                                 <td class="p-1 border border-[#eceeef]">
                                     {{ row.quantity }}

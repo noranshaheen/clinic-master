@@ -10,9 +10,6 @@
           class="wrapper Gbg-white shadow-xl sm:rounded-lg p-4"
         >
           <Table :resource="rooms">
-            <template #cell(branch)="{item : room}">
-                {{ room.clinic.address }}
-            </template>
             <template #cell(actions)="{ item: room }">
               <secondary-button @click="editCustomer(room)">
                 <i class="fa fa-edit"></i> {{ __("Edit") }}

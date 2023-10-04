@@ -10,9 +10,6 @@
           class="wrapper Gbg-white shadow-xl sm:rounded-lg p-4"
         >
           <Table :resource="diagnosis">
-            <template #cell(specialty_id)="{ item: diagnose }">
-              {{ diagnose.specialty.name }}
-            </template>
             <template #cell(actions)="{ item: diagnose }">
               <secondary-button @click="editCustomer(diagnose)">
                 <i class="fa fa-edit"></i> {{ __("Edit") }}

@@ -10,8 +10,11 @@
                     class="wrapper Gbg-white shadow-xl sm:rounded-lg p-4"
                 >
                     <Table :resource="items" >
-						<template #cell(hidden)="{item:item}">
-							{{ item.hidden == 0? "No":"Yes" }}
+						<!-- <template #cell(unit)="{item:item}">
+							{{ item.unit.desc_en }}
+						</template> -->
+						<template #cell(storable)="{item:item}">
+							{{ item.storable == 1?  __('Yes') :__('No') }}
 						</template>
                         <template #cell(actions)="{ item: item }">
                             <secondary-button @click="editCustomer(item)">

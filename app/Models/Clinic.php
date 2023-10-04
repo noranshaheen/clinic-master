@@ -33,4 +33,8 @@ class Clinic extends Model
     public function spendings():HasMany{
         return $this->hasMany('App\Models\Spendings','clinic','id');
     }
+
+    public function inventories():HasMany{
+        return $this->hasMany('App\Models\Inventory\Inventory','clinic_id','id');
+    }
 }

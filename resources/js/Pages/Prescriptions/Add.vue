@@ -5,8 +5,6 @@
         <add-analysis-dialog ref="dlg2" @Save="getAnalysis()" />
         <add-xrays-dialog ref="dlg3" @Save="getXray()" />
 
-        <!-- <jet-validation-errors class="mb-4 mt-4" /> -->
-
         <div class="sm:py-2 mx-auto">
             <div class="mx-auto sm:px-4 lg:px-6">
                 <div class="bg-white shadow-xl sm:rounded-lg px-2">
@@ -69,6 +67,10 @@
                                     {{ __("History") }}
                                 </jet-button>
                             </div>
+
+                            <jet-validation-errors class="mb-4 mt-4 px-2" />
+
+                            <!-- start prescription -->
                             <div v-show="tab_idx == 1" class="px-2">
                                 <div v-if="current_patient_name" class="mx-auto w-full mt-4 border border-[#eceeef]">
                                     <div class="text-center p-2 font-bold bg-[#f8f9fa] w-full">
@@ -143,10 +145,9 @@
                                     </tr>
                                     <!-- end rays -->
                                     <!-- start consumables -->
-                                    <tr class="border">
-                                        <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Consumables") }}</td>
-                                        <td class="p-2">
-                                            <!-- {{form.consumedItems}} -->
+                                    <!-- <tr class="border">
+                                        <td class="p-2 font-bold text-center bg-[#f8f9fa]">
+                                            {{ __("Consumables") }}
                                             <ul v-for="(item, idx) in form.consumedItems">
                                                 <li class="mb-2">
                                                     <div class="flex justify-between items-center">
@@ -163,7 +164,7 @@
                                                 </li>
                                             </ul>
                                         </td>
-                                    </tr>
+                                    </tr> -->
                                     <!-- end consumables -->
                                     <!-- start nots -->
                                     <tr class="border">
@@ -335,8 +336,7 @@
                             <!-- end adding rays -->
 
                             <!-- start consumables -->
-                            <div class="mb-4 pb-2 border-b-2">
-                                <!-- <jet-label :value="__('Consumables')" class="font-bold"/> -->
+                            <!-- <div class="mb-4 pb-2 border-b-2">
                                 <lable class="my-1 text-slate-700 font-bold">{{ __('Consumables') }}</lable>
                                 <span class="m-2 text-gray-400 text-sm">{{ __("(you can choose multiple options)") }}</span>
                                 <div class="flex justify-start flex-wrap my-4">
@@ -351,13 +351,12 @@
                                         </div>
                                     </button>
                                 </div>
-                            </div>
+                            </div> -->
                             <!-- end consumables -->
 
                             <!-- start notes -->
                             <div class="my-1">
                                 <lable class="my-1 text-slate-700 font-bold">{{ __('Notes') }}</lable>
-                                <!-- <jet-label :value="__('Notes')" class="my-1 font-bold" /> -->
                                 <div class="my-1">
                                     <input v-model="form.notes" type="text" class="w-full border border-gray-300 rounded" />
                                 </div>
@@ -455,20 +454,15 @@
                                     </tr>
                                     <!-- end rays -->
                                     <!-- start consumables -->
-                                    <tr class="border">
-                                        <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Consumables") }}</td>
-                                        <td class="p-2">
-                                            <!-- {{consumedItems}} -->
+                                    <!-- <tr class="border">
+                                        <td class="p-2 font-bold text-center bg-[#f8f9fa]">
+                                            {{ __("Consumables") }}
                                             <ul v-for="(item, idx) in form.consumedItems">
                                                 <li class="mb-2">
                                                     <div class="flex justify-between items-center">
                                                         <span class="font-bold">{{ item.name + " (" +
                                                             item.measurement_unit + ")" }}</span>
-                                                        <!-- <i class="fa fa-delete-left cursor-pointer text-red-500"
-                                                            @click="deleteItem(idx,consumedItems)"></i> -->
                                                     </div>
-                                                    <!-- <multiselect v-model="line.dose" label="name" :options="doses"
-                                                        placeholder="Dose" :searchable="true" class="text-sm" /> -->
                                                     <div class="flex justify-between">
                                                         <input type="number" step="0.1" v-model="item.quantity"
                                                             placeholder="quantity"
@@ -479,7 +473,7 @@
                                                 </li>
                                             </ul>
                                         </td>
-                                    </tr>
+                                    </tr> -->
                                     <!-- end consumables -->
                                     <!-- start nots -->
                                     <tr class="border">
@@ -580,6 +574,7 @@ import ShowPrescription from './Show.vue';
 import AddAnalysisDialog from '../Analysis/Edit.vue';
 import AddXraysDialog from '../XRays/Edit.vue';
 import PatientInfo from "@/Pages/Patients/Information.vue";
+import JetValidationErrors from '@/Jetstream/ValidationErrors.vue'
 
 export default {
     components: {
@@ -588,6 +583,7 @@ export default {
         JetButton,
         JetSecondaryButton,
         JetDangerButton,
+        JetValidationErrors,
         DialogInvoiceLine,
         TextField,
         Multiselect,
@@ -606,7 +602,7 @@ export default {
             tab_idx: 1,
             allClinics: [],
             selected_clinic: "",
-            allItems: [],
+            // allItems: [],
             prescription_details: "",
             appointments: [],
             current_patient_name: "",
@@ -627,14 +623,14 @@ export default {
             form: this.$inertia.form({
                 appointment_id: "",
                 patient_id: "",
-                dateTimeIssued: new Date().toISOString().slice(0, 16),
+                dateTimeIssued: new Date().toISOString().slice(0,10),
                 prescriptionLines: [],
                 diagnosis: [],
                 analysis: [],
                 rays: [],
                 notes: "",
                 selected_clinic: null,
-                consumedItems: []
+                // consumedItems: []
             }),
         };
     },
@@ -828,8 +824,8 @@ export default {
                 })
                 .catch((error) => {
                     this.form.processing = false;
-                    // this.$page.props.errors = error.response.data.errors;
-                    this.errors = error.response.data.errors; //.password[0];
+                    this.$page.props.errors = error.response.data.errors;
+                    // this.errors = error.response.data.errors; //.password[0];
                     //this.$refs.password.focus()
                 });
         },
@@ -862,12 +858,12 @@ export default {
             .then((response) => {
                 this.allClinics = response.data;
             })
-        axios
-            .get(route('items.index'))
-            .then((response) => {
-                this.allItems = response.data;
-                console.log("items", response.data);
-            })
+        // axios
+        //     .get(route('items.index'))
+        //     .then((response) => {
+        //         this.allItems = response.data;
+        //         console.log("items", response.data);
+        //     })
         // axios
         //     .get(route('json.analysis'))
         //     .then((response) => {

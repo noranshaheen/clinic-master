@@ -17,7 +17,7 @@
 						:placeholder="__('Unit')" class="mt-1 block w-full" />
 				</div>
 				<div>
-					<jet-label for="itemName" :value="__('Price/Unit')" />
+					<jet-label for="itemName" :value="__('Unit Price')" />
 					<TextField v-model="form.unitPrice" itemType="number" />
 				</div>
 				<div>

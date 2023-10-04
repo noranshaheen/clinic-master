@@ -33,6 +33,7 @@ use App\Http\Controllers\DiagnosisController;
 use App\Http\Controllers\AnalysisController;
 use App\Http\Controllers\BillController;
 use App\Http\Controllers\BillDetailsController;
+use App\Http\Controllers\Inventory\InventoryController;
 use App\Http\Controllers\SetupDataController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PrescriptionController;
@@ -153,7 +154,12 @@ Route::middleware(['auth:sanctum', 'verified', 'ETASettings'])->group(function (
         'xray' => XRayController::class,
         'bills' => BillController::class,
         'billDetails' => BillDetailsController::class,
+        'inventories' => InventoryController::class,
     ]);
+
+
+    Route::get('/incoms/export/', [BillController::class, 'export']);
+
 
     Route::get('/clinic/all', [ClinicController::class, 'all'])->name("clinic.all");
     Route::get('/doctor/all', [DoctorController::class, 'all'])->name("doctor.all");
@@ -178,11 +184,31 @@ Route::middleware(['auth:sanctum', 'verified', 'ETASettings'])->group(function (
 
     Route::get('/item/show', [ItemController::class, 'showAll'])->name("items.showAll");
 
+    Route::get('/inventory/items',[InventoryController::class,'showItems'])->name('inventories.show.items');
+    Route::get('/inventory/{clinic_id}',[InventoryController::class,'getAllInventories'])->name('inventory.all');
+    Route::get('/inventory-ins',[InventoryController::class,'showIns'])->name('inventory.show.ins');
+    Route::get('/inventory-ins/create',[InventoryController::class,'createIns'])->name('inventory.create.ins');
+    Route::post('/inventory-ins/store',[InventoryController::class,'storeIns'])->name('inventory.store.ins');
+    Route::get('/inventory-outs',[InventoryController::class,'showOuts'])->name('inventory.show.outs');
+    Route::get('/inventory-outs/create',[InventoryController::class,'createOUTs'])->name('inventory.create.outs');
+    Route::post('/inventory-outs/store',[InventoryController::class,'storeOUTs'])->name('inventory.store.outs');
+    Route::get('/inventory/items/balance', [InventoryController::class, 'getItemsBalance'])->name("inventory.items.balance");
+    Route::post('/inventory/items/searchBalance', [InventoryController::class, 'searchItemsBalance'])->name("inventory.search.balance");
+    Route::post('/inventory/items/searchBalance/export', [InventoryController::class, 'exportItemsBalance'])->name("inventory.export.balance");
+
     Route::get('/bill/show', [BillController::class, 'showAll'])->name("bills.showAll");
-    Route::get('/bill/search', [BillController::class, 'search'])->name("bills.search");
-    Route::post('/bill/searchExpensesData', [BillController::class, 'searchExpensesData'])->name("bills.expenses.searchData");
+    Route::get('/bill/incomes/search', [BillController::class, 'searchIncomes'])->name("bills.incomes.search");
     Route::post('/bill/searchIncomeData', [BillController::class, 'searchIncomeData'])->name("bills.income.searchData");
-    Route::post('/bill/items/balance', [BillController::class, 'getItemsBalance'])->name("bills.items.balance");
+    Route::post('/bill/searchIncomeData/export', [BillController::class, 'exportIncomeData'])->name("bills.income.exportData");
+    Route::get('/bill/expenses/search', [BillController::class, 'searchExpenses'])->name("bills.expenses.search");
+    Route::post('/bill/searchExpensesData', [BillController::class, 'searchExpensesData'])->name("bills.expenses.searchData");
+    Route::post('/bill/searchExpensesData/export', [BillController::class, 'exportExpensesData'])->name("bills.expenses.exportData");
+    
+    
+    Route::post('/bill/administrative/store', [BillController::class, 'storeAdministrativeBill'])->name("bills.administrative.store");
+    Route::post('/bill/purchase/store', [BillController::class, 'storePurchaseBill'])->name("bills.purchase.store");
+    Route::get('/bill/administrative/create', [BillController::class, 'createAdministrativeBill'])->name("bills.administrative.create");
+    Route::get('/bill/puschase/create', [BillController::class, 'createPurchaseBill'])->name("bills.purchase.create");
 
     Route::get('/invoice/search', [InvoiceController::class, 'search'])->name("invoices.search");
     Route::post('/invoice/searchData', [InvoiceController::class, 'searchData'])->name("invoices.searchData");
@@ -375,3 +401,4 @@ Route::middleware(['web'])->group(function () {
         return redirect()->back();
     })->name('language');
 });
+

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Item;
+use Illuminate\Validation\Rule;
 use Spatie\QueryBuilder\QueryBuilder;
 use ProtoneMedia\LaravelQueryBuilderInertiaJs\InertiaTable;
 
@@ -18,7 +19,7 @@ class ItemController extends Controller
      */
     public function index()
     {
-		$items = Item::all();
+        $items = Item::all();
         return $items;
     }
 
@@ -28,7 +29,7 @@ class ItemController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create()
-    {     
+    {
     }
 
     /**
@@ -39,30 +40,31 @@ class ItemController extends Controller
      */
     public function store(Request $request)
     {
-       $data=$request->validate([
-        'name'=>['required', 'string', 'max:255', 'regex:/^[\p{Arabic}A-Za-z0-9\s]+$/u'],
-        'weight'=>['nullable', 'numeric'],
-        'measurement_unit.desc_en'=>['required'],
-        'selling_price'=>['required','numeric'],
-        'hiddenItem'=>['nullable']
-       ]);
-       $item = new Item();
-       $item->name= $request->name;
-       $item->weight= $request->weight == null? null: $request->weight;
-       $item->measurement_unit= $request->measurement_unit['desc_en'];
-       $item->selling_price= $request->selling_price;
-       $item->hidden = $request->hiddenItem;
-       $item->save();
-       return "item has been stored successfully";
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255', 'regex:/^[\p{Arabic}A-Za-z0-9\s]+$/u'],
+            'measurement_unit' => ['nullable'],
+            'storableItem' => ['required', Rule::in([0, 1])]
+            // 'selling_price'=>['required','numeric'],
+            // 'weight'=>['nullable', 'numeric'],
+        ]);
+        $item = new Item();
+        $item->name = $request->name;
+        $item->unit =
+            $request->measurement_unit ? $request->measurement_unit['desc_en'] : null;
+        $item->storable = $request->storableItem;
+        //    $item->selling_price= $request->selling_price;
+        //    $item->weight= $request->weight == null? null: $request->weight;
+        $item->save();
+        return "item is stored successfully";
     }
 
-   
+
     public function showAll()
     {
         $items = QueryBuilder::for(Item::class)
             ->defaultSort('id')
-            ->allowedSorts(['id', 'name','measurement_unit','selling_price'])
-            ->allowedFilters([ 'name','measurement_unit','selling_price'])
+            ->allowedSorts(['id', 'name', 'unit', 'storable'])
+            ->allowedFilters(['name', 'unit', 'storable'])
             ->paginate(Request()->input('perPage', 20))
             ->withQueryString();
 
@@ -83,22 +85,15 @@ class ItemController extends Controller
                 sortable: true,
                 searchable: true
             )->column(
-                key: "measurement_unit",
+                key: "unit",
                 label: __("Measurement Unit"),
                 canBeHidden: true,
                 hidden: false,
                 sortable: true,
                 searchable: true
             )->column(
-                key: "selling_price",
-                label: __("Selling Price"),
-                canBeHidden: true,
-                hidden: false,
-                sortable: true,
-                searchable: true
-            )->column(
-                key: "hidden",
-                label: __("Hidden"),
+                key: "storable",
+                label: __("Storable"),
                 canBeHidden: true,
                 hidden: false,
                 searchable: true
@@ -129,15 +124,20 @@ class ItemController extends Controller
      */
     public function update(Request $request,  Item $item)
     {
-        $data=$request->validate([
-            'name'=>['required', 'string', 'max:255', 'regex:/^[\p{Arabic}A-Za-z0-9\s]+$/u'],
-            'weight'=>['nullable', 'numeric'],
-            'measurement_unit.desc_en'=>['required'],
-            'selling_price'=>['required','numeric'],
-            'hiddenItem'=>['nullable']
-           ]);
+        // dd($request , $item);
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255', 'regex:/^[\p{Arabic}A-Za-z0-9\s]+$/u'],
+            'measurement_unit' => ['nullable'],
+            'storableItem' => ['required', Rule::in([0, 1])]
+        ]);
 
-        $item->update($data);
+        $item->update([
+            'name' => $request->name,
+            'unit' => $request->measurement_unit ? $request->measurement_unit['desc_en'] : null,
+            'storable' => $request->storableItem
+        ]);
+
+        return "item is updated successfully";
     }
 
     /**

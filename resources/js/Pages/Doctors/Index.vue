@@ -6,15 +6,13 @@
         </confirm>
         <div class="py-4">
             <div class="mx-auto sm:px-6 lg:px-8">
+                <jet-validation-errors class="mb-4" />
                 <div
                     class="wrapper Gbg-white shadow-xl sm:rounded-lg p-4"
                 >
                     <Table :resource="doctors" >
                         <template #cell(date_of_birth)="{ item: doctor }">
                             {{ new Date().getFullYear() - new Date(doctor.date_of_birth).getFullYear() }}
-                        </template>
-                        <template #cell(specialty_id)="{ item: doctor }">
-                            {{ doctor.specialties.name }}
                         </template>
                         <template #cell(actions)="{ item: doctor }">
                             <secondary-button @click="editCustomer(doctor)">
@@ -39,6 +37,7 @@ import { Table } from "@protonemedia/inertiajs-tables-laravel-query-builder";
 import SecondaryButton from "@/Jetstream/SecondaryButton.vue";
 import JetDangerButton from "@/Jetstream/DangerButton.vue";
 import JetButton from "@/Jetstream/Button.vue";
+import JetValidationErrors from "@/Jetstream/ValidationErrors.vue";
 import axios from 'axios';
 
 export default {
@@ -48,6 +47,7 @@ export default {
         AppLayout,
         Table,
         SecondaryButton,
+        JetValidationErrors,
         JetButton,
         JetDangerButton
     },
@@ -81,6 +81,7 @@ export default {
                     }, 500);
                 })
                 .catch((error) => {
+                    this.$page.props.errors = error.response.data.errors;
                 });
         },
         showColumn(columnKey) {

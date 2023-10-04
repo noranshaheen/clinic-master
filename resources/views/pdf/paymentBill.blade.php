@@ -33,8 +33,6 @@
                             <li class="pb-2 text-gray-600">{{ __('Doctor Name') }}: {{ $data->doctor->name}}</li>
                             <li class="text-gray-600 pb-2">{{ __('Date Of Issue') }}: {{
                                 \Carbon\Carbon::parse($data->dateTimeIssued)->toDateString() }}</li>
-                            <li class="text-gray-600 pb-2">{{ __('Time Of Issue') }}: {{
-                                \Carbon\Carbon::parse($data->dateTimeIssued)->toTimeString() }}</li>
                         </ul>
                     </div>
                 </div>
@@ -47,6 +45,7 @@
                             <li class="pb-2 text-gray-600">{{ __('Patient') }} : {{ $data->patient->name }}</li>
                             <li class="pb-2 text-gray-600">{{ __('Phone Number') }} : {{ $data->patient->phone }}</li>
                             <li class="text-gray-600 pb-2">{{ __('Gender') }} : {{ $data->patient->gender == 'F'? __('Female'):__('Male') }}</li>
+                            <li class="pb-2 text-gray-600">{{ __('Detection Type') }} : {{ __($data->appointment->type)}}</li>
                         </ul>
                     </div>
                 </div>

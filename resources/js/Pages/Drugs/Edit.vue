@@ -24,8 +24,12 @@
                             <span class="m-2 text-gray-400 text-sm">
                                 {{__("(you can choose multiple options)")}}
                             </span>
-                            <multiselect v-model="form.diagnose" label="name"  
-                            :options="allDiagnosis" :searchable="true" :multiple="true" track-by="id" 
+                            <multiselect v-model="form.diagnose" 
+                            label="name"  
+                            :options="allDiagnosis" 
+                            :searchable="true" 
+                            :multiple="true" 
+                            track-by="id" 
                             :placeholder='__("Select Diagnose")'/>
                         </div>
 

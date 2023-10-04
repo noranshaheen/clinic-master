@@ -16,6 +16,8 @@
                     ادخال بيانات عامة
                 </div>
             </div>
+          <jet-validation-errors class="mb-4" />
+
             <form @submit.prevent="submit">
                 <div class="grid grid-cols-1 gap-4 px-5">
 

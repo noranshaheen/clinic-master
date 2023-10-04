@@ -22,7 +22,7 @@ class DiagnosisController extends Controller
             ->with('specialty')
             ->defaultSort('id')
             ->allowedSorts(['id', 'name','description','specialty_id'])
-            ->allowedFilters(['id', 'name','description'])
+            ->allowedFilters(['id', 'name','description','specialty.name'])
             ->paginate(Request()->input('perPage', 20))
             ->withQueryString();
         return Inertia::render('Diagnosis/Index',[
@@ -49,7 +49,7 @@ class DiagnosisController extends Controller
                 sortable:true,
                 searchable:true
             )->column(
-                key:"specialty_id",
+                key:"specialty.name",
                 label:__("Specialty"),
                 canBeHidden:true,
                 hidden:false,

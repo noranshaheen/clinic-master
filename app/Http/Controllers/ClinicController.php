@@ -73,7 +73,7 @@ class ClinicController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => ['required','string','max:255','min:2','regex:/^[\p{Arabic}A-Za-z0-9\s]+$/u'],
+            'name' => ['required','string','max:400','min:2','regex:/^[\p{Arabic}A-Za-z0-9\s]+$/u'],
             'phone'=> ['required','numeric','min:7','unique:clinics,phone'],
             'address' =>['required','string','max:255'],
         ]);
@@ -110,7 +110,7 @@ class ClinicController extends Controller
     public function update(Request $request, Clinic $clinic)
     {
         $date = $request->validate([
-            'name' => ['required','string','max:255','min:2'],
+            'name' => ['required','string','max:400','min:2','regex:/^[\p{Arabic}A-Za-z0-9\s]+$/u'],
             'phone'=> ['required','numeric'],
             'address' =>['required','string','max:255'],
         ]);

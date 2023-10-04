@@ -27,8 +27,8 @@
             </div>
         </div>
 
-        <ul class="mt-3 list-disc list-inside text-sm text-red-600">
-            <li v-for="(error, key) in errors" :key="key">{{ error[0] }}</li>
+        <ul class="mt-3 list-disc list-inside text-md text-red-600">
+            <li v-for="(error, key) in errors" :key="key">{{ __(error[0]) }}</li>
         </ul>
     </div>
 </template>

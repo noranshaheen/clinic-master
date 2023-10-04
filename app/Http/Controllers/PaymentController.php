@@ -66,7 +66,11 @@ class PaymentController extends Controller
     public function payServiceFees(Request $request)
     {
         $payment = Payment::where('appointment_id',$request->appointment)->first();
-        $payment->service_fees = $request->paid;
+        if($payment->service_fees === null){
+            $payment->service_fees = $request->paid;
+        }else{
+            $payment->service_fees += $request->paid;
+        }
         $payment->update();
     }
 
