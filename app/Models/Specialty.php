@@ -13,19 +13,25 @@ class Specialty extends Model
     public $primaryKey = 'id';
     protected $fillable = ['name'];
 
-    public function diagnosis(): HasMany{
+    public function diagnosis(): HasMany
+    {
         return $this->hasMany('App\Models\Diagnosis', 'specialty_id', 'id');
     }
-    public function analysis(): HasMany{
+    public function analysis(): HasMany
+    {
         return $this->hasMany('App\Models\Analysis', 'specialty_id', 'id');
     }
-    public function xray(): HasMany{
+    public function xray(): HasMany
+    {
         return $this->hasMany('App\Models\XRay', 'specialty_id', 'id');
     }
 
-    public function doctors(): HasMany{
+    public function doctors(): HasMany
+    {
         return $this->hasMany('App\Models\Doctor', 'specialty_id', 'id');
     }
-
-
+    public function services(): HasMany
+    {
+        return $this->hasMany('App\Models\Specialty', 'specialty_id', 'id');
+    }
 }

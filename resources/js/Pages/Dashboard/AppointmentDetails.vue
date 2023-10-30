@@ -13,20 +13,20 @@
                 </div>
                 <table class="w-full">
                     <tr class="border">
-                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">{{__("Reservation Time")}}</th>
+                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">{{ __("Reservation Time") }}</th>
                         <td class="pl-5">{{ subtractHours(appointment_Details[0].from, 3) }}</td>
                     </tr>
                     <tr class="border">
-                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">{{__("Patient Name")}}</th>
+                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">{{ __("Patient Name") }}</th>
                         <td class="pl-5">{{ appointment_Details[1].name }}</td>
                     </tr>
                     <tr class="border">
-                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">{{__("Phone Number")}}</th>
+                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">{{ __("Phone Number") }}</th>
                         <td class="pl-5">{{ appointment_Details[1].phone }}</td>
                     </tr>
                     <tr class="border">
-                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">{{__("Appointment Type")}}</th>
-                        <td class="pl-5">{{ appointment_Details[0].type }}</td>
+                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">{{ __("Appointment Type") }}</th>
+                        <td class="pl-5">{{ __(appointment_Details[0].type) }}</td>
                     </tr>
                     <tr class="border">
                         <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">{{ __("Payment Status") }}</th>
@@ -41,43 +41,56 @@
                                 <JetButton
                                     v-if="appointment_Details[0].amount == null && appointment_Details[0].cancelled == null"
                                     @click=" amount = true" class="font-sm">
-                                    {{ __("Pay")}}
+                                    {{ __("Pay") }}
                                 </JetButton>
                                 <JetButton
                                     v-else-if="appointment_Details[0].cancelled !== null || appointment_Details[0].amount !== null"
                                     :disabled="true" class="font-sm bg-green-400 ">
-                                    {{ __("Pay")}}
+                                    {{ __("Pay") }}
                                 </JetButton>
                             </div>
                         </td>
                     </tr>
                     <tr class="border" v-if="amount == true">
                         <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">{{ __("Payment Amount") }}</th>
-                        <td class="px-5">
-                            <jet-input id="type" type="text" class=" block w-full " v-model="form.amount" required />
+                        <td>
+                            <jet-input id="type" type="text" class="m-1 block w-11/12 border-slate-300 rounded-md text-sm"
+                                v-model="form.amount" required />
                         </td>
                     </tr>
                     <tr class="border" v-if="appointment_Details[0].status == 'paid'">
-                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">{{__("Payment Amount")}}</th>
-                        <td class="px-5">
-                            <jet-input id="type" type="text" class=" block w-full " :value="appointment_Details[0].amount"
-                                :disabled="true" />
+                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">{{ __("Payment Amount") }}</th>
+                        <td>
+                            <jet-input id="type" type="text" class="m-1 block w-11/12 border-slate-300 rounded-md text-sm"
+                                :value="appointment_Details[0].amount" :disabled="true" />
                         </td>
                     </tr>
-                    <!-- <tr class="border" v-if="amount == true">
-                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">Notes</th>
-                        <td class="px-5 py-2">
-                            <jet-input id="type" type="text" class=" block w-full " 
-                            v-model="form.notes"/>
-                        </td>
+                    <tr v-if="appointment_Details[0].status !== 'paid'" class="border">
+                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">{{ __("Reciever") }}</th>
+                        <select id="type" v-model="form.current_team_id"
+                            class="m-1 block w-11/12 border-slate-300 rounded-md text-sm"
+                            @change="getAll(form.current_team_id)">
+                            <option value="1">{{ __("Reseptionist") }}</option>
+                            <option value="2">{{ __("Doctor") }}</option>
+                        </select>
                     </tr>
-                    <tr class="border" v-if="appointment_Details[0].notes">
-                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">Notes</th>
-                        <td class="px-5 py-2">
-                            <jet-input id="type" type="text" class=" block w-full text-gray-400" 
-                            :value="appointment_Details[0].notes" :disabled="true" />
-                        </td>
-                    </tr> -->
+                    <tr v-if="appointment_Details[0].status !== 'paid'" class="border">
+                        <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">{{ __("Name") }}</th>
+                        <select required v-model="form.doctor_id"
+                            class="m-1 block w-11/12 border-slate-300 rounded-md text-sm" v-if="all_doctors.length != 0">
+                            <option v-for="doctor in all_doctors" :value="doctor.id" :key="doctor.id">
+                                {{ doctor.name }}
+                            </option>
+                        </select>
+                        <select required v-model="form.reseptionist_id"
+                            class="m-1 block w-11/12 border-slate-300 rounded-md text-sm"
+                            v-if="all_reseptionists.length != 0">
+                            <option v-for="reseptionist in all_reseptionists" :value="reseptionist.id"
+                                :key="reseptionist.id">
+                                {{ reseptionist.name }}
+                            </option>
+                        </select>
+                    </tr>
                 </table>
                 <JetSecondaryButton class="my-2" @click="additionalPayments(appointment_Details[0].id)">
                     {{ __("Additional Payments") }}
@@ -85,18 +98,18 @@
             </template>
             <template #footer>
                 <JetButton class="ml-2"
-                    v-if="appointment_Details[0].amount == null && appointment_Details[0].cancelled == null" @click="save()">
-                    {{__("Save")}}</JetButton>
-                <JetButton class="ml-2" v-else :disabled="true">{{__("Save")}}</JetButton>
-                <JetDangerButton class="ml-2" 
-                v-if="appointment_Details[0].amount == null && appointment_Details[0].cancelled == null"
-                @click="cancelAppointment()"
-                >{{__("Delete")}}</JetDangerButton>
+                    v-if="appointment_Details[0].amount == null && appointment_Details[0].cancelled == null"
+                    @click="save()">
+                    {{ __("Save") }}</JetButton>
+                <JetButton class="ml-2" v-else :disabled="true">{{ __("Save") }}</JetButton>
                 <JetSecondaryButton class="ml-2" @click="close()">{{ __("Close") }}</JetSecondaryButton>
+                <JetDangerButton class="ml-2"
+                    v-if="appointment_Details[0].amount == null && appointment_Details[0].cancelled == null"
+                    @click="cancelAppointment()">{{ __("Delete") }}</JetDangerButton>
             </template>
         </jet-dialog-modal>
     </div>
-    <ServiceFees ref="dlg1" :prescription="prescription" :appointment_id="form.appointment_id"/>
+    <ServiceFees ref="dlg1" :fees="fees" />
 </template>
 <script>
 import ServiceFees from "@/Pages/Dashboard/ServiceFees.vue";
@@ -130,12 +143,20 @@ export default {
         return {
             showDialog: false,
             amount: false,
+            // payment: 0,
+            // prescription: [],
+            fees: [],
+            all_doctors: [],
+            all_reseptionists: [],
             form: this.$inertia.form({
                 amount: "",
                 appointment_id: "",
-                notes: ""
+                notes: "",
+                date: new Date().toLocaleDateString(),
+                reseptionist_id: "",
+                doctor_id: "",
+                current_team_id: "",
             }),
-            prescription: []
         }
     },
     methods: {
@@ -149,11 +170,37 @@ export default {
             var exactTime = d.toLocaleTimeString();
             return exactTime;
         },
+        getAll(team_id) {
+            // console.log(team_id);
+            if (team_id == 1) {
+                axios
+                    .get(route("reseptionist.all"))
+                    .then((response) => {
+                        this.all_doctors = [];
+                        this.form.doctor_id = "";
+                        this.all_reseptionists = response.data;
+                        console.log(response.data);
+                    })
+            } else if (team_id == 2) {
+                axios
+                    .get(route("doctor.all"))
+                    .then((response) => {
+                        this.all_reseptionists = [];
+                        this.form.reseptionist_id = "";
+                        this.all_doctors = response.data;
+                        console.log(response.data);
+                    })
+            }
+        },
         additionalPayments(appointment_id) {
             axios.get(route('prescription.serviceFees', appointment_id))
                 .then((response) => {
-                    this.prescription = response.data;
+                    console.log(response.data)
+                    this.fees = response.data;
                     this.form.appointment_id = appointment_id;
+                    // this.prescription = response.data[0];
+                    // this.payment = response.data[1][0];
+                }).then((res) => {
                     this.$nextTick(() => {
                         this.$refs.dlg1.ShowDialog();
                     });
@@ -180,7 +227,7 @@ export default {
             }).then((approved) => {
                 if (approved) {
                     axios
-                    .delete(route("appointments.destroy", {appointment:appointment_id}))
+                        .delete(route("appointments.destroy", { appointment: appointment_id }))
                         .then((response) => {
                             swal({
                                 title: this.__("This appointment have been cancelled"),
@@ -189,7 +236,7 @@ export default {
                                 this.showDialog = false;
                                 this.$emit('Delete');
                             })
-                    })
+                        })
                 }
             })
         },

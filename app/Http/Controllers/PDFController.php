@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ETA\Invoice;
+use App\Models\Payment;
 use App\Models\Prescription;
 use Meneses\LaravelMpdf\Facades\LaravelMpdf as PDF;
 
@@ -23,12 +24,12 @@ class PDFController extends Controller
 
     public function previewPayment($id)
     {
-        $data = Prescription::with('doctor')
-            ->with('prescriptionItems')
-            ->with('prescriptionItems.drugs')
+        $data = Payment::with('doctor')
             ->with('appointment')
-            ->with('appointment.payment')
             ->with('patient')
+            ->with('appointment.prescription')
+            ->with('appointment.prescription.prescriptionItems')
+            ->with('appointment.prescription.prescriptionItems.drugs')
             ->find($id);
             // dd($data);
         return view('pdf.paymentBill', compact('data'));

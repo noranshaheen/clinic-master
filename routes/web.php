@@ -39,6 +39,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\PrescriptionItemsController;
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SpecialtyController;
 use App\Http\Controllers\XRayController;
 use App\Models\Appointment;
@@ -155,6 +156,7 @@ Route::middleware(['auth:sanctum', 'verified', 'ETASettings'])->group(function (
         'bills' => BillController::class,
         'billDetails' => BillDetailsController::class,
         'inventories' => InventoryController::class,
+        'services' => ServiceController::class,
     ]);
 
 
@@ -198,7 +200,9 @@ Route::middleware(['auth:sanctum', 'verified', 'ETASettings'])->group(function (
 
     Route::get('/bill/show', [BillController::class, 'showAll'])->name("bills.showAll");
     Route::get('/bill/incomes/search', [BillController::class, 'searchIncomes'])->name("bills.incomes.search");
+    Route::get('/bill/incomes/search/total', [BillController::class, 'searchTotalIncomes'])->name("bills.incomes.search.total");
     Route::post('/bill/searchIncomeData', [BillController::class, 'searchIncomeData'])->name("bills.income.searchData");
+    Route::post('/bill/searchIncomeData/total', [BillController::class, 'searchTotalIncomeData'])->name("bills.income.searchData.total");
     Route::post('/bill/searchIncomeData/export', [BillController::class, 'exportIncomeData'])->name("bills.income.exportData");
     Route::get('/bill/expenses/search', [BillController::class, 'searchExpenses'])->name("bills.expenses.search");
     Route::post('/bill/searchExpensesData', [BillController::class, 'searchExpensesData'])->name("bills.expenses.searchData");

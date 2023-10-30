@@ -86,6 +86,8 @@ class InventoryController extends Controller
             ->paginate(Request()->input('perPage', 20))
             ->withQueryString();
 
+        // dd($items);
+        
         return Inertia::render('Inventories/Items', [
             'items' => $items
         ])->table(function (InertiaTable $table) {
@@ -95,47 +97,42 @@ class InventoryController extends Controller
                 canBeHidden: false,
                 hidden: false,
                 sortable: true
-            )
-                ->column(
-                    key: "item.name",
-                    label: __("Item"),
-                    canBeHidden: true,
-                    hidden: false,
-                    // sortable: true,
-                    searchable: true
-                )
-                ->column(
-                    key: "quantity_in_hand",
-                    label: __("Quantity"),
-                    canBeHidden: true,
-                    hidden: false,
-                    sortable: true,
-                    searchable: true
-                )
-                ->column(
-                    key: "stock.name",
-                    label: __("Stock"),
-                    canBeHidden: true,
-                    hidden: false,
-                    // sortable: true,
-                    searchable: true
-                )
-                ->column(
-                    key: "stock.inventory.name",
-                    label: __("Warehouse"),
-                    canBeHidden: true,
-                    hidden: false,
-                    // sortable: true,
-                    searchable: true
-                )
-                ->column(
-                    key: "stock.inventory.clinic.name",
-                    label: __("Clinic"),
-                    canBeHidden: true,
-                    hidden: false,
-                    // sortable: true,
-                    searchable: true
-                );
+            )->column(
+                key: "item.name",
+                label: __("Item"),
+                canBeHidden: true,
+                hidden: false,
+                // sortable: true,
+                searchable: true
+            )->column(
+                key: "quantity_in_hand",
+                label: __("Quantity"),
+                canBeHidden: true,
+                hidden: false,
+                sortable: true,
+                searchable: true
+            )->column(
+                key: "stock.name",
+                label: __("Stock"),
+                canBeHidden: true,
+                hidden: false,
+                // sortable: true,
+                searchable: true
+            )->column(
+                key: "stock.inventory.name",
+                label: __("Warehouse"),
+                canBeHidden: true,
+                hidden: false,
+                // sortable: true,
+                searchable: true
+            )->column(
+                key: "stock.inventory.clinic.name",
+                label: __("Clinic"),
+                canBeHidden: true,
+                hidden: false,
+                // sortable: true,
+                searchable: true
+            );
             // ->column(
             //     key: "clinic.name",
             //     label: __("Clinic"),

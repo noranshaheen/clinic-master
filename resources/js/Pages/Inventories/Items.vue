@@ -9,10 +9,10 @@
                 <div
                     class="wrapper Gbg-white overflow-hidden shadow-xl sm:rounded-lg p-4"
                 >
-                    <Table :resource="inventories">
-                        <!-- <template #cell(clinic)="{ item: inventory }">
-                            {{ inventory.clinic.name }}
-                        </template> -->
+                    <Table :resource="items">
+                        <template #cell(stock.inventory.clinic.name)="{ item: item1 }">
+                            {{ item1.stock.inventory.clinic.name }}
+                        </template>
                         
                         <!-- <template #cell(actions)="{ item: inventory }">
                             <secondary-button @click="editCustomer(inventory)">
@@ -50,7 +50,7 @@ export default {
         JetDangerButton
     },
     props: {
-        inventories: Object,
+        items: Object,
     },
     data() {
         return {
@@ -93,7 +93,7 @@ export default {
         },
     },
     created: function created() {
-        console.log(this.inventories);
+        console.log(this.items);
     }
 };
 </script>

@@ -39,13 +39,17 @@ class Appointment extends Model
     {
         return $this->belongsTo('App\Models\Patient', 'patient_id', 'id');
     }
-    public function payment(): HasOne
+    public function payments(): HasMany
     {
-        return $this->hasOne('App\Models\Payment', 'appointment_id', 'id');
+        return $this->hasMany('App\Models\Payment', 'appointment_id', 'id');
     }
     public function prescription(): HasOne
     {
         return $this->hasOne('App\Models\Prescription', 'appointment_id', 'id');
+    }
+    public function fees(): HasMany
+    {
+        return $this->hasMany('App\Models\Fee', 'appointment_id', 'id');
     }
 
 }

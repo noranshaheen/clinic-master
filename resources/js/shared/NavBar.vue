@@ -347,13 +347,25 @@
               </template>
               <template #content>
                 <div>
-                  <dropdown-link :href="route('bills.incomes.search')" as="a">
-                    {{ __("Incomes") }}
-                  </dropdown-link>
-                  <dropdown-link :href="route('bills.expenses.search')" as="a">
+                  <div class="p-1 border-b flex justify-between">
+                    <p>{{ __("Incomes") }}</p>
+                    <i class="fa-solid fa-caret-down cursor-pointer" @click="incomes = false"
+                      v-show="incomes"></i>
+                    <i class="fa-solid fa-caret-left cursor-pointer" @click="incomes = true"
+                      v-show="!incomes"></i>
+                  </div>
+                  <div v-show="incomes">
+                    <dropdown-link :href="route('bills.incomes.search')" as="a">
+                      {{ __("detailed Incomes") }}
+                    </dropdown-link>
+                    <dropdown-link :href="route('bills.incomes.search.total')" as="a">
+                      {{ __("Total Incomes") }}
+                    </dropdown-link>
+                  </div>
+                  <dropdown-link :href="route('bills.expenses.search')" as="a" class=" border-b">
                     {{ __("Expenses") }}
                   </dropdown-link>
-                  <dropdown-link as="a" :href="route('inventory.items.balance')">
+                  <dropdown-link as="a" :href="route('inventory.items.balance')" >
                     {{ __("Inventory Balance") }}
                   </dropdown-link>
                 </div>
@@ -869,7 +881,8 @@ export default {
       warehouse: false,
       items: false,
       reports: false,
-      bills: false
+      bills: false,
+      incomes:false
     };
   },
   methods: {

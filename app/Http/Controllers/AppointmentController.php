@@ -318,7 +318,10 @@ class AppointmentController extends Controller
 
     public function pay(Request $request)
     {
+        // dd($request);
+
         $appointment = Appointment::find($request->appointment_id);
+
         $appointment->amount = $request->amount;
         $appointment->status = "paid";
         if ($request->notes) {
@@ -327,10 +330,17 @@ class AppointmentController extends Controller
         $appointment->save();
 
         $payments = new Payment;
-        $payments->patient_id = $appointment->patient_id;
         $payments->appointment_id = $appointment->id;
+        $payments->patient_id = $appointment->patient_id;
         $payments->doctor_id = $appointment->doctor_id;
-        $payments->detection_fees = $request->amount;
+        $payments->paid_amount = $request->amount;
+        $payments->date = $request->date;
+        $payments->receiver_team_id = $request->current_team_id; //1->reseptionist 2->doctor
+        if($request->reseptionist_id !== ""){
+            $payments->receiver_id = $request->reseptionist_id;
+        }else{
+            $payments->receiver_id = $request->doctor_id;
+        }
         $payments->save();
     }
 

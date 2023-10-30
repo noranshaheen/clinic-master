@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 
 class Patient extends Model
@@ -31,5 +32,13 @@ class Patient extends Model
     public function spendings(): HasMany
     {
         return $this->hasMany('App\Models\Spendings', 'patient_id', 'id');
+    }
+    public function payments(): HasMany
+    {
+        return $this->hasMany('App\Models\Payment', 'patient_id', 'id');
+    }
+    public function fees(): HasMany
+    {
+        return $this->hasMany('App\Models\Fee', 'patient_id', 'id');
     }
 }

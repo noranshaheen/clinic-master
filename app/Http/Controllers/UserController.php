@@ -38,15 +38,15 @@ class UserController extends Controller
      */
     public function index()
     {
-		$globalSearch = AllowedFilter::callback('global', function ($query, $value) {
+        $globalSearch = AllowedFilter::callback('global', function ($query, $value) {
             $query->where(function ($query) use ($value) {
                 $query->where('name', 'LIKE', "%{$value}%")->orWhere('email', 'LIKE', "%{$value}%");
             });
         });
 
         $branches = QueryBuilder::for(User::class)
-        	->defaultSort('name')
-            ->allowedSorts(['Id', 'name', 'email'] )
+            ->defaultSort('name')
+            ->allowedSorts(['Id', 'name', 'email'])
             ->allowedFilters(['name', 'email', $globalSearch])
             ->paginate(Request()->input('perPage', 20))
             ->withQueryString();
@@ -92,7 +92,7 @@ class UserController extends Controller
      */
     public function create()
     {
-		//return Inertia::render('Items/Create');;        
+        //return Inertia::render('Items/Create');;        
     }
 
     /**
@@ -104,43 +104,42 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $user = new User();
-        if($request->doctor_id != ""){
+        if ($request->doctor_id != "") {
             $data = $request->validate([
-                'doctor_id'=>['required', 'integer'],
-                'email' 	=> ['required', 'string', 'email', 'max:255', Rule::unique('users')],
-                'password'	=> ['required', 'min:8'], 
-                'current_team_id'	=> ['required', 'integer', Rule::in([1,2])],
+                'doctor_id' => ['required', 'integer'],
+                'email'     => ['required', 'string', 'email', 'max:255', Rule::unique('users')],
+                'password'    => ['required', 'min:8'],
+                'current_team_id'    => ['required', 'integer', Rule::in([1, 2])],
             ]);
             $doc = Doctor::find($request->doctor_id);
             $user->name = $doc->name;
             $user->doc_res_id = $request->doctor_id;
-            
-        }else{
+        } else {
             $data = $request->validate([
-                'reseptionist_id'=>['required', 'integer'],
-                'email' 	=> ['required', 'string', 'email', 'max:255', Rule::unique('users')],
-                'password'	=> ['required', 'min:8'], 
-                'current_team_id'	=> ['required', 'integer', Rule::in([1,2])],
+                'reseptionist_id' => ['required', 'integer'],
+                'email'     => ['required', 'string', 'email', 'max:255', Rule::unique('users')],
+                'password'    => ['required', 'min:8'],
+                'current_team_id'    => ['required', 'integer', Rule::in([1, 2])],
             ]);
             $doc = Reseptionist::find($request->reseptionist_id);
             $user->name = $doc->name;
             $user->doc_res_id = $request->reseptionist_id;
         }
-        
+
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
         $user->current_team_id = $request->current_team_id;
         $user->save();
 
         return $user;
-		
-		
+
+
         // $item2 = new User($data);
-		// $item2->password = Hash::make($item2->password);
-		// $item2->save();
+        // $item2->password = Hash::make($item2->password);
+        // $item2->save();
 
         // return $item2;   
-     }
+    }
 
     /**
      * Display the specified resource.
@@ -173,20 +172,35 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-		$data = $request->validate([
-            'name' 		=> ['required', 'string', 'max:255','regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
-			'email' 	=> ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($id)], 
-            'current_team_id'	=> ['required', 'integer', Rule::in([1,2])]
+        // dd($request);
+        $data = $request->validate([
+            'reseptionist_id' => ['nullable'],
+            'doctor_id' => ['nullable'],
+            // 'name' 		=> ['required', 'string', 'max:255','regex:/^[\p{Arabic}A-Za-z\s]+$/u'],
+            'email'     => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($id)],
+            'current_team_id'    => ['required', 'integer', Rule::in([1, 2])]
         ]);
-		
-		$item = User::findOrFail($id);
 
-		$item->update($data);
-		if ($request->has('password') && strlen($request->input('password')) > 0)
-			$item->password = Hash::make($request->input('password'));
-		$item->save();
+        $item = User::findOrFail($id);
+        $reseptionist = $request->reseptionist_id !== "" ? Reseptionist::find($request->reseptionist_id) : null;
+        $doctor = $request->doctor_id !== "" ? Doctor::find($request->doctor_id) : null;
+        if ($reseptionist) {
+            $name = $reseptionist->name;
+        } elseif ($doctor) {
+            $name = $doctor->name;
+        }
+
+        $item->update([
+            'name' => $name,
+            'email' => $request->email,
+            'current_team_id' => $request->current_team_id
+        ]);
         
-		return $item;
+        if ($request->has('password') && strlen($request->input('password')) > 0)
+            $item->password = Hash::make($request->input('password'));
+        $item->save();
+
+        return $item;
     }
 
     /**
@@ -198,6 +212,6 @@ class UserController extends Controller
     public function destroy($id)
     {
         $branch = User::findOrFail($id);
-		$branch->delete(); 
+        $branch->delete();
     }
 }

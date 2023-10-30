@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS `Discount`;
 DROP TABLE IF EXISTS `Invoice`;
 DROP TABLE IF EXISTS `InvoiceLine`;
 DROP TABLE IF EXISTS `Issuer`;
-DROP TABLE IF EXISTS `Payment`;
+-- DROP TABLE IF EXISTS `Payment`;
 DROP TABLE IF EXISTS `Receiver`;
 DROP TABLE IF EXISTS `TaxTotal`;
 DROP TABLE IF EXISTS `TaxableItem`;
@@ -64,22 +64,22 @@ CONSTRAINT PK_Receiver PRIMARY KEY CLUSTERED
 )
 ;
 
-create table Payment (
-    Id int AUTO_INCREMENT NOT NULL,
-    bankName varchar(50) NULL,
-    bankAddress varchar(50) NULL,
-    bankAccountNo varchar(50) NULL,
-    bankAccountIBAN varchar(50) NULL,
-    swiftCode varchar(50) NULL,
-    terms varchar(50) NULL,
-	`created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-	`updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-CONSTRAINT PK_Payment PRIMARY KEY CLUSTERED
-   (
-      Id asc
-   )
-)
-;
+-- create table Payment (
+--     Id int AUTO_INCREMENT NOT NULL,
+--     bankName varchar(50) NULL,
+--     bankAddress varchar(50) NULL,
+--     bankAccountNo varchar(50) NULL,
+--     bankAccountIBAN varchar(50) NULL,
+--     swiftCode varchar(50) NULL,
+--     terms varchar(50) NULL,
+-- 	`created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+-- 	`updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+-- CONSTRAINT PK_Payment PRIMARY KEY CLUSTERED
+--    (
+--       Id asc
+--    )
+-- )
+-- ;
 create table Delivery (
     Id int AUTO_INCREMENT NOT NULL,
     approach varchar(50) NULL,
@@ -192,7 +192,7 @@ create table Invoice (
     salesOrderReference varchar(50) NULL,
     salesOrderDescription varchar(50) NULL,
     proformaInvoiceNumber varchar(50) NULL,
-    payment_id int,
+   --  payment_id int,
     delivery_id int,
     totalDiscountAmount decimal(9,3) NOT NULL,
     totalSalesAmount decimal(9,3) NOT NULL,
@@ -329,7 +329,7 @@ CREATE TABLE Uploads (
 );
 ALTER TABLE Invoice ADD CONSTRAINT fk_invoice_issuer_id FOREIGN KEY (issuer_id) REFERENCES Issuer(id);
 ALTER TABLE Invoice ADD CONSTRAINT fk_invoice_receiver_id FOREIGN KEY (receiver_id) REFERENCES Receiver(id);
-ALTER TABLE Invoice ADD CONSTRAINT fk_invoice_payment_id FOREIGN KEY (payment_id) REFERENCES Payment(id);
+-- ALTER TABLE Invoice ADD CONSTRAINT fk_invoice_payment_id FOREIGN KEY (payment_id) REFERENCES Payment(id);
 ALTER TABLE Invoice ADD CONSTRAINT fk_invoice_delivery_id FOREIGN KEY (delivery_id) REFERENCES Delivery(id);
 ALTER TABLE Issuer ADD CONSTRAINT fk_issuer_address_id FOREIGN KEY (address_id) REFERENCES Address(id);
 ALTER TABLE TaxTotal ADD CONSTRAINT fk_TaxTotal_invoice_id FOREIGN KEY (invoice_id) REFERENCES Invoice(id);

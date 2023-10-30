@@ -121,7 +121,8 @@ export default {
                 doctor_id: "",
                 email: "",
                 password: "",
-                current_team_id: ""
+                current_team_id: "",
+                name:""
             }),
             showDialog: false,
         };

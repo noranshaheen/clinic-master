@@ -17,6 +17,14 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        Schema::create('services', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('specialty_id')->references('id')->on('specialities')->onDelete('cascade');
+            $table->string('name');
+            $table->string('default_price');
+            $table->timestamps();
+        });
+
         Schema::create('doctors', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -37,7 +45,7 @@ return new class extends Migration
             $table->date('date_of_birth')->nullable();
             $table->string('insurance_number')->nullable();
             $table->string('insurance_company')->nullable();
-            $table->string('additionalInformation',4000)->nullable();
+            $table->string('additionalInformation', 4000)->nullable();
             $table->timestamps();
         });
 
@@ -112,7 +120,7 @@ return new class extends Migration
             $table->foreignId('patient_id')->nullable();
             $table->string('type')->nullable();
             $table->string('status')->default("hold");
-            $table->string('amount',2000)->nullable();
+            $table->string('amount', 2000)->nullable();
             $table->string('notes', 4000)->nullable();
             $table->integer('done')->nullable();
             $table->integer('cancelled')->nullable();
@@ -136,9 +144,10 @@ return new class extends Migration
         Schema::create('prescription_items', function (Blueprint $table) {
             $table->id();
             $table->foreignId('prescription_id');
-            $table->foreignId('drug_id');
+            $table->foreignId('drug_id')->nullable();
+            $table->foreignId('service_id')->nullable();
             $table->string('dose')->nullable();
-            $table->string('service_fees',2000)->nullable();
+            // $table->string('service_fees',2000)->nullable();
             $table->timestamps();
         });
 
@@ -152,16 +161,6 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('price');
-            $table->timestamps();
-        });
-
-        Schema::create('patient_payments', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('patient_id');
-            $table->foreignId('appointment_id');
-            $table->foreignId('doctor_id');
-            $table->integer('detection_fees');
-            $table->integer('service_fees')->nullable();
             $table->timestamps();
         });
 
@@ -201,7 +200,7 @@ return new class extends Migration
             $table->foreignId('inv_stock_id')->constrained('inv_stock');
             $table->foreignId('item_id')->constrained('items');
             $table->date('date');
-            $table->enum('type',['in','out']);
+            $table->enum('type', ['in', 'out']);
             $table->integer('quantity');
             $table->float('unit_price')->nullable();
             $table->float('total_price')->nullable();
@@ -218,7 +217,7 @@ return new class extends Migration
 
         Schema::create('bills', function (Blueprint $table) {
             $table->id();
-            $table->enum('type',['administrative','purchase']);
+            $table->enum('type', ['administrative', 'purchase']);
             $table->foreignId('doctor_id')->nullable();
             $table->foreignId('clinic_id')->constrained('clinics');
             $table->date('date');
@@ -244,7 +243,6 @@ return new class extends Migration
             $table->foreignId('patient_id');
             $table->timestamps();
         });
-
     }
 
     /**

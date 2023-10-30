@@ -9,17 +9,24 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Payment extends Model
 {
     use HasFactory;
-    protected $table = 'patient_payments';
+    protected $table = 'payments';
     public $primaryKey = 'id';
-    protected $fillable = ['patient_id', 'appointment_id', 'doctor_id', 'detection_fees', 'service_fees'];
-    // protected $casts = [
-    //     'patient_id' => 'integer',
-    //     'appointment_id' => 'integer',
-    //     'doctor_id' => 'integer',
-    // ];
+    protected $fillable = ['appointment_id','patient_id','doctor_id','paid_amount', 'receiver_team_id','receiver_id','date'];
+    protected $casts = [
+        'date' => 'date',
+    ];
 
+    public function patient(): BelongsTo
+    {
+        return $this->belongsTo('App\Models\Patient', 'patient_id', 'id');
+    }
+    public function doctor(): BelongsTo
+    {
+        return $this->belongsTo('App\Models\Doctor', 'doctor_id', 'id');
+    }
     public function appointment(): BelongsTo
     {
         return $this->belongsTo('App\Models\Appointment', 'appointment_id', 'id');
     }
+
 }

@@ -71,7 +71,7 @@
                                             @click.prevent="openDlg('dlg1', apnt.id)"
                                             class="m-1 text-blue-500 border-blue-500 
                                             hover:bg-[#4099de] hover:text-white md:w-full">
-                                            {{ subtractHours(apnt.from, 3) }}
+                                            {{ subtractHours(apnt.from, 2) }}
                                         </jet-secondary-button>
                                         <jet-secondary-button v-else-if="apnt.cancelled == null && apnt.done == null"
                                             @click.prevent="showDetails(apnt.id)"

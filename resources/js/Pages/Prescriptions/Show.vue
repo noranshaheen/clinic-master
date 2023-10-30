@@ -19,10 +19,10 @@
                         <td class="p-2">
                             <ul class="list-disc list-inside">
                                 <li v-for="diagnosis in JSON.parse(prescription_detail[0].prescription.diagnosis)">
-                                {{ diagnosis }}
+                                    {{ diagnosis }}
                                 </li>
                             </ul>
-                            
+
                         </td>
                     </tr>
                     <tr class="border" v-if="JSON.parse(prescription_detail[0].prescription.rays).length > 0">
@@ -51,9 +51,27 @@
                         <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Drugs") }}</td>
                         <td class="p-2">
                             <ul class="list-disc list-inside">
-                                <li v-for="prescription in prescription_detail" :key="prescription.id">
-                                {{ prescription.drugs.name + ' - ' + prescription.dose }}
-                                </li>
+                                <div v-for="prescription in prescription_detail" :key="prescription.id">
+                                    <li v-if="prescription.drug_id">
+                                        <span >
+                                            {{ prescription.drug.name + ' - ' + prescription.dose }}
+                                        </span>
+                                    </li>
+                                </div>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr class="border">
+                        <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Service") }}</td>
+                        <td class="p-2">
+                            <ul class="list-disc list-inside">
+                                <div v-for="prescription in prescription_detail" :key="prescription.id">
+                                    <li v-if="prescription.service_id">
+                                        <span>
+                                            {{ prescription.service.name }}
+                                        </span>
+                                    </li>
+                                </div>
                             </ul>
                         </td>
                     </tr>

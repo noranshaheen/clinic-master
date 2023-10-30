@@ -93,7 +93,7 @@ class ReseptionistController extends Controller
 
     public function show(Reseptionist $reseptionist)
     {
-        //
+        return $reseptionist;
     }
 
     public function edit(Reseptionist $reseptionist)

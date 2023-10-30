@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Appointment;
 use App\Models\Payment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
@@ -65,14 +67,19 @@ class PaymentController extends Controller
 
     public function payServiceFees(Request $request)
     {
-        $payment = Payment::where('appointment_id',$request->appointment)->first();
-        if($payment->service_fees === null){
-            $payment->service_fees = $request->paid;
-        }else{
-            $payment->service_fees += $request->paid;
-        }
-        $payment->update();
+        $today = Carbon::parse('today')->format('Y-m-d');
+        $appointment = Appointment::where('id', '=', $request->appointment)->first();
+        $payment = new Payment();
+        $payment->appointment_id = $appointment->id;
+        $payment->patient_id = $appointment->patient_id;
+        $payment->doctor_id = $appointment->doctor_id;
+        $payment->paid_amount = $request->paid;
+        $payment->receiver_team_id = $request->current_team_id;
+        $payment->receiver_id = $request->reseptionist_id !== "" ?
+            $request->reseptionist_id : $request->doctor_id;
+        $payment->date = $today;
+        $payment->save();
+
+        return true;
     }
-
-
 }

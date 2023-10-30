@@ -17,7 +17,7 @@ class Drug extends Model
 
     protected $fillable = ['name', 'description'];
 
-    public function prescriptionItem(): HasMany
+    public function prescriptionItems(): HasMany
     {
         return $this->hasMany('App\Models\PrescriptionItems','drug_id','id');
     }

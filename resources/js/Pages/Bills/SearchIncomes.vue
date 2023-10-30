@@ -102,6 +102,12 @@
                 {{ __("Doctor") }}
               </th>
               <th class="bg-[#f8f9fa] p-3 border border-[#d4d4d4]">
+                {{ __("Patient") }}
+              </th>
+              <th class="bg-[#f8f9fa] p-3 border border-[#d4d4d4]">
+                {{ __("Diagnosis") }}
+              </th>
+              <th class="bg-[#f8f9fa] p-3 border border-[#d4d4d4]">
                 {{ __("Incomes Amount") }}
               </th>
             </thead>
@@ -119,12 +125,22 @@
                 <td class="border border-[#d4d4d4]">
                   {{ row.doctor.name }}
                 </td>
+                <td class="border border-[#d4d4d4]">
+                  {{ row.patient.name }}
+                </td>
+                <td class="border border-[#d4d4d4]">
+                  <ul class="list-disc list-inside">
+                    <li v-for="diagnose in JSON.parse(row.diagnosis)" class="text-start px-2">
+                      {{ diagnose }}
+                    </li>
+                  </ul>
+                </td>
                 <td class="p-2 border border-[#d4d4d4]">
-                  {{ getTotalLineIncome(row) }}
+                  {{ getTotalLineIncome(row.appointment.payments) }}
                 </td>
               </tr>
               <tr>
-                <td class="p-2 border font-bold border-[#d4d4d4]" colspan="4">{{ __("Total") }}</td>
+                <td class="p-2 border font-bold border-[#d4d4d4]" colspan="6">{{ __("Total") }}</td>
                 <td class="p-2 border font-bold border-[#d4d4d4]">{{ totalIncomes() }}</td>
               </tr>
             </tbody>
@@ -272,34 +288,20 @@ export default {
                 link.click();
             });
     },
-    getTotalLineIncome(line) {
+    getTotalLineIncome(payment) {
       var total = 0;
-      if (line.appointment.payment !== null) {
-        total = Number(line.appointment.payment.detection_fees);
-        if (line.appointment.payment.service_fees !== null)
-          total += line.appointment.payment.service_fees
-        //   forEach(element => {
-        // if (element.service_fees !== null) {
-        //   total += Number(element.service_fees);
-        // }
-        //   });
+      if(payment.length >0 ){
+        payment.forEach((el) => {
+          total += Number(el.paid_amount);
+        })
       }
-      // } else {
-      //   var total = 0;
-      //   line.prescription_items.forEach(element => {
-      //     if (element.service_fees !== null) {
-      //       total += Number(element.service_fees);
-      //       // console.log(el.service_fees);
-      //     }
-      //   });
-      // }
       return total;
     },
     totalIncomes() {
       if (this.incomes.length > 0) {
         var total = 0;
         this.incomes.forEach((line) => {
-          total += Number(this.getTotalLineIncome(line));
+          total += Number(this.getTotalLineIncome(line.appointment.payments));
         })
         return total;
       }

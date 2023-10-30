@@ -32,7 +32,7 @@
                             <li class="pb-2 text-gray-600">{{ __('Invoice Number') }}: {{ $data->id}}</li>
                             <li class="pb-2 text-gray-600">{{ __('Doctor Name') }}: {{ $data->doctor->name}}</li>
                             <li class="text-gray-600 pb-2">{{ __('Date Of Issue') }}: {{
-                                \Carbon\Carbon::parse($data->dateTimeIssued)->toDateString() }}</li>
+                                \Carbon\Carbon::parse($data->date)->toDateString() }}</li>
                         </ul>
                     </div>
                 </div>
@@ -63,45 +63,24 @@
                         <tr>
                             <td class="p-2 border border-[#eceeef] font-bold">{{ __('Detection Fees') }}</td>
                             <td class="p-2 border border-[#eceeef] font-bold">
-                                {{ $data->appointment->payment ? $data->appointment->payment->detection_fees : __('Not Paid') }}
+                                {{ $data->detection_fees }}
                             </td>
                         </tr>
-                        @php
-                        $total = 0;
-                        @endphp
-
-                        @foreach($data->prescriptionItems as $line)
-                        @if($line->service_fees !== null)
-                        @php
-                        $total = $total+$line->service_fees
-                        @endphp
-                        @endif
-                        @endforeach
-
                         <tr>
                             <td class="p-2 border border-[#eceeef] font-bold">{{ __('Service Fees') }}</td>
-                            <td class="p-2 border border-[#eceeef] font-bold">{{ $total }}</td>
+                            <td class="p-2 border border-[#eceeef] font-bold">
+                                {{ $data->total_service_fees }}
+                            </td>
                         </tr>
-
-                        @foreach ($data->prescriptionItems as $line)
-                        @if($line->service_fees !== null)
-                        <tr>
-                            <td class="p-2 border border-[#eceeef]">{{ "- ".$line->drugs->name }}</td>
-                            <td class="p-2 border border-[#eceeef]">{{ $line->service_fees }}</td>
-                        </tr>
-                        @endif
-                        @endforeach
-
                     </tbody>
                 </table>
                 <div class="invoice-total py-5 text-right">
                     <h4 class="capitalize py-2 text-gray-600 text-xl font-bold">{{ __('Invoice Total') }}:
-                        {{sprintf("%0.2f", (($data->appointment->payment) ? $total+intval($data->appointment->payment->detection_fees) : $total))}} 
+                        {{sprintf("%0.2f", ($data->detection_fees + $data->total_service_fees))}}
                         {{ __(' EGP')}}
                     </h4>
                     <h4 class="capitalize py-2 text-gray-600 text-xl font-bold">{{ __('Paid') }}:
-                        {{sprintf("%0.2f",
-                            ($data->appointment->payment ? ($data->appointment->payment->service_fees + $data->appointment->payment->detection_fees): 0))}}
+                        {{sprintf("%0.2f",($data->detection_fees + $data->paid_service_fees))}}
                         {{ __(' EGP')}}
                     </h4>
                 </div>

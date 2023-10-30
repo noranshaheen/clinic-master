@@ -96,7 +96,6 @@
                                     <tr class="border">
                                         <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Drugs") }}</td>
                                         <td class="p-2">
-                                            <!-- {{form.checkedDrugs}} -->
                                             <ul v-for="(line, idx) in form.prescriptionLines">
                                                 <li class="mb-2">
                                                     <div class="flex justify-between items-center">
@@ -104,22 +103,34 @@
                                                         <i class="fa fa-delete-left cursor-pointer text-red-500"
                                                             @click="deleteItem(idx, form.prescriptionLines)"></i>
                                                     </div>
-                                                    <!-- <multiselect v-model="line.dose" label="name" :options="doses"
-                                                        placeholder="Dose" :searchable="true" class="text-sm" /> -->
                                                     <div class="flex justify-between">
                                                         <input list="doses" id="dose" v-model="line.dose" placeholder="dose"
                                                             class="border w-3/5 pl-2 mx-1 border-slate-300 rounded-md">
                                                         <datalist id="doses">
                                                             <option v-for="dose in doses" :value="dose.name"></option>
                                                         </datalist>
-                                                        <input type="text" v-model="line.cost" placeholder="cost"
-                                                            class="w-2/5 border-slate-300 rounded-md" />
+                                                        <!-- <input type="text" v-model="line.cost" placeholder="cost"
+                                                            class="w-2/5 border-slate-300 rounded-md" /> -->
                                                     </div>
                                                 </li>
                                             </ul>
                                         </td>
                                     </tr>
                                     <!-- end drugs -->
+                                    <!-- start service -->
+                                    <tr class="border">
+                                        <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Service") }}</td>
+                                        <td class="p-2">
+                                            <ul v-for="service in form.services" class="list-disc list-inside">
+                                                <li>
+                                                    <span>{{ service.name }}</span>
+                                                    <input type="text" v-model="service.default_price"
+                                                    class="w-2/5 border-slate-300 rounded-md"/>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                    <!-- end service -->
                                     <!-- start analysis -->
                                     <tr class="border">
                                         <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Analysis") }}</td>
@@ -262,24 +273,46 @@
                         </div>
 
                         <div>
-                            <!-- <jet-label :value="__('Drug')" class="font-bold"/> -->
-                            <lable class="my-1 text-slate-700 font-bold">{{ __('Drug') }}</lable>
-                            <span class="m-2 text-gray-400 text-sm">{{ __("(you can choose multiple options)") }}</span>
+
                             <!-- start adding drugs -->
-                            <div class="my-4 pb-2 border-b-2 ">
-                                <div v-if="temp_drugs.length != 0" class="inline">
-                                    <button v-for="(drug, idx) in temp_drugs" class="my-2 mx-1">
-                                        <input type="checkbox" class="peer sr-only" :id="drug.name" name="drug"
-                                            :value="{ drg: drug, dose: null, cost: null }" v-model="checkedDrugs"
-                                            @change="check(drug)" />
-                                        <label :for="drug.name"
-                                            class=" cursor-pointer p-2 text-sm rounded-md text-center border shadow peer-checked:bg-green-500">
-                                            {{ drug.name }}
-                                        </label>
-                                    </button>
+                            <div class="my-4 pb-2 border-b-2">
+                                <lable class="my-1 text-slate-700 font-bold">{{ __('Drug') }}</lable>
+                                <span class="m-2 text-gray-400 text-sm">{{ __("(you can choose multiple options)") }}</span>
+                                <div>
+                                    <div v-if="temp_drugs.length != 0" class="inline">
+                                        <button v-for="(drug, idx) in temp_drugs" class="my-2 mx-1">
+                                            <input type="checkbox" class="peer sr-only" :id="drug.name" name="drug"
+                                                :value="{ drg: drug, dose: null, cost: null }" v-model="checkedDrugs"
+                                                @change="check(drug)" />
+                                            <label :for="drug.name"
+                                                class=" cursor-pointer p-2 text-sm rounded-md text-center border shadow peer-checked:bg-green-500">
+                                                {{ drug.name }}
+                                            </label>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                             <!-- end adding drugs -->
+
+                            <!-- start adding services -->
+                            <div class="my-4 pb-2 border-b-2">
+                                <lable class="my-1 text-slate-700 font-bold">{{ __('Service') }}</lable>
+                                <span class="m-2 text-gray-400 text-sm">{{ __("(you can choose multiple options)") }}</span>
+                                <div>
+                                    <!-- <div v-if="all_services.length != 0" class="inline"> -->
+                                    <button v-for="(service, idx) in all_services" class="my-2 mx-1">
+                                        <input type="checkbox" class="peer sr-only" :id="service.name" name="service"
+                                            :value="service"
+                                            v-model="form.services" />
+                                        <label :for="service.name"
+                                            class=" cursor-pointer p-2 text-sm rounded-md text-center border shadow peer-checked:bg-green-500">
+                                            {{ service.name }}
+                                        </label>
+                                    </button>
+                                    <!-- </div> -->
+                                </div>
+                            </div>
+                            <!-- end adding services -->
 
                             <!-- start adding analysis -->
                             <div class="my-2 pb-2 border-b-2 ">
@@ -334,25 +367,6 @@
                                 </div>
                             </div>
                             <!-- end adding rays -->
-
-                            <!-- start consumables -->
-                            <!-- <div class="mb-4 pb-2 border-b-2">
-                                <lable class="my-1 text-slate-700 font-bold">{{ __('Consumables') }}</lable>
-                                <span class="m-2 text-gray-400 text-sm">{{ __("(you can choose multiple options)") }}</span>
-                                <div class="flex justify-start flex-wrap my-4">
-                                    <button v-for="item in allItems" :key="item.id" class="my-2 first:mx-0 mx-1">
-                                        <div v-if="item.hidden !== 1">
-                                            <input type="checkbox" class="peer sr-only" :id="item.name" name="item"
-                                                :value="item" v-model="form.consumedItems" />
-                                            <label :for="item.name"
-                                                class=" cursor-pointer p-2 rounded-md text-center text-sm border shadow peer-checked:bg-green-500">
-                                                {{ item.name }}
-                                            </label>
-                                        </div>
-                                    </button>
-                                </div>
-                            </div> -->
-                            <!-- end consumables -->
 
                             <!-- start notes -->
                             <div class="my-1">
@@ -429,6 +443,20 @@
                                         </td>
                                     </tr>
                                     <!-- end drugs -->
+                                     <!-- start service -->
+                                     <tr class="border">
+                                        <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Service") }}</td>
+                                        <td class="p-2">
+                                            <ul v-for="service in form.services" class="list-disc list-inside">
+                                                <li>
+                                                    <span>{{ service.name }}</span>
+                                                    <input type="text" v-model="service.default_price"
+                                                    class="w-2/5 border-slate-300 rounded-md"/>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                    <!-- end service -->
                                     <!-- start analysis -->
                                     <tr class="border">
                                         <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Analysis") }}</td>
@@ -453,28 +481,7 @@
                                         </td>
                                     </tr>
                                     <!-- end rays -->
-                                    <!-- start consumables -->
-                                    <!-- <tr class="border">
-                                        <td class="p-2 font-bold text-center bg-[#f8f9fa]">
-                                            {{ __("Consumables") }}
-                                            <ul v-for="(item, idx) in form.consumedItems">
-                                                <li class="mb-2">
-                                                    <div class="flex justify-between items-center">
-                                                        <span class="font-bold">{{ item.name + " (" +
-                                                            item.measurement_unit + ")" }}</span>
-                                                    </div>
-                                                    <div class="flex justify-between">
-                                                        <input type="number" step="0.1" v-model="item.quantity"
-                                                            placeholder="quantity"
-                                                            class="w-1/2 mx-1 border-slate-300 rounded-md" />
-                                                        <input type="text" v-model="item.selling_price" placeholder="cost"
-                                                            class="w-1/2 mx-1 border-slate-300 rounded-md" />
-                                                    </div>
-                                                </li>
-                                            </ul>
-                                        </td>
-                                    </tr> -->
-                                    <!-- end consumables -->
+
                                     <!-- start nots -->
                                     <tr class="border">
                                         <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Notes") }}</td>
@@ -612,6 +619,7 @@ export default {
             doses: [],
             durations: [],
             all_diagnosis: [],
+            all_services: [],
             errors: [],
             analysis: false,
             all_analysis: [],
@@ -623,8 +631,9 @@ export default {
             form: this.$inertia.form({
                 appointment_id: "",
                 patient_id: "",
-                dateTimeIssued: new Date().toISOString().slice(0,10),
+                dateTimeIssued: new Date().toISOString().slice(0, 10),
                 prescriptionLines: [],
+                services: [],
                 diagnosis: [],
                 analysis: [],
                 rays: [],
@@ -840,6 +849,12 @@ export default {
             .get(route("drug.all"))
             .then((response) => {
                 this.drugs = response.data;
+            })
+            .catch((error) => { });
+        axios
+            .get(route("services.index"))
+            .then((response) => {
+                this.all_services = response.data;
             })
             .catch((error) => { });
         axios

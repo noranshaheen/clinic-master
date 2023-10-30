@@ -44,7 +44,7 @@ class PrescriptionItemsController extends Controller
     public function getItems($prescription_id){
         // dd($prescription_id);
         $prescriptionItems = PrescriptionItems::where('prescription_id',$prescription_id)
-        ->with('drugs')->with('prescription')->get();
+        ->with('drug')->with('service')->with('prescription')->get();
         return $prescriptionItems;
     }
 

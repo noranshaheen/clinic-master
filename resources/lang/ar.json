@@ -524,7 +524,7 @@
 	"Service Fees":"مصاريف الخدمات الاضافية",
 	"Total Service Fees":"إجمالي الخدمات الاضافية",
 	"Paid Service Fees":"المدفوع من مصاريف الخدمات",
-	"Remains":"الباقي من مصاريف الخدمات",
+	"Remains":"الباقي",
 	"Diagnose":"التشخيص",
 	"hold":"لم يتم الدفع",
 	"paid":"تم الدفع",
@@ -564,7 +564,7 @@
 	"Consumed Quantity":"الكمية المستهلكة",
 	"Details":"تفاصيل",
 	"Expenses":"المصروفات",
-	"Incomes":"الواردات",
+	"Incomes":"الايرادات",
 	"Consumable Items Balance":"رصيد الاصناف",
 	"Upload Patients":"تحميل مرضى",
 	"Beginning Balance":"الرصيد بداية الفترة",
@@ -645,6 +645,8 @@
 	"The :attribute must contain :size items.":"",
 	"The :attribute must be a string.":"",
 	"The :attribute has already been taken.":"",
-	"":"",
-	"":""
+	"Reciever":"المستلم",
+	"Reseptionist":"موظف الاستقبال",
+	"detailed Incomes":"ايرادات مفصلة",
+	"Total Incomes":"ايرادات مجملة",
 }
