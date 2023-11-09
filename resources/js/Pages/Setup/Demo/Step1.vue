@@ -28,11 +28,11 @@
                             <jet-input id="Rooms" type="number" class="mt-1 block w-full" v-model="form.numberOfRooms"
                                 required />
                         </div>
-                        <div class="mt-4">
+                        <!-- <div class="mt-4">
                             <jet-label for="doctors" :value="__('عدد الاطباء')" />
                             <jet-input id="doctors" type="number" class="mt-1 block w-full" v-model="form.numberOfDoctors"
                                 required />
-                        </div>
+                        </div> -->
 
                     </div>
                     <div>
@@ -44,11 +44,11 @@
                             <jet-label for="location" :value="__('عنوان العيادة')" />
                             <jet-input id="location" type="text" class="mt-1 block w-full" v-model="form.address" />
                         </div>
-                        <div class="mt-4">
+                        <!-- <div class="mt-4">
                             <jet-label for="Patients" :value="__('عدد المرضى')" />
                             <jet-input id="Patients" type="number" class="mt-1 block w-full" v-model="form.numberOfPatients"
                                 required />
-                        </div>
+                        </div> -->
                         <!-- <div class="mt-4">
                             <jet-label
                                 for="branchLogo"

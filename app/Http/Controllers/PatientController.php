@@ -176,16 +176,26 @@ class PatientController extends Controller
             ->with('appointment.payments')
             ->with('patient')
             ->where('patient_id', '=', $patient_id)->get();
-        $payments = Payment::where('patient_id', '=', $patient_id)
-            ->with('appointment')
-            ->with('appointment.fees')
+
+        // $payments = Payment::where('patient_id', '=', $patient_id)
+        //     ->with('appointment')
+        //     ->with('appointment.fees')
+        //     ->with('doctor')
+        //     ->get()
+        //     ->groupBy('date');
+
+        $appointments = Appointment::where('patient_id','=',$patient_id)
+            ->with('payments')
+            ->with('fees')
+            ->with('patient')
             ->with('doctor')
-            ->get()
-            ->groupBy('date');
+            ->get();
+
+        // dd($payment);
     
         return Inertia::render('Patients/History', [
             'prescriptions' => $patient_history,
-            'payments' => $payments
+            'appointments' => $appointments
         ]);
     }
 
@@ -206,7 +216,7 @@ class PatientController extends Controller
                 $new_patient = new Patient();
                 $new_patient->name = $temp[$key]['name'];
                 $new_patient->gender = $temp[$key]['gender (M|F)'];
-                $new_patient->phone = "0" . $temp[$key]['phone'];
+                $new_patient->phone = $temp[$key]['phone'];
                 $new_patient->type = $temp[$key]['type (P|I)'];
                 $new_patient->date_of_birth = $this->excelDateToDatetime($temp[$key]['date_of_birth']);
                 $new_patient->insurance_number = $temp[$key]['insurance_number'] ? $temp[$key]['insurance_number'] : null;

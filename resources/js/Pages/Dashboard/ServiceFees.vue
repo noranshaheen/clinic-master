@@ -103,7 +103,8 @@ export default {
         // payment: {
         //     default: 0
         // }
-        fees: {
+        appointment_id,
+        appointments_fees: {
             default: null
         },
     },
@@ -129,12 +130,12 @@ export default {
             this.showDialog = true;
             this.message = null;
 
-            console.log(this.fees);
+            console.log(this.appointments_fees);
             // console.log(this.payment);
 
-            if (this.fees.length !== 0) {
-                this.getTotalServiceFees(this.fees);
-                this.form.appointment = this.fees[0].appointment_id;
+            if (this.appointments_fees.fees.length !== 0) {
+                this.getTotalServiceFees(this.appointments_fees);
+                this.form.appointment = this.appointment_id;
             }
             else {
                 this.message = "Not Fount Any Additional Payments";
@@ -165,12 +166,21 @@ export default {
                     })
             }
         },
-        getTotalServiceFees(fees) {
+        getTotal(appointments_fees) {
             var total = 0;
-            fees.forEach(el => {
-                total += Number(el.price);
+            appointments_fees.forEach(element => {
+                if(element.fees)
+                total += this.getTotalFees(element.fees)
             });
-            this.total = total;
+            return total;
+
+        },
+        getTotalFees(fees){
+            var total = 0;
+            fees.forEach((el)=>{
+                total += Number(el.price);
+            })
+        return total;
         },
         // getPaidServiceFees(prescription) {
 

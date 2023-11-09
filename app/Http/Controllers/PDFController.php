@@ -24,13 +24,23 @@ class PDFController extends Controller
 
     public function previewPayment($id)
     {
-        $data = Payment::with('doctor')
-            ->with('appointment')
+        // $data = Payment::with('doctor')
+        //     ->with('appointment')
+        //     ->with('patient')
+        //     ->with('appointment.prescription')
+        //     ->with('appointment.prescription.prescriptionItems')
+        //     ->with('appointment.prescription.prescriptionItems.drugs')
+        //     ->find($id);
+
+            $data = Payment::where('appointment_id', '=', $id)
             ->with('patient')
+            ->with('appointment')
             ->with('appointment.prescription')
-            ->with('appointment.prescription.prescriptionItems')
-            ->with('appointment.prescription.prescriptionItems.drugs')
-            ->find($id);
+            ->with('appointment.fees')
+            ->with('doctor')
+            ->get();
+            // ->groupBy('date');
+
             // dd($data);
         return view('pdf.paymentBill', compact('data'));
     }
@@ -40,9 +50,10 @@ class PDFController extends Controller
         $data = Prescription::with('doctor')
             ->with('doctor.specialties')
             ->with('prescriptionItems')
-            ->with('prescriptionItems.drugs')
+            ->with('prescriptionItems.drug')
+            ->with('prescriptionItems.service')
             ->with('appointment')
-            ->with('appointment.payment')
+            ->with('appointment.payments')
             ->with('patient')
             ->find($id);
             // dd($data);
@@ -81,13 +92,13 @@ class PDFController extends Controller
     }
     public function downloadPayment(int $id)
     {
-        $data = Prescription::with('doctor')
-            ->with('prescriptionItems')
-            ->with('prescriptionItems.drugs')
-            ->with('appointment')
-            ->with('appointment.payment')
-            ->with('patient')
-            ->find($id);
+        $data = Payment::where('appointment_id', '=', $id)
+        ->with('patient')
+        ->with('appointment')
+        ->with('appointment.prescription')
+        ->with('appointment.fees')
+        ->with('doctor')
+        ->get();
         //return view('pdf.saveInvoice', compact('data'));
         $pdf = PDF::loadView('pdf.savePayment', [
             'data' => $data

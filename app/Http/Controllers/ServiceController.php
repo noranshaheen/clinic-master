@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Doctor;
 use App\Models\Service;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ServiceController extends Controller
 {
@@ -12,8 +14,9 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        $services = Service::all();
-        return $services;
+        $doc = Doctor::find(Auth::user()->doc_res_id);
+        $specialty_id = $doc->specialty_id;
+        return Service::where('specialty_id', '=', $specialty_id)->get();
     }
 
     /**
@@ -29,7 +32,17 @@ class ServiceController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => ['string','max:255','min:2','required'],
+            'price' => ['string','max:255','min:2','nullable'],
+            'specialty_id' => ['required','exists:App\Models\Specialty,id']
+        ]);
+
+        $analysis = new Service();
+        $analysis->name = $request->name;
+        $analysis->default_price = $request->price;
+        $analysis->specialty_id = $request->specialty_id;
+        $analysis->save();
     }
 
     /**

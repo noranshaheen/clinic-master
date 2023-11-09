@@ -1,6 +1,6 @@
 <template>
     <div class="px-3 py-6 w-screen h-screen flex justify-center items-center">
-        <jet-dialog-modal :show="showDialog" @close="showDialog=false" max-width="2xl" max-height="h-1/2"
+        <!-- <jet-dialog-modal :show="showDialog" @close="showDialog=false" max-width="2xl" max-height="h-1/2"
         >
             <template #title>
                 الفيديو للتعرف على طريقة الربط و الحصول على كود الربط
@@ -15,7 +15,7 @@
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen />				
             </template>
-        </jet-dialog-modal>
+        </jet-dialog-modal> -->
 		<div
             class="grid grid-cols-2 gap-4 w-full lg:w-2/5 xl:w-2/5 2xl:w-2/6 border border-gray-200 rounded-lg shadow-lg p-6"
         >

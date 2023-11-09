@@ -19,9 +19,13 @@ use Carbon\Carbon;
 use Carbon\CarbonInterval;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use App\Http\Traits\ExcelWrapper;
+use Illuminate\Support\Facades\File;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class SetupDataController extends Controller
 {
+    use ExcelWrapper;
     /**
      * Display a listing of the resource.
      */
@@ -35,8 +39,8 @@ class SetupDataController extends Controller
             "phone" => ['required'],
             "address" => ['required'],
             "numberOfRooms" => ['required'],
-            "numberOfDoctors" => ['required'],
-            "numberOfPatients" => ['required', 'min:1'],
+            //     // "numberOfDoctors" => ['required'],
+            //     // "numberOfPatients" => ['required', 'min:1'],
         ]);
 
         $num_of_specialties = Specialty::all()->count();
@@ -56,70 +60,94 @@ class SetupDataController extends Controller
             $room->save();
         }
 
-        //add doctors
-        $titles = ["طبيب الامتياز", "طبيب مقيم", "أخصائي", "أخصائي أول", "إستشاري", "استشاري أول", "دكتوراه / بروفيسور"];
-        for ($i = 1; $i <= $request->numberOfDoctors; $i++) {
-            $doctor = new Doctor();
-            $doctor->name = fake()->name();
-            $doctor->phone = fake()->phoneNumber();
-            $doctor->specialty_id = rand(1, $num_of_specialties);
-            $doctor->title = $titles[rand(0, count($titles) - 1)];
-            $doctor->date_of_birth = "1990-01-01";
-            $doctor->save();
 
+        //doctors
+        $temp = $this->xlsxToArray(public_path() . '/ExcelTemplates/Demo/DoctorDemo.xlsx');
+        foreach ($temp as $key => $value) {
+            $spc = Specialty::where('name', '=', $temp[$key]['specialty'])->first();
+            $doc = new Doctor();
+            $doc->name = $temp[$key]['name'];
+            $doc->phone = $temp[$key]['phone'];
+            $doc->date_of_birth = $this->excelDateToDatetime($temp[$key]['date_of_birth']);
+            $doc->specialty_id = $spc->id;
+            $doc->title = $temp[$key]['title'];
+            $doc->save();
             User::create([
-                'name' => $doctor->name,
-                'email' => "doctor" . $i . "@master.com",
+                'name' => $doc->name,
+                'email' => $temp[$key]['email'],
                 'password' => Hash::make("123456789"),
                 'current_team_id' => 2,
-                'doc_res_id' => $doctor->id
+                'doc_res_id' => $doc->id
             ]);
         }
 
-
-        //add patients
-        for ($i = 1; $i <= $request->numberOfPatients; $i++) {
-            $patient = new Patient();
-            $patient->name = fake()->name();
-            $patient->gender = "M";
-            $patient->phone = fake()->phoneNumber();
-            $patient->type = "P";
-            $patient->date_of_birth = "2000-01-01";
-            $patient->save();
+        //patients
+        $temp = $this->xlsxToArray(public_path() . '/ExcelTemplates/Demo/PatientDemo.xlsx');
+        foreach ($temp as $key => $value) {
+            $new_patient = new Patient();
+            $new_patient->name = $temp[$key]['name'];
+            $new_patient->gender = $temp[$key]['gender (M|F)'];
+            $new_patient->phone = $temp[$key]['phone'];
+            $new_patient->type = $temp[$key]['type (P|I)'];
+            $new_patient->date_of_birth = $this->excelDateToDatetime($temp[$key]['date_of_birth']);
+            $new_patient->insurance_number = $temp[$key]['insurance_number'] ? $temp[$key]['insurance_number'] : null;
+            $new_patient->insurance_company = $temp[$key]['insurance_company'] ? $temp[$key]['insurance_company'] : null;
+            $new_patient->additionalInformation = $temp[$key]['additionalInformation'] ? $temp[$key]['additionalInformation'] : null;
+            $new_patient->save();
         }
 
-        //add diagnoses
-        for ($i = 1; $i <= 30; $i++) {
-            $diagnose = new Diagnosis();
-            $diagnose->name = "تشخيص" . $i;
-            $diagnose->specialty_id = rand(1, $num_of_specialties);
-            $diagnose->save();
-        }
+        //drugs - diagnosis - doses
+        $temp = $this->xlsxToArray(public_path() . '/ExcelTemplates/Demo/DrugDemo.xlsx');
+        foreach ($temp as $key => $value) {
+            $speciality = $temp[$key]['spaeciality'];
+            $diagnosis = [];
 
-        //add drugs
-        $num_of_diagnoses = Diagnosis::all()->count();
-        for ($i = 1; $i <= 50; $i++) {
+            for ($i = 1; $i <= 10; $i++) {
+                if ($temp[$key]['diagnose ' . $i]) {
+                    array_push($diagnosis, $temp[$key]['diagnose ' . $i]);
+                } else {
+                    continue;
+                }
+            }
+
             $drug = new Drug();
-            $drug->name = "drug" . $i;
+            $drug->name = $temp[$key]['name'];
+            $drug->description = $temp[$key]['description'];
             $drug->save();
-            $drug->diagnosis()->attach(rand(1, $num_of_diagnoses));
-        }
 
-        //add doses
-        $doses = [
-            '10 ملغ/ كغ 3 مرات في اليوم',
-            '500 ملغ كل 8 ساعات',
-            '250 ملغ كل 12 ساعات',
-            'كبسولة مرتين قي اليوم',
-            'كبسولتين كل 8 ساعات'
-        ];
-        for ($i = 1; $i <= 10; $i++) {
             DB::table('doses')->insert([
-                'name' => $doses[rand(0, count($doses) - 1)]
+                'name' => $temp[$key]['default dose']
             ]);
+
+            foreach ($diagnosis as $val) {
+                $diagnose = Diagnosis::where('name', '=', $val)->first();
+                if (!$diagnose) {
+                    $spc = Specialty::where('name', '=', $speciality)->first();
+                    if (!$spc) {
+                        $sp = new Specialty();
+                        $sp->name = $speciality;
+                        $sp->save();
+                        $dgsn = new Diagnosis();
+                        $dgsn->name = $val;
+                        $dgsn->description = null;
+                        $sp->diagnosis()->save($dgsn);
+                        $drug->diagnosis()->attach($dgsn->id);
+                    } else {
+                        $dgsn = new Diagnosis();
+                        $dgsn->name = $val;
+                        $dgsn->description = null;
+                        $dgsn->specialty_id = $spc->id;
+                        $dgsn->save();
+                        $drug->diagnosis()->attach($dgsn->id);
+                    }
+                } else {
+                    continue;
+                }
+            }
         }
 
-        //add rays
+        
+        // //add rays
         for ($i = 1; $i <= 30; $i++) {
             $ray = new XRay();
             $ray->name = "xray-" . $i;
@@ -127,7 +155,7 @@ class SetupDataController extends Controller
             $ray->save();
         }
 
-        //add analysis
+        // //add analysis
         for ($i = 1; $i <= 30; $i++) {
             $analysis = new Analysis();
             $analysis->name = "analysis-" . $i;
@@ -136,7 +164,7 @@ class SetupDataController extends Controller
         }
 
         //add items
-        
+
 
         //add inventories
 
@@ -159,8 +187,6 @@ class SetupDataController extends Controller
     {
         //make appointments
 
-        // dd($request);
-
         //validation
         $request->validate([
             "name"      => ['required'],
@@ -176,7 +202,7 @@ class SetupDataController extends Controller
         $tomorrow = Carbon::parse('tomorrow')->format('Y-m-d');
         $yesterday = Carbon::parse('yesterday')->format('Y-m-d');
         $timesArray = array();
-        $patients = Patient::all()->count();
+        $patients = Patient::all();
 
         $days = [$yesterday, $today, $tomorrow];
         $appointment_types = ['كشف مستعجل', 'استشاره', 'كشف عادي'];
@@ -194,16 +220,15 @@ class SetupDataController extends Controller
                 $apt->clinic_id = 1;
                 $apt->room_id = $request['room'];
                 $apt->date = $day;
+                $apt->patient_id = $j<= 25? $patients[$j]->id: null;
                 $apt->from = $day . " " . $timesArrayFormated[$j++];
                 $apt->to = $day . " " . $timesArrayFormated[$j];
-                $apt->patient_id = rand(1, $patients);
                 $apt->type = $appointment_types[rand(0, count($appointment_types) - 1)];
                 $apt->status = "hold";
-                // dd($apt);
                 $apt->save();
             }
         }
-        // dd(Appointment::get());
+
         return "appointments stored succefully";
     }
 

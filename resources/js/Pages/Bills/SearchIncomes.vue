@@ -347,22 +347,22 @@ export default {
     axios
       .get(route('doctor.all'))
       .then((response) => {
-        var all = {
-          "id": -1,
-          "name": "All"
-        };
+        // var all = {
+        //   "id": -1,
+        //   "name": "All"
+        // };
         this.doctors = response.data;
-        this.doctors.unshift(all);
+        // this.doctors.unshift(all);
       })
     axios
       .get(route('clinic.all'))
       .then((response) => {
-        var all = {
-          "id": -1,
-          "name": "All"
-        };
+        // var all = {
+        //   "id": -1,
+        //   "name": "All"
+        // };
         this.clinics = response.data;
-        this.clinics.unshift(all);
+        // this.clinics.unshift(all);
       })
   },
 };

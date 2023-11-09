@@ -21,22 +21,23 @@
                     <div>
                         <div class="">
                             <jet-label for="date" :value="__('التاريخ')" />
-                            <jet-input id="date" type="text" readonly class="mt-1 block w-full" v-model="form.date" required />
+                            <jet-input id="date" type="text" readonly class="mt-1 block w-full" v-model="form.date"
+                                required />
                         </div>
                         <div class="mt-4">
                             <jet-label for="Room" :value="__('الغرفة')" />
-                            <select id="Room" 
-                            class="mt-1 block w-full rounded border border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm" 
-                            v-model="form.room">
-                            <option v-for="room in all_rooms" :key="room.id" :value="room.id">
-                                {{room.name}}
-                            </option>
+                            <select id="Room"
+                                class="mt-1 block w-full rounded border border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm"
+                                v-model="form.room">
+                                <option v-for="room in all_rooms" :key="room.id" :value="room.id">
+                                    {{ room.name }}
+                                </option>
                             </select>
                         </div>
+
                         <div class="mt-4">
-                            <jet-label for="To" :value="__('إلى')" />
-                            <jet-input id="To" type="time" class="mt-1 block w-full" v-model="form.to"
-                                required />
+                            <jet-label for="from" :value="__('من')" />
+                            <jet-input id="from" type="time" class="mt-1 block w-full" v-model="form.from" required />
                         </div>
                         <div class="mt-4">
                             <jet-label for="cases" :value="__('عدد الحالات')" />
@@ -47,33 +48,31 @@
                     <div>
                         <div class="">
                             <jet-label for="name" :value="__('اسم العيادة')" />
-                            <jet-input id="name" type="text" v-model="form.name" vlaue="{{all_clinics[0].name}}" readonly class="mt-1 block w-full"  required />
+                            <jet-input id="name" type="text" v-model="form.name" vlaue="{{all_clinics[0].name}}" readonly
+                                class="mt-1 block w-full" required />
                         </div>
                         <div class="mt-4">
                             <jet-label for="Doctors" :value="__('الطبيب')" />
-                            <select id="Doctors" 
-                            class="mt-1 block w-full rounded border border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm" 
-                            v-model="form.doctor">
-                            <option v-for="doctor in all_doctors" :key="doctor.id" :value="doctor.id">
-                                {{doctor.name}}
-                            </option>
+                            <select id="Doctors"
+                                class="mt-1 block w-full rounded border border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm"
+                                v-model="form.doctor">
+                                <option v-for="doctor in all_doctors" :key="doctor.id" :value="doctor.id">
+                                    {{ doctor.name }}
+                                </option>
                             </select>
                         </div>
                         <div class="mt-4">
-                            <jet-label for="from" :value="__('من')" />
-                            <jet-input id="from" type="time" class="mt-1 block w-full" v-model="form.from"
-                                required />
+                            <jet-label for="To" :value="__('إلى')" />
+                            <jet-input id="To" type="time" class="mt-1 block w-full" v-model="form.to" required />
                         </div>
-                        
+
                     </div>
                 </div>
             </form>
             <div class="mt-8 flex justify justify-between">
                 <button
                     class="w-1/3 px-4 py-2 my-4 tracking-wide text-white transition-colors duration-200 transform bg-gray-700 rounded hover:bg-gray-600 focus:outline-none focus:bg-gray-600"
-                    :disabled="formIsProcessing"
-                    @click="goBack"
-                >
+                    :disabled="formIsProcessing" @click="goBack">
                     {{ "السابق" }}
                 </button>
 
@@ -132,7 +131,7 @@ export default {
             all_clinics: [],
             all_rooms: [],
             all_doctors: [],
-            
+
             form: this.$inertia.form({
                 name: "",
                 date: new Date().toLocaleDateString(),
@@ -193,7 +192,7 @@ export default {
                 this.all_rooms = response.data;
             }).catch(error => {
             });
-        
+
     },
 };
 </script>

@@ -167,7 +167,6 @@ return [
          */
 		Maatwebsite\Excel\ExcelServiceProvider::class,
 		Alkoumi\LaravelArabicNumbers\LaravelArabicNumbersServiceProvider::class,
-
         /*
          * Application Service Providers...
          */

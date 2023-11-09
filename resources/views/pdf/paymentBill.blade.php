@@ -29,10 +29,10 @@
                     </div>
                     <div>
                         <ul>
-                            <li class="pb-2 text-gray-600">{{ __('Invoice Number') }}: {{ $data->id}}</li>
-                            <li class="pb-2 text-gray-600">{{ __('Doctor Name') }}: {{ $data->doctor->name}}</li>
+                            <!-- <li class="pb-2 text-gray-600">{{ __('Invoice Number') }}: {{ $data[0]->appointment->prescription->id}}</li> -->
+                            <li class="pb-2 text-gray-600">{{ __('Doctor Name') }}: {{ $data[0]->doctor->name}}</li>
                             <li class="text-gray-600 pb-2">{{ __('Date Of Issue') }}: {{
-                                \Carbon\Carbon::parse($data->date)->toDateString() }}</li>
+                                \Carbon\Carbon::parse($data[0]->date)->toDateString() }}</li>
                         </ul>
                     </div>
                 </div>
@@ -42,10 +42,10 @@
                     </div>
                     <div>
                         <ul>
-                            <li class="pb-2 text-gray-600">{{ __('Patient') }} : {{ $data->patient->name }}</li>
-                            <li class="pb-2 text-gray-600">{{ __('Phone Number') }} : {{ $data->patient->phone }}</li>
-                            <li class="text-gray-600 pb-2">{{ __('Gender') }} : {{ $data->patient->gender == 'F'? __('Female'):__('Male') }}</li>
-                            <li class="pb-2 text-gray-600">{{ __('Detection Type') }} : {{ __($data->appointment->type)}}</li>
+                            <li class="pb-2 text-gray-600">{{ __('Patient') }} : {{ $data[0]->patient->name }}</li>
+                            <!-- <li class="pb-2 text-gray-600">{{ __('Phone Number') }} : {{ $data[0]->patient->phone }}</li> -->
+                            <!-- <li class="text-gray-600 pb-2">{{ __('Gender') }} : {{ $data[0]->patient->gender == 'F'? __('Female'):__('Male') }}</li> -->
+                            <li class="pb-2 text-gray-600">{{ __('Detection Type') }} : {{ __($data[0]->appointment->type)}}</li>
                         </ul>
                     </div>
                 </div>
@@ -63,31 +63,42 @@
                         <tr>
                             <td class="p-2 border border-[#eceeef] font-bold">{{ __('Detection Fees') }}</td>
                             <td class="p-2 border border-[#eceeef] font-bold">
-                                {{ $data->detection_fees }}
+                                {{ $data[0]->appointment->amount }}
                             </td>
                         </tr>
                         <tr>
+                            @php
+                            $total = 0;
+                            foreach ($data[0]->appointment->fees as $fee)
+                            $total += $fee->price;
+                            @endphp
+
                             <td class="p-2 border border-[#eceeef] font-bold">{{ __('Service Fees') }}</td>
                             <td class="p-2 border border-[#eceeef] font-bold">
-                                {{ $data->total_service_fees }}
+                                {{ $total }}
                             </td>
                         </tr>
                     </tbody>
                 </table>
                 <div class="invoice-total py-5 text-right">
                     <h4 class="capitalize py-2 text-gray-600 text-xl font-bold">{{ __('Invoice Total') }}:
-                        {{sprintf("%0.2f", ($data->detection_fees + $data->total_service_fees))}}
+                        {{sprintf("%0.2f", ($data[0]->appointment->amount + $total))}}
                         {{ __(' EGP')}}
                     </h4>
+                    @php
+                    $total_paid = 0;
+                    foreach ($data as $payment)
+                    $total_paid += $payment->paid_amount;
+                    @endphp
                     <h4 class="capitalize py-2 text-gray-600 text-xl font-bold">{{ __('Paid') }}:
-                        {{sprintf("%0.2f",($data->detection_fees + $data->paid_service_fees))}}
+                        {{sprintf("%0.2f",($total_paid))}}
                         {{ __(' EGP')}}
                     </h4>
                 </div>
             </div>
         </div>
         <div class="btns my-5 w-2/12 text-center">
-            <a href="{{ route('pdf.payment.download' , ['id' => $data->id]) }}">
+            <a href="{{ route('pdf.payment.download' , ['id' => $data[0]->appointment->id]) }}">
                 <button class="bg-black text-white py-2 px-5 rounded ml-2">
                     <i class="fa fa-download"></i> {{ __('Save') }}
                 </button>

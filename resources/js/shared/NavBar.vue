@@ -25,9 +25,17 @@
         </div>
         <div :class="!isOpen ? 'hidden' : ''" class="flex-1 md:flex md:items-center md:justify-between">
           <div class="flex flex-col -mx-4 md:flex-row md:items-center md:mx-5 mt-3 lg:mt-0">
+
+            <!-- reseptionist -->
             <Link v-if="$page.props.auth.user.current_team_id == 1" :href="route('dashboard')"
               :class="{ 'text-[#4099de]': $page.url === '/' }" class="grid justify-items-center ms-3 mb-3 lg:mb-0"><i
               class="fas fa-chart-pie"></i>{{ __("Dashboard") }}</Link>
+
+            <!-- doctor -->
+            <Link v-if="$page.props.auth.user.current_team_id == 2" :href="route('prescriptions.create')"
+              :class="{ 'text-[#4099de]': $page.url === 'prescriptions/create' }"
+              class="grid justify-items-center ms-3 mb-3 lg:mb-0"><i class="fas fa-chart-pie"></i>{{ __("Dashboard") }}
+            </Link>
 
 
             <!-- start dropdown menus -->
@@ -46,10 +54,15 @@
                 <div class="pt-0 divide-y divide-gray-200">
                   <!-- doctor -->
                   <div>
-                    <div class="p-1 border-b flex justify-between">
+                    <div class="px-1 py-2 border-b flex justify-between cursor-pointer" v-show="doctor"
+                      @click="doctor = false">
                       <p>{{ __("Doctors") }}</p>
-                      <i class="fa-solid fa-caret-down cursor-pointer" @click="doctor = false" v-show="doctor"></i>
-                      <i class="fa-solid fa-caret-left cursor-pointer" @click="doctor = true" v-show="!doctor"></i>
+                      <i class="fa-solid fa-caret-down "></i>
+                    </div>
+                    <div class="px-1 py-2 border-b flex justify-between cursor-pointer" v-show="!doctor"
+                      @click="doctor = true">
+                      <p>{{ __("Doctors") }}</p>
+                      <i class="fa-solid fa-caret-left"></i>
                     </div>
                     <div v-show="doctor">
                       <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg1')">
@@ -64,10 +77,15 @@
                   </div>
                   <!-- patient -->
                   <div>
-                    <div class="p-1 border-b flex justify-between">
+                    <div class="px-1 py-2 border-b flex justify-between cursor-pointer" v-show="patient"
+                      @click="patient = false">
                       <p>{{ __("Patients") }}</p>
-                      <i class="fa-solid fa-caret-down cursor-pointer" @click="patient = false" v-show="patient"></i>
-                      <i class="fa-solid fa-caret-left cursor-pointer" @click="patient = true" v-show="!patient"></i>
+                      <i class="fa-solid fa-caret-down"></i>
+                    </div>
+                    <div class="px-1 py-2 border-b flex justify-between cursor-pointer" v-show="!patient"
+                      @click="patient = true">
+                      <p>{{ __("Patients") }}</p>
+                      <i class="fa-solid fa-caret-left "></i>
                     </div>
                     <div v-show="patient">
                       <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg2')">
@@ -86,12 +104,15 @@
                   </div>
                   <!-- reseptionist -->
                   <div>
-                    <div class="p-1 border-b flex justify-between">
+                    <div class="px-1 py-2 border-b flex justify-between cursor-pointer" @click="reseptionist = false"
+                      v-show="reseptionist">
                       <p>{{ __("Reseptionists") }}</p>
-                      <i class="fa-solid fa-caret-down cursor-pointer" @click="reseptionist = false"
-                        v-show="reseptionist"></i>
-                      <i class="fa-solid fa-caret-left cursor-pointer" @click="reseptionist = true"
-                        v-show="!reseptionist"></i>
+                      <i class="fa-solid fa-caret-down"></i>
+                    </div>
+                    <div class="px-1 py-2 border-b flex justify-between cursor-pointer" @click="reseptionist = true"
+                      v-show="!reseptionist">
+                      <p>{{ __("Reseptionists") }}</p>
+                      <i class="fa-solid fa-caret-left"></i>
                     </div>
                     <div v-show="reseptionist">
                       <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg11')">
@@ -106,10 +127,15 @@
                   </div>
                   <!-- clinic -->
                   <div>
-                    <div class="p-1 border-b flex justify-between">
+                    <div class="px-1 py-2 border-b flex justify-between cursor-pointer" v-show="clinic"
+                      @click="clinic = false">
                       <p>{{ __("Clinics") }}</p>
-                      <i class="fa-solid fa-caret-down cursor-pointer" @click="clinic = false" v-show="clinic"></i>
-                      <i class="fa-solid fa-caret-left cursor-pointer" @click="clinic = true" v-show="!clinic"></i>
+                      <i class="fa-solid fa-caret-down "></i>
+                    </div>
+                    <div class="px-1 py-2 border-b flex justify-between cursor-pointer" v-show="!clinic"
+                      @click="clinic = true">
+                      <p>{{ __("Clinics") }}</p>
+                      <i class="fa-solid fa-caret-left "></i>
                     </div>
                     <div v-show="clinic">
                       <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg3')">
@@ -124,10 +150,15 @@
                   </div>
                   <!-- room -->
                   <div>
-                    <div class="p-1 border-b flex justify-between">
+                    <div class="px-1 py-2 border-b flex justify-between cursor-pointer" v-show="room"
+                      @click="room = false">
                       <p>{{ __("Rooms") }}</p>
-                      <i class="fa-solid fa-caret-down cursor-pointer" @click="room = false" v-show="room"></i>
-                      <i class="fa-solid fa-caret-left cursor-pointer" @click="room = true" v-show="!room"></i>
+                      <i class="fa-solid fa-caret-down "></i>
+                    </div>
+                    <div class="px-1 py-2 border-b flex justify-between cursor-pointer" v-show="!room"
+                      @click="room = true">
+                      <p>{{ __("Rooms") }}</p>
+                      <i class="fa-solid fa-caret-left "></i>
                     </div>
                     <div v-show="room">
                       <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg4')">
@@ -142,10 +173,15 @@
                   </div>
                   <!-- diagnose -->
                   <div>
-                    <div class="p-1 border-b flex justify-between">
+                    <div class="px-1 py-2 border-b flex justify-between cursor-pointer" v-show="diagnose"
+                      @click="diagnose = false">
                       <p>{{ __("Diagnosis") }}</p>
-                      <i class="fa-solid fa-caret-down cursor-pointer" @click="diagnose = false" v-show="diagnose"></i>
-                      <i class="fa-solid fa-caret-left cursor-pointer" @click="diagnose = true" v-show="!diagnose"></i>
+                      <i class="fa-solid fa-caret-down "></i>
+                    </div>
+                    <div class="px-1 py-2 border-b flex justify-between cursor-pointer" v-show="!diagnose"
+                      @click="diagnose = true">
+                      <p>{{ __("Diagnosis") }}</p>
+                      <i class="fa-solid fa-caret-left "></i>
                     </div>
                     <div v-show="diagnose">
                       <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg6')">
@@ -160,10 +196,15 @@
                   </div>
                   <!-- drug -->
                   <div>
-                    <div class="p-1 border-b flex justify-between">
+                    <div class="px-1 py-2 border-b flex justify-between cursor-pointer" v-show="drug"
+                      @click="drug = false">
                       <p>{{ __("Drugs") }}</p>
-                      <i class="fa-solid fa-caret-down cursor-pointer" @click="drug = false" v-show="drug"></i>
-                      <i class="fa-solid fa-caret-left cursor-pointer" @click="drug = true" v-show="!drug"></i>
+                      <i class="fa-solid fa-caret-down "></i>
+                    </div>
+                    <div class="px-1 py-2 border-b flex justify-between cursor-pointer" v-show="!drug"
+                      @click="drug = true">
+                      <p>{{ __("Drugs") }}</p>
+                      <i class="fa-solid fa-caret-left "></i>
                     </div>
                     <div v-show="drug">
                       <dropdown-link href="#" as="a" @click.prevent="openDlg('dlg5')">
@@ -183,12 +224,15 @@
 
                   <!-- prescription -->
                   <div>
-                    <div class="p-1 border-b flex justify-between">
+                    <div class="px-1 py-2 border-b flex justify-between cursor-pointer" v-show="prescription"
+                      @click="prescription = false">
                       <p>{{ __("Prescriptions") }}</p>
-                      <i class="fa-solid fa-caret-down cursor-pointer" @click="prescription = false"
-                        v-show="prescription"></i>
-                      <i class="fa-solid fa-caret-left cursor-pointer" @click="prescription = true"
-                        v-show="!prescription"></i>
+                      <i class="fa-solid fa-caret-down "></i>
+                    </div>
+                    <div class="px-1 py-2 border-b flex justify-between cursor-pointer" v-show="!prescription"
+                      @click="prescription = true">
+                      <p>{{ __("Prescriptions") }}</p>
+                      <i class="fa-solid fa-caret-left "></i>
                     </div>
                     <div v-show="prescription">
                       <dropdown-link v-if="$page.props.auth.user.current_team_id == 2" as="a"
@@ -260,10 +304,15 @@
               <template #content>
                 <!-- warehouse -->
                 <div>
-                  <div class="p-1 border-b flex justify-between">
+                  <div class="px-1 py-2 border-b flex justify-between cursor-pointer" v-show="warehouse"
+                    @click="warehouse = false">
                     <p>{{ __("Warehouses") }}</p>
-                    <i class="fa-solid fa-caret-down cursor-pointer" @click="warehouse = false" v-show="warehouse"></i>
-                    <i class="fa-solid fa-caret-left cursor-pointer" @click="warehouse = true" v-show="!warehouse"></i>
+                    <i class="fa-solid fa-caret-down"></i>
+                  </div>
+                  <div class="px-1 py-2 border-b flex justify-between cursor-pointer" v-show="!warehouse"
+                    @click="warehouse = true">
+                    <p>{{ __("Warehouses") }}</p>
+                    <i class="fa-solid fa-caret-left "></i>
                   </div>
                   <div v-show="warehouse">
                     <dropdown-link as="a" @click.prevent="openDlg('dlg15')" class="cursor-pointer">
@@ -283,12 +332,15 @@
 
                 <!-- inventory movement -->
                 <div>
-                  <div class="p-1 border-b flex justify-between">
+                  <div class="p-1 border-b flex justify-between cursor-pointer" v-show="inventoryMovements"
+                    @click="inventoryMovements = false">
                     <p>{{ __("Inventory Movements") }}</p>
-                    <i class="fa-solid fa-caret-down cursor-pointer" @click="inventoryMovements = false"
-                      v-show="inventoryMovements"></i>
-                    <i class="fa-solid fa-caret-left cursor-pointer" @click="inventoryMovements = true"
-                      v-show="!inventoryMovements"></i>
+                    <i class="fa-solid fa-caret-down "></i>
+                  </div>
+                  <div class="p-1 border-b flex justify-between cursor-pointer" v-show="!inventoryMovements"
+                    @click="inventoryMovements = true">
+                    <p>{{ __("Inventory Movements") }}</p>
+                    <i class="fa-solid fa-caret-left"></i>
                   </div>
                   <div v-show="inventoryMovements">
                     <dropdown-link as="a" :href="route('inventory.show.ins')" class="cursor-pointer">
@@ -347,12 +399,13 @@
               </template>
               <template #content>
                 <div>
-                  <div class="p-1 border-b flex justify-between">
+                  <div class="px-1 py-2 border-b flex justify-between cursor-pointer" v-show="incomes" @click="incomes = false">
                     <p>{{ __("Incomes") }}</p>
-                    <i class="fa-solid fa-caret-down cursor-pointer" @click="incomes = false"
-                      v-show="incomes"></i>
-                    <i class="fa-solid fa-caret-left cursor-pointer" @click="incomes = true"
-                      v-show="!incomes"></i>
+                    <i class="fa-solid fa-caret-down"></i>
+                  </div>
+                  <div class="px-1 py-2 border-b flex justify-between cursor-pointer"  v-show="!incomes" @click="incomes = true">
+                    <p>{{ __("Incomes") }}</p>
+                    <i class="fa-solid fa-caret-left"></i>
                   </div>
                   <div v-show="incomes">
                     <dropdown-link :href="route('bills.incomes.search')" as="a">
@@ -365,7 +418,7 @@
                   <dropdown-link :href="route('bills.expenses.search')" as="a" class=" border-b">
                     {{ __("Expenses") }}
                   </dropdown-link>
-                  <dropdown-link as="a" :href="route('inventory.items.balance')" >
+                  <dropdown-link as="a" :href="route('inventory.items.balance')">
                     {{ __("Inventory Balance") }}
                   </dropdown-link>
                 </div>
@@ -882,7 +935,7 @@ export default {
       items: false,
       reports: false,
       bills: false,
-      incomes:false
+      incomes: false
     };
   },
   methods: {

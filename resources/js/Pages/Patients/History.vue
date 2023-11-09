@@ -36,19 +36,19 @@
                                 <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{ __("Paid") }}</th>
                                 <th class="bg-[#f8f9fa] p-3 border border-[#eceeef]">{{ __("Actions") }}</th>
                             </tr>
-                            <tr v-for="payment  in payments" :key="payment.id">
+                            <tr v-for="appointment  in appointments" :key="appointment.id">
                                 <td class="text-center  border p-2">{{ new
-                                    Date(payment[0].date).toLocaleDateString() }}
+                                    Date(appointment.date).toLocaleDateString() }}
                                 </td>
-                                <td class="text-center  border p-2">{{ __(payment[0].doctor.name) }}</td>
-                                <td class="text-center  border p-2">{{ __(payment[0].appointment.type) }}</td>
-                                <td class="text-center  border p-2">{{ payment[0].appointment.amount }}</td>
-                                <td class="text-center  border p-2"> {{ getTotalFees(payment[0].appointment.fees) }}</td>
-                                <td class="text-center  border p-2"> {{ getTotal(payment[0].appointment) }}</td>
-                                <td class="text-center  border p-2"> {{ getTotalPaid(payment) }}
+                                <td class="text-center  border p-2">{{ __(appointment.doctor.name) }}</td>
+                                <td class="text-center  border p-2">{{ __(appointment.type) }}</td>
+                                <td class="text-center  border p-2">{{ appointment.amount }}</td>
+                                <td class="text-center  border p-2"> {{ getTotalFees(appointment.fees) }}</td>
+                                <td class="text-center  border p-2"> {{ getTotal(appointment) }}</td>
+                                <td class="text-center  border p-2"> {{ getTotalPaid(appointment.payments) }}
                                 </td>
                                 <td class="text-center  border p-2">
-                                    <JetButton @click="downloadPDF(payment)">
+                                    <JetButton @click="downloadPDF(appointment)">
                                         {{ __("Print") }}
                                     </JetButton>
                                 </td>
@@ -136,7 +136,7 @@ export default {
         // appointments: {
         //     default: null
         // },
-        payments: {
+        appointments: {
             default: null
         },
         prescriptions: {
@@ -184,10 +184,9 @@ export default {
         },
         getRemaining() {
             var remaining = 0;
-            var pays = Object.values(this.payments);
-            // console.log(pays)
-            pays.forEach((el) => {
-                remaining += this.getTotal(el[0].appointment) - this.getTotalPaid(el);
+            
+            this.appointments.forEach((el) => {
+                remaining += this.getTotal(el) - this.getTotalPaid(el.payments);
             })
             return remaining;
         },
@@ -282,12 +281,12 @@ export default {
                     });
                 })
         },
-        downloadPDF(payment) {
+        downloadPDF(appointment) {
             // console.log(payment)
-            window.open(route("pdf.payment.preview", payment.id));
+            window.open(route("pdf.payment.preview", appointment.id));
         },
         downloadPrescriptionPDF(prescription) {
-            window.open(route("pdf.prescription.preview", [prescription.id]));
+            window.open(route("pdf.prescription.preview", prescription.id));
         },
     },
     created() {
@@ -302,7 +301,7 @@ export default {
                 console.log(response.data)
             })
         console.log("prescriptions", this.prescriptions)
-        console.log("payments", this.payments)
+        console.log("appointments", this.payments)
 
     },
 };

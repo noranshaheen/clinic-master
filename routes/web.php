@@ -204,6 +204,7 @@ Route::middleware(['auth:sanctum', 'verified', 'ETASettings'])->group(function (
     Route::post('/bill/searchIncomeData', [BillController::class, 'searchIncomeData'])->name("bills.income.searchData");
     Route::post('/bill/searchIncomeData/total', [BillController::class, 'searchTotalIncomeData'])->name("bills.income.searchData.total");
     Route::post('/bill/searchIncomeData/export', [BillController::class, 'exportIncomeData'])->name("bills.income.exportData");
+    Route::post('/bill/searchIncomeData/export/total', [BillController::class, 'exportTotalIncomeData'])->name("bills.income.exportData.total");
     Route::get('/bill/expenses/search', [BillController::class, 'searchExpenses'])->name("bills.expenses.search");
     Route::post('/bill/searchExpensesData', [BillController::class, 'searchExpensesData'])->name("bills.expenses.searchData");
     Route::post('/bill/searchExpensesData/export', [BillController::class, 'exportExpensesData'])->name("bills.expenses.exportData");

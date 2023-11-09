@@ -50,10 +50,10 @@
                     </div>
                     <div>
                         <ul>
-                            <li class="pb-2 text-gray-600">
+                            <!-- <li class="pb-2 text-gray-600">
                                 <span class="font-semibold">{{ __('Prescription Number') }}</span> :
                                 <span>{{ $data->id}}</span>
-                            </li>
+                            </li> -->
                             <li class="pb-2 text-gray-600">
                                 <span class="font-semibold">{{ __('Detection Type') }}</span> :
                                 <span>{{ __($data->appointment->type)}}</span>
@@ -75,8 +75,8 @@
                         {{ __('Patient') }}
                     </p> :
                     <span class="text-gray-600 p-2">{{ $data->patient->name }}</span> -
-                    <span class="text-gray-600 p-2">{{ $data->patient->phone }}</span> -
-                    <span class="text-gray-600 p-2">{{ $data->patient->gender == 'F'? __('Female'):__('Male') }}</span>
+                    <!-- <span class="text-gray-600 p-2">{{ $data->patient->phone }}</span> - -->
+                    <!-- <span class="text-gray-600 p-2">{{ $data->patient->gender == 'F'? __('Female'):__('Male') }}</span> -->
                 </div>
                 <div class="mb-5 p-5">
                     <p class="text-gray-600 pb-2 font-semibold underline decoration-2 inline">
@@ -108,10 +108,16 @@
                     </thead>
                     <tbody class="text-center border border-[#eceeef]">
                         @foreach ($data->prescriptionItems as $line)
+                        @if($line->drug)
                         <tr>
-                            <td class="p-2 border border-[#eceeef]">{{ $line->drugs->name  }}</td>
+                            <td class="p-2 border border-[#eceeef]">{{ $line->drug->name }}</td>
                             <td class="p-2 border border-[#eceeef]">{{ $line->dose }}</td>
                         </tr>
+                        @else
+                        <tr>
+                            <td class="p-2 border border-[#eceeef]">{{ $line->service->name }}</td>
+                        </tr>
+                        @endif
                         @endforeach
                     </tbody>
                 </table>

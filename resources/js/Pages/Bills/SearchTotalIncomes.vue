@@ -262,14 +262,8 @@ export default {
                 .catch((error) => { });
         },
         onExportIncomes() {
-            // axios
-            // .post(route("bills.income.exportData"), this.form)
-            // .then((response) => {
-
-            // });
-
             axios({
-                url: route("bills.income.exportData"),
+                url: route("bills.income.exportData.total"),
                 method: "POST",
                 data: this.form,
                 responseType: "blob",
@@ -359,22 +353,22 @@ export default {
         axios
             .get(route('doctor.all'))
             .then((response) => {
-                var all = {
-                    "id": -1,
-                    "name": "All"
-                };
+                // var all = {
+                //     "id": -1,
+                //     "name": "All"
+                // };
                 this.doctors = response.data;
-                this.doctors.unshift(all);
+                // this.doctors.unshift(all);
             })
         axios
             .get(route('clinic.all'))
             .then((response) => {
-                var all = {
-                    "id": -1,
-                    "name": "All"
-                };
+                // var all = {
+                //     "id": -1,
+                //     "name": "All"
+                // };
                 this.clinics = response.data;
-                this.clinics.unshift(all);
+                // this.clinics.unshift(all);
             })
     },
 };

@@ -18,7 +18,9 @@ use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Traits\ExcelWrapper;
+use App\Models\Payment;
 use Illuminate\Http\Client\Response;
+use SebastianBergmann\CodeCoverage\Report\Xml\Totals;
 
 class BillController extends Controller
 {
@@ -356,18 +358,6 @@ class BillController extends Controller
         }
     }
 
-    private function getTotalLine($row)
-    {
-        $total = 0;
-        if ($row['appointment']['payment'] !== null) {
-            $total += $row['appointment']['payment']['detection_fees'];
-            if ($row['appointment']['payment']['service_fees'] !== null) {
-                $total += $row['appointment']['payment']['service_fees'];
-            }
-        }
-        return $total;
-    }
-
     public function exportIncomeData(Request $request)
     {
         $endDate = Carbon::parse($request->endDate)->endOfDay();
@@ -377,16 +367,18 @@ class BillController extends Controller
             $doctor_prescriptions = Prescription::with('doctor')
                 ->with('prescriptionItems')
                 ->with('clinic')
+                ->with('patient')
                 ->with('appointment')
-                ->with('appointment.payment')
+                ->with('appointment.payments')
                 ->whereBetween('dateTimeIssued', [$request->startDate, $endDate])
                 ->get();
         } elseif ($request->doctor['id'] == -1) {
             $doctor_prescriptions = Prescription::with('doctor')
                 ->with('prescriptionItems')
                 ->with('clinic')
+                ->with('patient')
                 ->with('appointment')
-                ->with('appointment.payment')
+                ->with('appointment.payments')
                 ->where('clinic_id', '=', $request->clinic['id'])
                 ->whereBetween('dateTimeIssued', [$request->startDate, $endDate])
                 ->get();
@@ -394,8 +386,9 @@ class BillController extends Controller
             $doctor_prescriptions = Prescription::with('doctor')
                 ->with('prescriptionItems')
                 ->with('clinic')
+                ->with('patient')
                 ->with('appointment')
-                ->with('appointment.payment')
+                ->with('appointment.payments')
                 ->where('doctor_id', '=', $request->doctor['id'])
                 ->whereBetween('dateTimeIssued', [$request->startDate, $endDate])
                 ->get();
@@ -403,8 +396,9 @@ class BillController extends Controller
             $doctor_prescriptions = Prescription::with('doctor')
                 ->with('prescriptionItems')
                 ->with('clinic')
+                ->with('patient')
                 ->with('appointment')
-                ->with('appointment.payment')
+                ->with('appointment.payments')
                 ->where('doctor_id', '=', $request->doctor['id'])
                 ->where('clinic_id', '=', $request->clinic['id'])
                 ->whereBetween('dateTimeIssued', [$request->startDate, $endDate])
@@ -421,13 +415,14 @@ class BillController extends Controller
             $file->getActiveSheet()->setCellValue($this->index(2, $rowIdx), Carbon::parse($row['dateTimeIssued'])->format('Y-m-d'));
             $file->getActiveSheet()->setCellValue($this->index(3, $rowIdx), $row['clinic']['name']);
             $file->getActiveSheet()->setCellValue($this->index(4, $rowIdx), $row['doctor']['name']);
-            $file->getActiveSheet()->setCellValue($this->index(5, $rowIdx), $this->getTotalLine($row));
+            $file->getActiveSheet()->setCellValue($this->index(5, $rowIdx), $row['patient']['name']);
+            $file->getActiveSheet()->setCellValue($this->index(6, $rowIdx), $this->getTotalPaid($row));
             $rowIdx++;
         }
 
-        $file->getActiveSheet()->mergeCells($this->index(1, $rowIdx) . ':' . $this->index(4, $rowIdx));
+        $file->getActiveSheet()->mergeCells($this->index(1, $rowIdx) . ':' . $this->index(5, $rowIdx));
         $file->getActiveSheet()->setCellValue($this->index(1, $rowIdx), "الأجمالي");
-        $file->getActiveSheet()->setCellValue($this->index(5, $rowIdx), "=SUM(E4:E" . $rowIdx-1 . ")");
+        $file->getActiveSheet()->setCellValue($this->index(6, $rowIdx), "=SUM(F4:F" . $rowIdx - 1 . ")");
 
 
         $writer = IOFactory::createWriter($file, 'Xlsx');
@@ -437,6 +432,104 @@ class BillController extends Controller
         $writer->save('php://output');
     }
 
+    private function getTotalRequired($prescriptions)
+    {
+        $total = 0;
+        foreach ($prescriptions as $prescription) {
+
+            $total += $prescription['appointment']['amount'] ? $prescription['appointment']['amount'] : 0;
+            foreach ($prescription['appointment']['fees'] as $fee) {
+                $total += $fee['price'];
+            }
+        }
+        return $total;
+    }
+
+    private function getTotalPaid($prescriptions)
+    {
+        $total = 0;
+        if (is_array($prescriptions)) {
+            foreach ($prescriptions as $prescription) {
+                foreach ($prescription['appointment']['payments'] as $payment) {
+                    $total += $payment['paid_amount'];
+                }
+            }
+        } else {
+            foreach ($prescriptions['appointment']['payments'] as $payment) {
+                $total += $payment['paid_amount'];
+            }
+        }
+        return $total;
+    }
+
+    public function exportTotalIncomeData(Request $request)
+    {
+        $endDate = Carbon::parse($request->endDate)->endOfDay();
+        $doctor_prescriptions = null;
+
+        if ($request->clinic['id'] == -1 && $request->doctor['id'] == -1) {
+            $doctor_prescriptions = Prescription::with('doctor')
+                ->with('prescriptionItems')
+                ->with('clinic')
+                ->with('patient')
+                ->with('appointment')
+                ->with('appointment.fees')
+                ->with('appointment.payments')
+                ->whereBetween('dateTimeIssued', [$request->startDate, $endDate])
+                ->get();
+        } elseif ($request->doctor['id'] == -1) {
+            $doctor_prescriptions = Prescription::with('doctor')
+                ->with('prescriptionItems')
+                ->with('clinic')
+                ->with('patient')
+                ->with('appointment')
+                ->with('appointment.fees')
+                ->with('appointment.payments')
+                ->where('clinic_id', '=', $request->clinic['id'])
+                ->whereBetween('dateTimeIssued', [$request->startDate, $endDate])
+                ->get();
+        } elseif ($request->clinic['id'] == -1) {
+            $doctor_prescriptions = Prescription::with('doctor')
+                ->with('prescriptionItems')
+                ->with('clinic')
+                ->with('patient')
+                ->with('appointment')
+                ->with('appointment.fees')
+                ->with('appointment.payments')
+                ->where('doctor_id', '=', $request->doctor['id'])
+                ->whereBetween('dateTimeIssued', [$request->startDate, $endDate])
+                ->get();
+        } else {
+            $doctor_prescriptions = Prescription::with('doctor')
+                ->with('prescriptionItems')
+                ->with('clinic')
+                ->with('patient')
+                ->with('appointment')
+                ->with('appointment.fees')
+                ->with('appointment.payments')
+                ->where('doctor_id', '=', $request->doctor['id'])
+                ->where('clinic_id', '=', $request->clinic['id'])
+                ->whereBetween('dateTimeIssued', [$request->startDate, $endDate])
+                ->get();
+        }
+
+        //render excel file now
+        $reader = IOFactory::createReader('Xlsx');
+        $file = $reader->load('./ExcelTemplates/TotalIncomes.xlsx');
+
+        $rowIdx = 4;
+        $file->getActiveSheet()->setCellValue($this->index(1, $rowIdx), $doctor_prescriptions[0]['clinic']['name']);
+        $file->getActiveSheet()->setCellValue($this->index(2, $rowIdx), $doctor_prescriptions[0]['doctor']['name']);
+        $file->getActiveSheet()->setCellValue($this->index(3, $rowIdx), count($doctor_prescriptions));
+        $file->getActiveSheet()->setCellValue($this->index(4, $rowIdx), $this->getTotalRequired($doctor_prescriptions));
+        $file->getActiveSheet()->setCellValue($this->index(5, $rowIdx), $this->getTotalPaid($doctor_prescriptions));
+
+        $writer = IOFactory::createWriter($file, 'Xlsx');
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="Purchase_ExportedData.xls"');
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
+    }
 
     public function searchExpenses()
     {
@@ -463,7 +556,8 @@ class BillController extends Controller
         return $bills;
     }
 
-    public function exportExpensesData(Request $request){
+    public function exportExpensesData(Request $request)
+    {
         $bills = null;
         if ($request->clinic['id'] == -1) {
             $bills = Bill::with('billDetails')
@@ -478,32 +572,30 @@ class BillController extends Controller
                 ->get();
         }
 
-                //render excel file now
-                $reader = IOFactory::createReader('Xlsx');
-                $file = $reader->load('./ExcelTemplates/Expenses.xlsx');
-        
-                $rowIdx = 4;
-                foreach ($bills as $row) {
-                    $file->getActiveSheet()->setCellValue($this->index(1, $rowIdx), $row['id']);
-                    $file->getActiveSheet()->setCellValue($this->index(2, $rowIdx), Carbon::parse($row['date'])->format('Y-m-d'));
-                    $file->getActiveSheet()->setCellValue($this->index(3, $rowIdx), $row['clinic']['name']);
-                    $file->getActiveSheet()->setCellValue($this->index(4, $rowIdx), $row['type']=='purchase' ? 'فاتورة شراء':'فاتورة ادارية');
-                    $file->getActiveSheet()->setCellValue($this->index(5, $rowIdx), $row['totalAmount']);
-                    $rowIdx++;
-                }
-        
-                $file->getActiveSheet()->mergeCells($this->index(1, $rowIdx) . ':' . $this->index(4, $rowIdx));
-                $file->getActiveSheet()->setCellValue($this->index(1, $rowIdx), "الأجمالي");
-                $file->getActiveSheet()->setCellValue($this->index(5, $rowIdx), "=SUM(E4:E" . $rowIdx-1 . ")");
-        
-        
-                $writer = IOFactory::createWriter($file, 'Xlsx');
-                header('Content-Type: application/vnd.ms-excel');
-                header('Content-Disposition: attachment;filename="Purchase_ExportedData.xls"');
-                header('Cache-Control: max-age=0');
-                $writer->save('php://output');
+        //render excel file now
+        $reader = IOFactory::createReader('Xlsx');
+        $file = $reader->load('./ExcelTemplates/Expenses.xlsx');
+
+        $rowIdx = 4;
+        foreach ($bills as $row) {
+            $file->getActiveSheet()->setCellValue($this->index(1, $rowIdx), $row['id']);
+            $file->getActiveSheet()->setCellValue($this->index(2, $rowIdx), Carbon::parse($row['date'])->format('Y-m-d'));
+            $file->getActiveSheet()->setCellValue($this->index(3, $rowIdx), $row['clinic']['name']);
+            $file->getActiveSheet()->setCellValue($this->index(4, $rowIdx), $row['type'] == 'purchase' ? 'فاتورة شراء' : 'فاتورة ادارية');
+            $file->getActiveSheet()->setCellValue($this->index(5, $rowIdx), $row['totalAmount']);
+            $rowIdx++;
+        }
+
+        $file->getActiveSheet()->mergeCells($this->index(1, $rowIdx) . ':' . $this->index(4, $rowIdx));
+        $file->getActiveSheet()->setCellValue($this->index(1, $rowIdx), "الأجمالي");
+        $file->getActiveSheet()->setCellValue($this->index(5, $rowIdx), "=SUM(E4:E" . $rowIdx - 1 . ")");
 
 
+        $writer = IOFactory::createWriter($file, 'Xlsx');
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="Purchase_ExportedData.xls"');
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output');
     }
 
     public function getItemsBalance(Request $request)

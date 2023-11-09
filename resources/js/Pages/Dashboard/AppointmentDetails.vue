@@ -5,6 +5,9 @@
                 {{ __("Appointment Details") }}
             </template>
             <template #content>
+                
+                <jet-validation-errors class="mb-4" />
+
                 <div v-if="appointment_Details[0].cancelled">
                     <p class="text-center text-red-600 my-5">
                         <i class="fa fa-exclamation-circle mr-1"></i>
@@ -67,7 +70,7 @@
                     </tr>
                     <tr v-if="appointment_Details[0].status !== 'paid'" class="border">
                         <th class="bg-[#f8f9fa] p-2 w-1/3 text-center">{{ __("Reciever") }}</th>
-                        <select id="type" v-model="form.current_team_id"
+                        <select required id="type" v-model="form.current_team_id"
                             class="m-1 block w-11/12 border-slate-300 rounded-md text-sm"
                             @change="getAll(form.current_team_id)">
                             <option value="1">{{ __("Reseptionist") }}</option>
@@ -109,7 +112,7 @@
             </template>
         </jet-dialog-modal>
     </div>
-    <ServiceFees ref="dlg1" :fees="fees" />
+    <ServiceFees ref="dlg1" :appointments_fees="appointments_fees" :appointment_id="form.appointment_id" />
 </template>
 <script>
 import ServiceFees from "@/Pages/Dashboard/ServiceFees.vue";
@@ -120,11 +123,13 @@ import JetDangerButton from "@/Jetstream/DangerButton.vue";
 import JetInput from "@/Jetstream/Input.vue";
 import axios from "axios";
 import swal from "sweetalert";
+import JetValidationErrors from "@/Jetstream/ValidationErrors.vue";
 
 
 export default {
     components: {
         ServiceFees,
+        JetValidationErrors,
         JetButton,
         JetDialogModal,
         JetSecondaryButton,
@@ -145,7 +150,7 @@ export default {
             amount: false,
             // payment: 0,
             // prescription: [],
-            fees: [],
+            appointments_fees: [],
             all_doctors: [],
             all_reseptionists: [],
             form: this.$inertia.form({
@@ -196,7 +201,7 @@ export default {
             axios.get(route('prescription.serviceFees', appointment_id))
                 .then((response) => {
                     console.log(response.data)
-                    this.fees = response.data;
+                    this.appointments_fees = response.data;
                     this.form.appointment_id = appointment_id;
                     // this.prescription = response.data[0];
                     // this.payment = response.data[1][0];

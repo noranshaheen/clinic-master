@@ -1,9 +1,10 @@
 <template>
     <app-layout>
-        <patient-info ref="dlg4" :patient="current_patient_info" />
+        <patient-info ref="dlg5" :patient="current_patient_info" />
         <show-prescription ref="dlg1" :prescription="prescription_details" />
         <add-analysis-dialog ref="dlg2" @Save="getAnalysis()" />
         <add-xrays-dialog ref="dlg3" @Save="getXray()" />
+        <add-service-dialog ref="dlg4" @Save="getService()" />
 
         <div class="sm:py-2 mx-auto">
             <div class="mx-auto sm:px-4 lg:px-6">
@@ -25,7 +26,7 @@
                         </div>
                         <hr class="block lg:hidden" />
                         <div class="lg:col-span-3 lg:ms-2 lg:border-s-2 px-2 ">
-                            <div class="flex justify-start sm:grid-cols-1 mt-2 lg:mt-0">
+                            <div class="sm:grid-cols-1 mt-2 lg:mt-0">
                                 <!-- patients -->
                                 <div class="">
                                     <div class=" lg:py-2 m-2 lg:m-0">
@@ -103,9 +104,9 @@
                                                         <i class="fa fa-delete-left cursor-pointer text-red-500"
                                                             @click="deleteItem(idx, form.prescriptionLines)"></i>
                                                     </div>
-                                                    <div class="flex justify-between">
+                                                    <div>
                                                         <input list="doses" id="dose" v-model="line.dose" placeholder="dose"
-                                                            class="border w-3/5 pl-2 mx-1 border-slate-300 rounded-md">
+                                                            class="border pl-2 mx-1 border-slate-300 rounded-md w-full">
                                                         <datalist id="doses">
                                                             <option v-for="dose in doses" :value="dose.name"></option>
                                                         </datalist>
@@ -122,10 +123,12 @@
                                         <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Service") }}</td>
                                         <td class="p-2">
                                             <ul v-for="service in form.services" class="list-disc list-inside">
-                                                <li>
-                                                    <span>{{ service.name }}</span>
-                                                    <input type="text" v-model="service.default_price"
-                                                    class="w-2/5 border-slate-300 rounded-md"/>
+                                                <li class="inline-block">
+                                                    <div class="flex justify-between items-center">
+                                                        <span>{{ service.name }}</span>
+                                                        <input type="text" v-model="service.default_price"
+                                                            class="w-2/5 border-slate-300 rounded-md" />
+                                                    </div>
                                                 </li>
                                             </ul>
                                         </td>
@@ -298,18 +301,25 @@
                             <div class="my-4 pb-2 border-b-2">
                                 <lable class="my-1 text-slate-700 font-bold">{{ __('Service') }}</lable>
                                 <span class="m-2 text-gray-400 text-sm">{{ __("(you can choose multiple options)") }}</span>
-                                <div>
+                                <div v-if="service">
                                     <!-- <div v-if="all_services.length != 0" class="inline"> -->
                                     <button v-for="(service, idx) in all_services" class="my-2 mx-1">
                                         <input type="checkbox" class="peer sr-only" :id="service.name" name="service"
-                                            :value="service"
-                                            v-model="form.services" />
+                                            :value="service" v-model="form.services" />
                                         <label :for="service.name"
                                             class=" cursor-pointer p-2 text-sm rounded-md text-center border shadow peer-checked:bg-green-500">
                                             {{ service.name }}
                                         </label>
                                     </button>
                                     <!-- </div> -->
+                                </div>
+                                <div class="flex items-center justify-end mt-4">
+                                    <jet-button class="ms-2" @click="addService()">
+                                        <i class="fa fa-plus mr-1"></i>
+                                    </jet-button>
+                                    <jet-button class="ms-2" @click="AddNewService()">
+                                        {{ __("Add") }}
+                                    </jet-button>
                                 </div>
                             </div>
                             <!-- end adding services -->
@@ -330,10 +340,10 @@
                                     </button>
                                 </div>
                                 <div class="flex items-center justify-end mt-4">
-                                    <jet-button class="ms-2" @click="AddNewAnalysis()">
+                                    <jet-button class="ms-2" @click="AddAnalysis()">
                                         <i class="fa fa-plus mr-1"></i>
                                     </jet-button>
-                                    <jet-button class="ms-2" @click="AddAnalysis()">
+                                    <jet-button class="ms-2" @click="AddNewAnalysis()">
                                         {{ __("Add") }}
                                     </jet-button>
                                 </div>
@@ -358,10 +368,10 @@
                                     </button>
                                 </div>
                                 <div class="flex items-center justify-end mt-4">
-                                    <jet-button class="ms-2" @click="AddNewXray()">
+                                    <jet-button class="ms-2" @click="AddRays()">
                                         <i class="fa fa-plus mr-1"></i>
                                     </jet-button>
-                                    <jet-button class="ms-2" @click="AddRays()">
+                                    <jet-button class="ms-2" @click="AddNewXray()">
                                         {{ __("Add") }}
                                     </jet-button>
                                 </div>
@@ -435,23 +445,23 @@
                                                         <datalist id="doses">
                                                             <option v-for="dose in doses" :value="dose.name"></option>
                                                         </datalist>
-                                                        <input type="text" v-model="line.cost" placeholder="cost"
-                                                            class="w-2/5 border-slate-300 rounded-md" />
+                                                        <!-- <input type="text" v-model="line.cost" placeholder="cost"
+                                                            class="w-2/5 border-slate-300 rounded-md" /> -->
                                                     </div>
                                                 </li>
                                             </ul>
                                         </td>
                                     </tr>
                                     <!-- end drugs -->
-                                     <!-- start service -->
-                                     <tr class="border">
+                                    <!-- start service -->
+                                    <tr class="border">
                                         <td class="p-2 font-bold text-center bg-[#f8f9fa]">{{ __("Service") }}</td>
                                         <td class="p-2">
                                             <ul v-for="service in form.services" class="list-disc list-inside">
                                                 <li>
                                                     <span>{{ service.name }}</span>
                                                     <input type="text" v-model="service.default_price"
-                                                    class="w-2/5 border-slate-300 rounded-md"/>
+                                                        class="w-2/5 border-slate-300 rounded-md" />
                                                 </li>
                                             </ul>
                                         </td>
@@ -580,6 +590,7 @@ import SecondaryButton from "@/Jetstream/SecondaryButton.vue";
 import ShowPrescription from './Show.vue';
 import AddAnalysisDialog from '../Analysis/Edit.vue';
 import AddXraysDialog from '../XRays/Edit.vue';
+import AddServiceDialog from '../Services/Edit.vue';
 import PatientInfo from "@/Pages/Patients/Information.vue";
 import JetValidationErrors from '@/Jetstream/ValidationErrors.vue'
 
@@ -598,6 +609,7 @@ export default {
         ShowPrescription,
         AddAnalysisDialog,
         AddXraysDialog,
+        AddServiceDialog,
         PatientInfo
     },
     props: {
@@ -625,6 +637,7 @@ export default {
             all_analysis: [],
             all_rays: [],
             rays: false,
+            service: false,
             checkedDiagnosis: [],
             checkedDrugs: [],
             current_patient_info: "",
@@ -676,6 +689,17 @@ export default {
                     this.all_rays = response.data;
                     console.log(response.data)
                 })
+        },
+        AddNewService() {
+            this.$nextTick(() => this.$refs.dlg4.ShowDialog());
+        },
+        getService() {
+            axios
+                .get(route("services.index"))
+                .then((response) => {
+                    this.all_services = response.data;
+                })
+                .catch((error) => { });
         },
         AddNewAnalysis() {
             this.$nextTick(() => this.$refs.dlg2.ShowDialog());
@@ -772,6 +796,9 @@ export default {
         AddRays: function () {
             this.rays = true
         },
+        addService: function () {
+            this.service = true
+        },
         nameWithId: function ({ id, name }) {
             return id + " - " + name;
         },
@@ -806,7 +833,7 @@ export default {
             if (this.patient_history.length > 0) {
                 this.current_patient_info = this.patient_history[0].patient;
             }
-            this.$nextTick(() => this.$refs.dlg4.ShowDialog());
+            this.$nextTick(() => this.$refs.dlg5.ShowDialog());
 
         },
         onCancel: function () {
@@ -845,18 +872,14 @@ export default {
         this.getDiagnosis();
         this.getAnalysis();
         this.getXray();
+        this.getService();
         axios
             .get(route("drug.all"))
             .then((response) => {
                 this.drugs = response.data;
             })
             .catch((error) => { });
-        axios
-            .get(route("services.index"))
-            .then((response) => {
-                this.all_services = response.data;
-            })
-            .catch((error) => { });
+
         axios
             .get(route('doses'))
             .then((response) => {

@@ -319,6 +319,10 @@ class AppointmentController extends Controller
     public function pay(Request $request)
     {
         // dd($request);
+        $request->validate([
+            'amount' =>['required'],
+            'current_team_id' =>['required'],
+        ]);
 
         $appointment = Appointment::find($request->appointment_id);
 

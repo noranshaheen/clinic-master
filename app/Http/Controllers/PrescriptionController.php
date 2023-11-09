@@ -154,7 +154,7 @@ class PrescriptionController extends Controller
             $prescription->prescriptionItems()->save($prescriptionItem);
         }
 
-        foreach($request->services as $service){
+        foreach ($request->services as $service) {
             $prescriptionItem2 = new PrescriptionItems();
             $prescriptionItem2->service_id = $service['id'];
             $prescription->prescriptionItems()->save($prescriptionItem2);
@@ -207,9 +207,29 @@ class PrescriptionController extends Controller
     public function getItemsFees($appointment_id)
     {
 
+        $appointment = Appointment::where("id", '=', $appointment_id)->first();
 
-        $fees = Fee::where('appointment_id','=',$appointment_id)->get();
-        // dd($fees);
+        // $appointments = Appointment::where('patient_id', '=', $appointment->patient_id)
+        //     ->where('doctor_id', '=', $appointment->doctor_id)
+        //     ->with('payments')
+        //     ->with('fees')
+        //     ->get();
+
+        $appointments = Appointment::where('patient_id','=',$appointment->patient_id)
+        ->where('doctor_id', '=', $appointment->doctor_id)
+        ->with('payments')
+        ->with('fees')
+        ->with('patient')
+        ->with('doctor')
+        ->get();
+
+        // dd($appointments);
+        return $appointments;
+
+        // $fees = Fee::where('appointment_id','=',$appointment_id)->get();
+        // return $fees;
+
+
         // $today = Carbon::parse('today')->format('Y-m-d');
         // dd($today);
         // $prescriptionItems = Prescription::where('appointment_id', '=', $appointment_id)
@@ -220,7 +240,6 @@ class PrescriptionController extends Controller
         //     ->get();
         // $payment = Payment::where('appointment_id', '=', $appointment_id)
         //                   ->get();  
-        return $fees;
         // dd($prescriptionItems);
     }
 
