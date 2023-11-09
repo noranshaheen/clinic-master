@@ -162,18 +162,18 @@ export default {
             this.prescription_details = patient;
             this.$nextTick(() => this.$refs.dlg1.ShowDialog());
         },
+        getTotal(appointment) {
+            var serviceFees = this.getTotalFees(appointment.fees);
+            var detectionFees = appointment.amount;
+            var totalFees = Number(serviceFees) + Number(detectionFees);
+            return totalFees;
+        },
         getTotalFees(fees) {
             var total = 0;
             fees.forEach(element => {
                 total += Number(element.price);
             });
             return total;
-        },
-        getTotal(appointment) {
-            var serviceFees = this.getTotalFees(appointment.fees);
-            var detectionFees = appointment.amount;
-            var totalFees = Number(serviceFees) + Number(detectionFees);
-            return totalFees;
         },
         getTotalPaid(payment) {
             var total = 0;
