@@ -131,19 +131,18 @@ export default {
         ShowDialog() {
             this.showDialog = true;
             this.message = null;
+            var total_fees = 0;
+            // console.log(this.appointments_fees);
+            this.form.appointment = this.appointment_id;
 
-            var apt = this.appointments_fees.filter((el) => { return el.id == this.appointment_id? true:false })
+            total_fees = this.getRemaining(this.appointments_fees);
 
-            if (apt[0].fees.length !== 0) {
-                this.total = this.getTotal(this.appointments_fees);
-                this.form.appointment = this.appointment_id;
+            if (total_fees == 0) {
+                    this.message = "Not Fount Any Additional Payments";
             }
             else {
-                this.message = "Not Fount Any Additional Payments";
+                this.total = total_fees
             }
-            // if (this.payment.detection_fees == null) {
-            //     this.message = "You Have To Pay Detection Fees First";
-            // }
         },
         getAll(team_id) {
             // console.log(team_id);
@@ -167,20 +166,21 @@ export default {
                     })
             }
         },
-        getTotal(appointments_fees) {
+        getTotal(appointment) {
             var total = 0;
-            appointments_fees.forEach(element => {
-                if(element.fees)
-                total += this.getTotalFees(element.fees)
-            });
+            var detectionFees = appointment.amount;
+            if (appointment.fees) {
+                var serviceFees = this.getTotalFees(appointment.fees);
+            }
+            total = Number(detectionFees) + Number(serviceFees);
             return total;
         },
-        getTotalFees(fees){
+        getTotalFees(fees) {
             var total = 0;
-            fees.forEach((el)=>{
+            fees.forEach((el) => {
                 total += Number(el.price);
             })
-        return total;
+            return total;
         },
         getTotalPaid(payment) {
             var total = 0;
@@ -188,6 +188,14 @@ export default {
                 total += Number(element.paid_amount);
             });
             return total;
+        },
+        getRemaining() {
+            var remaining = 0;
+
+            this.appointments_fees.forEach((el) => {
+                remaining += this.getTotal(el) - this.getTotalPaid(el.payments);
+            })
+            return remaining;
         },
         // getPaidServiceFees(prescription) {
 
